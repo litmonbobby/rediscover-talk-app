@@ -1,30 +1,56 @@
 {
   "expo": {
-    "name": "rediscover-talk",
+    "name": "Rediscover Talk",
     "slug": "rediscover-talk",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
-    "userInterfaceStyle": "light",
+    "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#004BA7"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.rediscovertalk.app",
+      "deploymentTarget": "26.0",
+      "infoPlist": {
+        "UIBackgroundModes": ["audio"],
+        "NSMicrophoneUsageDescription": "This app uses the microphone for meditation session recordings.",
+        "NSCameraUsageDescription": "This app uses the camera to take profile photos."
+      }
     },
     "android": {
+      "package": "com.rediscovertalk.app",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "backgroundColor": "#004BA7"
       },
       "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "permissions": [
+        "RECORD_AUDIO",
+        "VIBRATE"
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      "expo-font",
+      [
+        "expo-av",
+        {
+          "microphonePermission": "Allow Rediscover Talk to access your microphone for meditation recordings."
+        }
+      ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "rediscover-talk"
+      }
     }
   }
 }
