@@ -87,7 +87,7 @@ export const MeditationLibraryScreen = ({ navigation }: any) => {
 
   return (
     <LinearGradient
-      colors={[colors.primary.cobaltBlue, colors.primary.deepBlue]}
+      colors={[colors.primary.darkBlue, colors.primary.cobaltBlue]}
       style={styles.container}
     >
       <ScrollView

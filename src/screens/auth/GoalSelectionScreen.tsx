@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Colors, Typography, Spacing, BorderRadius, Shadows } from '../../constants';
+import { colors } from '../../constants/colors';
+import { typography } from '../../constants/typography';
+import { spacing, BorderRadius, Shadows } from '../../constants/spacing';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 
 type Props = NativeStackScreenProps<any, 'GoalSelection'>;
@@ -31,7 +33,7 @@ export const GoalSelectionScreen: React.FC<Props> = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <LinearGradient
-        colors={[Colors.primary.DEFAULT, Colors.primary.light]}
+        colors={[colors.primary.cobaltBlue, colors.primary.darkBlue]}
         style={styles.header}
       >
         <Text style={styles.title}>What are your goals?</Text>
@@ -74,80 +76,80 @@ export const GoalSelectionScreen: React.FC<Props> = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.background.DEFAULT,
+    backgroundColor: colors.background.DEFAULT,
   },
   header: {
     paddingTop: Spacing['4xl'],
-    paddingBottom: Spacing.xl,
-    paddingHorizontal: Spacing.xl,
+    paddingBottom: spacing.xl,
+    paddingHorizontal: spacing.xl,
   },
   title: {
-    fontSize: Typography.fontSize['3xl'],
-    fontWeight: Typography.fontWeight.bold,
-    color: Colors.text.inverse,
-    marginBottom: Spacing.sm,
+    fontSize: typography.fontSize['3xl'],
+    fontWeight: typography.fontWeight.bold,
+    color: colors.text.inverse,
+    marginBottom: spacing.sm,
   },
   subtitle: {
-    fontSize: Typography.fontSize.lg,
+    fontSize: typography.fontSize.lg,
     color: 'rgba(255, 255, 255, 0.9)',
   },
   content: {
     flex: 1,
   },
   scrollContent: {
-    padding: Spacing.xl,
+    padding: spacing.xl,
   },
   goalsGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: Spacing.md,
+    gap: spacing.md,
   },
   goalCard: {
     width: '47%',
-    backgroundColor: Colors.background.paper,
+    backgroundColor: colors.background.paper,
     borderRadius: BorderRadius.lg,
-    padding: Spacing.lg,
+    padding: spacing.lg,
     alignItems: 'center',
     borderWidth: 2,
-    borderColor: Colors.background.light,
+    borderColor: colors.background.light,
     ...Shadows.sm,
   },
   goalCardSelected: {
-    borderColor: Colors.accent.DEFAULT,
+    borderColor: colors.accent.DEFAULT,
     backgroundColor: 'rgba(199, 246, 0, 0.1)',
   },
   goalEmoji: {
     fontSize: 48,
-    marginBottom: Spacing.sm,
+    marginBottom: spacing.sm,
   },
   goalTitle: {
-    fontSize: Typography.fontSize.base,
-    fontWeight: Typography.fontWeight.medium,
-    color: Colors.text.primary,
+    fontSize: typography.fontSize.base,
+    fontWeight: typography.fontWeight.medium,
+    color: colors.text.primary,
     textAlign: 'center',
   },
   goalTitleSelected: {
-    color: Colors.primary.DEFAULT,
-    fontWeight: Typography.fontWeight.bold,
+    color: colors.primary.DEFAULT,
+    fontWeight: typography.fontWeight.bold,
   },
   footer: {
-    padding: Spacing.xl,
+    padding: spacing.xl,
     paddingBottom: Spacing['2xl'],
   },
   continueButton: {
-    backgroundColor: Colors.accent.DEFAULT,
+    backgroundColor: colors.accent.DEFAULT,
     borderRadius: BorderRadius.xl,
-    padding: Spacing.md,
+    padding: spacing.md,
     alignItems: 'center',
     ...Shadows.md,
   },
   continueButtonDisabled: {
-    backgroundColor: Colors.background.light,
+    backgroundColor: colors.background.light,
     opacity: 0.5,
   },
   continueButtonText: {
-    fontSize: Typography.fontSize.lg,
-    fontWeight: Typography.fontWeight.bold,
-    color: Colors.primary.DEFAULT,
+    fontSize: typography.fontSize.lg,
+    fontWeight: typography.fontWeight.bold,
+    color: colors.primary.DEFAULT,
   },
 });

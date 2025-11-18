@@ -8,7 +8,8 @@ export const colors = {
   primary: {
     cobaltBlue: '#004BA7',
     lightBlue: '#0088DD',
-    deepBlue: '#0043A7',
+    deepBlue: '#002D65',
+    darkBlue: '#001E43',
     DEFAULT: '#004BA7', // Cobalt Blue
     light: '#0088DD',   // Bleu de France
     dark: '#0043A7',    // Cobalt Blue Dark
@@ -52,8 +53,8 @@ export const colors = {
 
   text: {
     primary: '#FFFFFF',
-    secondary: 'rgba(255, 255, 255, 0.8)',
-    tertiary: 'rgba(255, 255, 255, 0.6)',
+    secondary: 'rgba(255, 255, 255, 0.9)',
+    tertiary: 'rgba(255, 255, 255, 0.7)',
     inverse: '#1A1A1A',
   },
 

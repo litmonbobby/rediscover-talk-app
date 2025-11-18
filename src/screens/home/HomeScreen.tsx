@@ -15,11 +15,15 @@ export const HomeScreen = ({ navigation }: any) => {
   ];
 
   return (
-    <ScrollView style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.greeting}>Good Morning</Text>
-        <Text style={styles.date}>Sunday, November 17</Text>
-      </View>
+    <LinearGradient
+      colors={[colors.primary.darkBlue, colors.primary.cobaltBlue]}
+      style={styles.container}
+    >
+      <ScrollView style={styles.scrollView}>
+        <View style={styles.header}>
+          <Text style={styles.greeting}>Good Morning</Text>
+          <Text style={styles.date}>Sunday, November 17</Text>
+        </View>
 
       {/* Mood Check-in Widget */}
       <TouchableOpacity
@@ -65,10 +69,7 @@ export const HomeScreen = ({ navigation }: any) => {
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.actionCard}
-            onPress={() => {
-              // TODO: Navigate to Journal screen
-              console.log('Navigate to Journal');
-            }}
+            onPress={() => navigation.navigate('JournalList')}
             activeOpacity={0.8}
           >
             <LinearGradient
@@ -81,10 +82,7 @@ export const HomeScreen = ({ navigation }: any) => {
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.actionCard}
-            onPress={() => {
-              // TODO: Navigate to Breathwork screen
-              console.log('Navigate to Breathwork');
-            }}
+            onPress={() => navigation.navigate('Breathwork')}
             activeOpacity={0.8}
           >
             <LinearGradient
@@ -114,26 +112,29 @@ export const HomeScreen = ({ navigation }: any) => {
         </View>
       </View>
 
-      {/* Daily Quote */}
-      <View style={styles.card}>
-        <Text style={styles.quoteText}>
-          "The present moment is filled with joy and happiness. If you are attentive, you will see it."
-        </Text>
-        <Text style={styles.quoteAuthor}>— Thích Nhất Hạnh</Text>
-      </View>
-    </ScrollView>
+        {/* Daily Quote */}
+        <View style={styles.card}>
+          <Text style={styles.quoteText}>
+            "The present moment is filled with joy and happiness. If you are attentive, you will see it."
+          </Text>
+          <Text style={styles.quoteAuthor}>— Thích Nhất Hạnh</Text>
+        </View>
+      </ScrollView>
+    </LinearGradient>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.background.light,
+  },
+  scrollView: {
+    flex: 1,
   },
   header: {
-    backgroundColor: colors.primary.cobaltBlue,
     padding: spacing.xl,
     paddingTop: spacing.xl * 2,
+    marginBottom: spacing.md,
   },
   greeting: {
     ...typography.h1,

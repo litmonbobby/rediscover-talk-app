@@ -3,11 +3,11 @@ import {
   View,
   Text,
   StyleSheet,
-  TouchableOpacity,
   TextInput,
-  ScrollView,
+  TouchableOpacity,
   KeyboardAvoidingView,
   Platform,
+  ScrollView,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { colors } from '../../constants/colors';
@@ -16,32 +16,33 @@ import { spacing } from '../../constants/spacing';
 
 type MoodType = 'amazing' | 'good' | 'okay' | 'bad' | 'terrible';
 
-interface MoodOption {
-  type: MoodType;
-  emoji: string;
-  label: string;
-  color: string;
-}
-
-const moodOptions: MoodOption[] = [
-  { type: 'amazing', emoji: '😄', label: 'Amazing', color: colors.mood.happy },
-  { type: 'good', emoji: '😊', label: 'Good', color: colors.mood.good },
-  { type: 'okay', emoji: '😐', label: 'Okay', color: colors.mood.neutral },
-  { type: 'bad', emoji: '😔', label: 'Bad', color: colors.mood.sad },
-  { type: 'terrible', emoji: '😢', label: 'Terrible', color: colors.mood.veryBad },
+const moodOptions = [
+  { type: 'amazing' as MoodType, emoji: '😄', label: 'Amazing' },
+  { type: 'good' as MoodType, emoji: '😊', label: 'Good' },
+  { type: 'okay' as MoodType, emoji: '😐', label: 'Okay' },
+  { type: 'bad' as MoodType, emoji: '😔', label: 'Bad' },
+  { type: 'terrible' as MoodType, emoji: '😢', label: 'Terrible' },
 ];
 
-export const MoodCheckInScreen = ({ navigation }: any) => {
+export const JournalEntryScreen = ({ navigation }: any) => {
+  const [title, setTitle] = useState('');
+  const [content, setContent] = useState('');
   const [selectedMood, setSelectedMood] = useState<MoodType | null>(null);
-  const [note, setNote] = useState('');
 
-  const handleSaveMood = () => {
-    if (!selectedMood) return;
+  const handleSave = () => {
+    if (!title.trim() || !content.trim()) {
+      return;
+    }
 
-    // TODO: Save mood to Supabase
-    console.log('Saving mood:', { mood: selectedMood, note, timestamp: new Date() });
+    // TODO: Save to Supabase
+    console.log('Saving journal entry:', {
+      title,
+      content,
+      mood: selectedMood,
+      timestamp: new Date(),
+    });
 
-    // Navigate back to home
+    // Navigate back
     navigation.goBack();
   };
 
@@ -64,47 +65,61 @@ export const MoodCheckInScreen = ({ navigation }: any) => {
             <TouchableOpacity onPress={() => navigation.goBack()} style={styles.closeButton}>
               <Text style={styles.closeIcon}>✕</Text>
             </TouchableOpacity>
-            <Text style={styles.title}>How are you feeling?</Text>
-            <Text style={styles.subtitle}>Select your current mood</Text>
+            <Text style={styles.title}>New Entry</Text>
+            <Text style={styles.subtitle}>Express your thoughts and feelings</Text>
           </View>
 
-          {/* Mood Selection */}
-          <View style={styles.moodContainer}>
-            {moodOptions.map((mood) => (
-              <TouchableOpacity
-                key={mood.type}
-                style={[
-                  styles.moodOption,
-                  selectedMood === mood.type && styles.moodOptionSelected,
-                  selectedMood === mood.type && { borderColor: mood.color },
-                ]}
-                onPress={() => setSelectedMood(mood.type)}
-                activeOpacity={0.7}
-              >
-                <Text style={styles.moodEmoji}>{mood.emoji}</Text>
-                <Text
-                  style={[
-                    styles.moodLabel,
-                    selectedMood === mood.type && styles.moodLabelSelected,
-                  ]}
-                >
-                  {mood.label}
-                </Text>
-              </TouchableOpacity>
-            ))}
-          </View>
-
-          {/* Note Input */}
-          <View style={styles.noteContainer}>
-            <Text style={styles.noteLabel}>Add a note (optional)</Text>
+          {/* Title Input */}
+          <View style={styles.inputContainer}>
+            <Text style={styles.inputLabel}>Title</Text>
             <TextInput
-              style={styles.noteInput}
-              placeholder="What's on your mind?"
+              style={styles.titleInput}
+              placeholder="Give your entry a title..."
               placeholderTextColor={colors.text.tertiary}
-              value={note}
-              onChangeText={setNote}
+              value={title}
+              onChangeText={setTitle}
+            />
+          </View>
+
+          {/* Mood Selector */}
+          <View style={styles.moodContainer}>
+            <Text style={styles.inputLabel}>How are you feeling?</Text>
+            <View style={styles.moodGrid}>
+              {moodOptions.map((mood) => (
+                <TouchableOpacity
+                  key={mood.type}
+                  style={[
+                    styles.moodOption,
+                    selectedMood === mood.type && styles.moodOptionSelected,
+                  ]}
+                  onPress={() => setSelectedMood(mood.type)}
+                  activeOpacity={0.7}
+                >
+                  <Text style={styles.moodEmoji}>{mood.emoji}</Text>
+                  <Text
+                    style={[
+                      styles.moodLabel,
+                      selectedMood === mood.type && styles.moodLabelSelected,
+                    ]}
+                  >
+                    {mood.label}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+          </View>
+
+          {/* Content Input */}
+          <View style={styles.inputContainer}>
+            <Text style={styles.inputLabel}>Your thoughts</Text>
+            <TextInput
+              style={styles.contentInput}
+              placeholder="What's on your mind today?"
+              placeholderTextColor={colors.text.tertiary}
+              value={content}
+              onChangeText={setContent}
               multiline
-              numberOfLines={4}
+              numberOfLines={10}
               textAlignVertical="top"
             />
           </View>
@@ -113,19 +128,23 @@ export const MoodCheckInScreen = ({ navigation }: any) => {
           <TouchableOpacity
             style={[
               styles.saveButton,
-              !selectedMood && styles.saveButtonDisabled,
+              (!title.trim() || !content.trim()) && styles.saveButtonDisabled,
             ]}
-            onPress={handleSaveMood}
-            disabled={!selectedMood}
+            onPress={handleSave}
+            disabled={!title.trim() || !content.trim()}
             activeOpacity={0.8}
           >
             <LinearGradient
-              colors={selectedMood ? [colors.accent.lime, colors.accent.brightLime] : [colors.ui.disabled, colors.ui.disabled]}
+              colors={
+                title.trim() && content.trim()
+                  ? [colors.accent.lime, colors.accent.brightLime]
+                  : [colors.ui.disabled, colors.ui.disabled]
+              }
               style={styles.saveButtonGradient}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 0 }}
             >
-              <Text style={styles.saveButtonText}>Save Mood</Text>
+              <Text style={styles.saveButtonText}>Save Entry</Text>
             </LinearGradient>
           </TouchableOpacity>
         </ScrollView>
@@ -177,54 +196,67 @@ const styles = StyleSheet.create({
     ...typography.body,
     color: colors.text.secondary,
   },
-  moodContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
-    marginBottom: spacing.xl,
+  inputContainer: {
+    marginBottom: spacing.lg,
   },
-  moodOption: {
-    width: '30%',
-    aspectRatio: 1,
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderRadius: spacing.borderRadius.lg,
-    borderWidth: 2,
-    borderColor: 'transparent',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: spacing.md,
-  },
-  moodOptionSelected: {
-    backgroundColor: 'rgba(255, 255, 255, 0.15)',
-    borderWidth: 3,
-  },
-  moodEmoji: {
-    fontSize: 48,
-    marginBottom: spacing.xs,
-  },
-  moodLabel: {
-    ...typography.caption,
-    color: colors.text.secondary,
-  },
-  moodLabelSelected: {
-    ...typography.bodyBold,
-    color: colors.text.primary,
-  },
-  noteContainer: {
-    marginBottom: spacing.xl,
-  },
-  noteLabel: {
+  inputLabel: {
     ...typography.bodyBold,
     color: colors.text.primary,
     marginBottom: spacing.sm,
   },
-  noteInput: {
+  titleInput: {
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderRadius: spacing.borderRadius.md,
+    padding: spacing.md,
+    ...typography.h3,
+    color: colors.text.primary,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  moodContainer: {
+    marginBottom: spacing.lg,
+  },
+  moodGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: spacing.sm,
+  },
+  moodOption: {
+    width: '18%',
+    aspectRatio: 1,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderRadius: spacing.borderRadius.md,
+    borderWidth: 2,
+    borderColor: 'transparent',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  moodOptionSelected: {
+    backgroundColor: 'rgba(255, 255, 255, 0.15)',
+    borderColor: colors.accent.lime,
+  },
+  moodEmoji: {
+    fontSize: 28,
+    marginBottom: spacing.xs / 2,
+  },
+  moodLabel: {
+    ...typography.caption,
+    fontSize: 11,
+    color: colors.text.tertiary,
+  },
+  moodLabelSelected: {
+    ...typography.caption,
+    fontSize: 11,
+    fontWeight: '700',
+    color: colors.text.primary,
+  },
+  contentInput: {
     backgroundColor: 'rgba(255, 255, 255, 0.05)',
     borderRadius: spacing.borderRadius.md,
     padding: spacing.md,
     ...typography.body,
     color: colors.text.primary,
-    minHeight: 100,
+    minHeight: 200,
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.1)',
   },

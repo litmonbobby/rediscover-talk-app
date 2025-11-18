@@ -6,29 +6,29 @@
 export const typography = {
   // Text Styles
   h1: {
-    fontSize: 32,
+    fontSize: 34,
     fontWeight: '700' as const,
-    lineHeight: 40,
+    lineHeight: 42,
   },
   h2: {
-    fontSize: 24,
-    fontWeight: '600' as const,
-    lineHeight: 32,
+    fontSize: 26,
+    fontWeight: '700' as const,
+    lineHeight: 34,
   },
   h3: {
     fontSize: 20,
-    fontWeight: '600' as const,
+    fontWeight: '700' as const,
     lineHeight: 28,
   },
   body: {
-    fontSize: 16,
-    fontWeight: '400' as const,
-    lineHeight: 24,
+    fontSize: 17,
+    fontWeight: '500' as const,
+    lineHeight: 26,
   },
   bodyBold: {
-    fontSize: 16,
-    fontWeight: '600' as const,
-    lineHeight: 24,
+    fontSize: 17,
+    fontWeight: '700' as const,
+    lineHeight: 26,
   },
   caption: {
     fontSize: 14,

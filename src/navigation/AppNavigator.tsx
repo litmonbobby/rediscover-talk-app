@@ -5,6 +5,8 @@ import { SplashScreen, OnboardingScreen, SignUpScreen, LoginScreen, GoalSelectio
 import { HomeScreen } from '../screens/home';
 import { MoodCheckInScreen, MoodHistoryScreen } from '../screens/mood';
 import { MeditationLibraryScreen } from '../screens/meditation';
+import { JournalListScreen, JournalEntryScreen } from '../screens/journal';
+import { BreathworkScreen } from '../screens/breathwork';
 
 export type RootStackParamList = {
   Splash: undefined;
@@ -16,6 +18,9 @@ export type RootStackParamList = {
   MoodCheckIn: undefined;
   MoodHistory: undefined;
   MeditationLibrary: undefined;
+  JournalList: undefined;
+  JournalEntry: undefined;
+  Breathwork: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -50,6 +55,20 @@ export const AppNavigator = () => {
 
         {/* Meditation Screens */}
         <Stack.Screen name="MeditationLibrary" component={MeditationLibraryScreen} />
+
+        {/* Journal Screens */}
+        <Stack.Screen name="JournalList" component={JournalListScreen} />
+        <Stack.Screen
+          name="JournalEntry"
+          component={JournalEntryScreen}
+          options={{
+            presentation: 'modal',
+            animation: 'slide_from_bottom',
+          }}
+        />
+
+        {/* Breathwork Screens */}
+        <Stack.Screen name="Breathwork" component={BreathworkScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

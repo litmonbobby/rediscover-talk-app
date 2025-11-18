@@ -10,7 +10,9 @@ import {
   NativeSyntheticEvent,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Colors, Typography, Spacing, BorderRadius } from '../../constants';
+import { colors } from '../../constants/colors';
+import { typography } from '../../constants/typography';
+import { spacing } from '../../constants/spacing';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 
 const { width } = Dimensions.get('window');
@@ -31,21 +33,21 @@ const slides: OnboardingSlide[] = [
     title: 'Track Your Mood',
     description: 'Monitor your emotional well-being with daily mood check-ins and insights',
     icon: '😊',
-    gradient: [Colors.primary.DEFAULT, Colors.primary.light],
+    gradient: [colors.primary.cobaltBlue, colors.primary.darkBlue],
   },
   {
     id: 2,
     title: 'Guided Meditation',
     description: 'Access a library of meditation sessions designed to reduce stress and anxiety',
     icon: '🧘',
-    gradient: [Colors.primary.light, Colors.accent.DEFAULT],
+    gradient: [colors.primary.darkBlue, colors.accent.lime],
   },
   {
     id: 3,
     title: 'Journal Your Journey',
     description: 'Reflect on your thoughts and track your progress with therapeutic journaling',
     icon: '📝',
-    gradient: [Colors.accent.DEFAULT, Colors.primary.DEFAULT],
+    gradient: [colors.accent.lime, colors.primary.cobaltBlue],
   },
 ];
 
@@ -131,14 +133,14 @@ export const OnboardingScreen: React.FC<Props> = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.primary.DEFAULT,
+    backgroundColor: colors.primary.cobaltBlue,
   },
   slide: {
     width,
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    padding: Spacing.xl,
+    padding: spacing.xl,
   },
   content: {
     alignItems: 'center',
@@ -146,26 +148,26 @@ const styles = StyleSheet.create({
   },
   icon: {
     fontSize: 120,
-    marginBottom: Spacing['3xl'],
+    marginBottom: spacing['3xl'],
   },
   title: {
-    fontSize: Typography.fontSize['3xl'],
-    fontWeight: Typography.fontWeight.bold,
-    color: Colors.text.inverse,
+    fontSize: typography.fontSize['3xl'],
+    fontWeight: typography.fontWeight.bold,
+    color: colors.text.primary,
     textAlign: 'center',
-    marginBottom: Spacing.md,
+    marginBottom: spacing.md,
   },
   description: {
-    fontSize: Typography.fontSize.lg,
+    fontSize: typography.fontSize.lg,
     color: 'rgba(255, 255, 255, 0.9)',
     textAlign: 'center',
-    lineHeight: Typography.fontSize.lg * Typography.lineHeight.relaxed,
+    lineHeight: typography.fontSize.lg * typography.lineHeight.relaxed,
   },
   pagination: {
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    paddingVertical: Spacing.xl,
+    paddingVertical: spacing.xl,
   },
   dot: {
     width: 8,
@@ -175,33 +177,33 @@ const styles = StyleSheet.create({
     marginHorizontal: 4,
   },
   dotActive: {
-    backgroundColor: Colors.accent.DEFAULT,
+    backgroundColor: colors.accent.lime,
     width: 24,
   },
   footer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: Spacing.xl,
-    paddingBottom: Spacing['2xl'],
+    paddingHorizontal: spacing.xl,
+    paddingBottom: spacing['2xl'],
   },
   skipButton: {
-    padding: Spacing.md,
+    padding: spacing.md,
   },
   skipText: {
-    fontSize: Typography.fontSize.lg,
+    fontSize: typography.fontSize.lg,
     color: 'rgba(255, 255, 255, 0.7)',
-    fontWeight: Typography.fontWeight.medium,
+    fontWeight: typography.fontWeight.medium,
   },
   nextButton: {
-    backgroundColor: Colors.accent.DEFAULT,
-    paddingHorizontal: Spacing.xl,
-    paddingVertical: Spacing.md,
-    borderRadius: BorderRadius.xl,
+    backgroundColor: colors.accent.lime,
+    paddingHorizontal: spacing.xl,
+    paddingVertical: spacing.md,
+    borderRadius: spacing.borderRadius.xl,
   },
   nextText: {
-    fontSize: Typography.fontSize.lg,
-    color: Colors.primary.DEFAULT,
-    fontWeight: Typography.fontWeight.bold,
+    fontSize: typography.fontSize.lg,
+    color: colors.primary.cobaltBlue,
+    fontWeight: typography.fontWeight.bold,
   },
 });

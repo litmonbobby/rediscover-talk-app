@@ -11,7 +11,9 @@ import {
   Alert,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Colors, Typography, Spacing, BorderRadius, Shadows } from '../../constants';
+import { colors } from '../../constants/colors';
+import { typography } from '../../constants/typography';
+import { spacing } from '../../constants/spacing';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 
 type Props = NativeStackScreenProps<any, 'SignUp'>;
@@ -77,23 +79,24 @@ export const SignUpScreen: React.FC<Props> = ({ navigation }) => {
   };
 
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+    <LinearGradient
+      colors={[colors.primary.darkBlue, colors.primary.cobaltBlue]}
       style={styles.container}
     >
-      <ScrollView
-        contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={false}
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={styles.keyboardView}
       >
-        <LinearGradient
-          colors={[Colors.primary.DEFAULT, Colors.primary.light]}
-          style={styles.header}
+        <ScrollView
+          contentContainerStyle={styles.scrollContent}
+          showsVerticalScrollIndicator={false}
         >
-          <Text style={styles.headerTitle}>Create Account</Text>
-          <Text style={styles.headerSubtitle}>
-            Start your mental wellness journey
-          </Text>
-        </LinearGradient>
+          <View style={styles.header}>
+            <Text style={styles.headerTitle}>Create Account</Text>
+            <Text style={styles.headerSubtitle}>
+              Start your mental wellness journey
+            </Text>
+          </View>
 
         <View style={styles.formContainer}>
           {/* Name Input */}
@@ -102,7 +105,7 @@ export const SignUpScreen: React.FC<Props> = ({ navigation }) => {
             <TextInput
               style={styles.input}
               placeholder="Enter your name"
-              placeholderTextColor={Colors.text.tertiary}
+              placeholderTextColor={colors.text.tertiary}
               value={name}
               onChangeText={setName}
               autoCapitalize="words"
@@ -115,7 +118,7 @@ export const SignUpScreen: React.FC<Props> = ({ navigation }) => {
             <TextInput
               style={styles.input}
               placeholder="Enter your email"
-              placeholderTextColor={Colors.text.tertiary}
+              placeholderTextColor={colors.text.tertiary}
               value={email}
               onChangeText={setEmail}
               keyboardType="email-address"
@@ -130,7 +133,7 @@ export const SignUpScreen: React.FC<Props> = ({ navigation }) => {
             <TextInput
               style={styles.input}
               placeholder="Create a password"
-              placeholderTextColor={Colors.text.tertiary}
+              placeholderTextColor={colors.text.tertiary}
               value={password}
               onChangeText={setPassword}
               secureTextEntry
@@ -144,7 +147,7 @@ export const SignUpScreen: React.FC<Props> = ({ navigation }) => {
             <TextInput
               style={styles.input}
               placeholder="Confirm your password"
-              placeholderTextColor={Colors.text.tertiary}
+              placeholderTextColor={colors.text.tertiary}
               value={confirmPassword}
               onChangeText={setConfirmPassword}
               secureTextEntry
@@ -198,114 +201,114 @@ export const SignUpScreen: React.FC<Props> = ({ navigation }) => {
             </Text>
           </TouchableOpacity>
         </View>
-      </ScrollView>
-    </KeyboardAvoidingView>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </LinearGradient>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.background.DEFAULT,
+  },
+  keyboardView: {
+    flex: 1,
   },
   scrollContent: {
     flexGrow: 1,
+    paddingBottom: spacing.xl,
   },
   header: {
-    paddingTop: Spacing['4xl'],
-    paddingBottom: Spacing.xl,
-    paddingHorizontal: Spacing.xl,
+    paddingTop: spacing.xl * 2,
+    paddingBottom: spacing.xl,
+    paddingHorizontal: spacing.lg,
+    alignItems: 'center',
+    marginBottom: spacing.lg,
   },
   headerTitle: {
-    fontSize: Typography.fontSize['3xl'],
-    fontWeight: Typography.fontWeight.bold,
-    color: Colors.text.inverse,
-    marginBottom: Spacing.sm,
+    ...typography.h1,
+    color: colors.text.primary,
+    marginBottom: spacing.xs,
   },
   headerSubtitle: {
-    fontSize: Typography.fontSize.lg,
-    color: 'rgba(255, 255, 255, 0.9)',
+    ...typography.body,
+    color: colors.text.secondary,
   },
   formContainer: {
     flex: 1,
-    padding: Spacing.xl,
+    paddingHorizontal: spacing.lg,
   },
   inputGroup: {
-    marginBottom: Spacing.lg,
+    marginBottom: spacing.md,
   },
   label: {
-    fontSize: Typography.fontSize.base,
-    fontWeight: Typography.fontWeight.medium,
-    color: Colors.text.primary,
-    marginBottom: Spacing.sm,
+    ...typography.bodyBold,
+    color: colors.text.primary,
+    marginBottom: spacing.sm,
   },
   input: {
-    backgroundColor: Colors.background.paper,
-    borderRadius: BorderRadius.md,
-    padding: Spacing.md,
-    fontSize: Typography.fontSize.base,
-    color: Colors.text.primary,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderRadius: spacing.borderRadius.md,
+    padding: spacing.md,
+    ...typography.body,
+    color: colors.text.primary,
     borderWidth: 1,
-    borderColor: Colors.background.light,
-    ...Shadows.sm,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
   },
   signUpButton: {
-    backgroundColor: Colors.accent.DEFAULT,
-    borderRadius: BorderRadius.xl,
-    padding: Spacing.md,
-    alignItems: 'center',
-    marginTop: Spacing.md,
-    ...Shadows.md,
+    borderRadius: spacing.borderRadius.lg,
+    overflow: 'hidden',
+    marginTop: spacing.md,
   },
   signUpButtonText: {
-    fontSize: Typography.fontSize.lg,
-    fontWeight: Typography.fontWeight.bold,
-    color: Colors.primary.DEFAULT,
+    ...typography.h2,
+    backgroundColor: colors.accent.lime,
+    paddingVertical: spacing.md,
+    textAlign: 'center',
+    color: colors.primary.cobaltBlue,
   },
   divider: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginVertical: Spacing.xl,
+    marginVertical: spacing.xl,
   },
   dividerLine: {
     flex: 1,
     height: 1,
-    backgroundColor: Colors.background.light,
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
   },
   dividerText: {
-    marginHorizontal: Spacing.md,
-    fontSize: Typography.fontSize.sm,
-    color: Colors.text.secondary,
+    marginHorizontal: spacing.md,
+    ...typography.body,
+    color: colors.text.secondary,
   },
   socialButtons: {
     flexDirection: 'row',
-    gap: Spacing.md,
+    gap: spacing.md,
   },
   socialButton: {
     flex: 1,
-    backgroundColor: Colors.background.paper,
-    borderRadius: BorderRadius.md,
-    padding: Spacing.md,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderRadius: spacing.borderRadius.md,
+    padding: spacing.md,
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: Colors.background.light,
-    ...Shadows.sm,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
   },
   socialButtonText: {
-    fontSize: Typography.fontSize.base,
-    fontWeight: Typography.fontWeight.medium,
-    color: Colors.text.primary,
+    ...typography.body,
+    color: colors.text.primary,
   },
   loginLink: {
-    marginTop: Spacing.xl,
+    marginTop: spacing.xl,
     alignItems: 'center',
   },
   loginLinkText: {
-    fontSize: Typography.fontSize.base,
-    color: Colors.text.secondary,
+    ...typography.body,
+    color: colors.text.secondary,
   },
   loginLinkBold: {
-    color: Colors.primary.DEFAULT,
-    fontWeight: Typography.fontWeight.bold,
+    color: colors.accent.lime,
+    fontWeight: '700',
   },
 });
