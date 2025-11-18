@@ -3,7 +3,7 @@
  * Based on 8px grid system
  */
 
-export const Spacing = {
+export const spacing = {
   xs: 4,
   sm: 8,
   md: 16,
@@ -12,7 +12,19 @@ export const Spacing = {
   '2xl': 40,
   '3xl': 48,
   '4xl': 64,
+  borderRadius: {
+    none: 0,
+    sm: 4,
+    md: 8,
+    lg: 12,
+    xl: 16,
+    '2xl': 24,
+    full: 9999,
+  },
 } as const;
+
+// Legacy exports for backwards compatibility
+export const Spacing = spacing;
 
 export const BorderRadius = {
   none: 0,
@@ -62,6 +74,6 @@ export const Shadows = {
   },
 } as const;
 
-export type SpacingScheme = typeof Spacing;
+export type SpacingScheme = typeof spacing;
 export type BorderRadiusScheme = typeof BorderRadius;
 export type ShadowsScheme = typeof Shadows;

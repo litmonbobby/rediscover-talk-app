@@ -3,9 +3,12 @@
  * Based on Coolors palette: https://coolors.co/004ba7-eef2f5-c7f600-0088dd-0043a7
  */
 
-export const Colors = {
+export const colors = {
   // Primary Colors
   primary: {
+    cobaltBlue: '#004BA7',
+    lightBlue: '#0088DD',
+    deepBlue: '#0043A7',
     DEFAULT: '#004BA7', // Cobalt Blue
     light: '#0088DD',   // Bleu de France
     dark: '#0043A7',    // Cobalt Blue Dark
@@ -22,6 +25,9 @@ export const Colors = {
 
   // Accent Colors
   accent: {
+    lime: '#C7F600',
+    brightLime: '#d8ff2b',
+    softLime: '#a0c400',
     DEFAULT: '#C7F600',  // Lime
     light: '#d8ff2b',
     dark: '#a0c400',
@@ -45,10 +51,10 @@ export const Colors = {
   },
 
   text: {
-    primary: '#1A1A1A',
-    secondary: '#6B7280',
-    tertiary: '#9CA3AF',
-    inverse: '#FFFFFF',
+    primary: '#FFFFFF',
+    secondary: 'rgba(255, 255, 255, 0.8)',
+    tertiary: 'rgba(255, 255, 255, 0.6)',
+    inverse: '#1A1A1A',
   },
 
   // Semantic Colors
@@ -57,12 +63,19 @@ export const Colors = {
   error: '#EF4444',
   info: '#0088DD',
 
+  // UI Elements
+  ui: {
+    disabled: '#6B7280',
+  },
+
   // Mood Colors (for mood tracking)
   mood: {
+    happy: '#10B981',       // Green - Amazing
+    good: '#C7F600',        // Lime - Good
+    neutral: '#F59E0B',     // Orange - Okay
+    sad: '#0088DD',         // Blue - Bad
+    veryBad: '#EF4444',     // Red - Terrible
     veryHappy: '#10B981',   // Green
-    happy: '#C7F600',       // Lime
-    neutral: '#F59E0B',     // Orange
-    sad: '#0088DD',         // Blue
     verySad: '#6366F1',     // Indigo
     anxious: '#EF4444',     // Red
     calm: '#10B981',        // Green
@@ -86,4 +99,7 @@ export const Colors = {
   },
 } as const;
 
-export type ColorScheme = typeof Colors;
+// Legacy export for backwards compatibility
+export const Colors = colors;
+
+export type ColorScheme = typeof colors;
