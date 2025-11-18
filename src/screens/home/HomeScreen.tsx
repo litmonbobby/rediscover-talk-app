@@ -56,6 +56,19 @@ export const HomeScreen = ({ navigation }: any) => {
         <View style={styles.actionsGrid}>
           <TouchableOpacity
             style={styles.actionCard}
+            onPress={() => navigation.navigate('Chat')}
+            activeOpacity={0.8}
+          >
+            <LinearGradient
+              colors={[colors.accent.lime, colors.accent.brightLime]}
+              style={styles.actionGradient}
+            >
+              <Text style={styles.actionEmoji}>💬</Text>
+              <Text style={styles.actionText}>AI Coach</Text>
+            </LinearGradient>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.actionCard}
             onPress={() => navigation.navigate('MeditationLibrary')}
             activeOpacity={0.8}
           >
@@ -73,7 +86,7 @@ export const HomeScreen = ({ navigation }: any) => {
             activeOpacity={0.8}
           >
             <LinearGradient
-              colors={[colors.accent.softLime, colors.accent.lime]}
+              colors={[colors.mood.good, colors.mood.veryHappy]}
               style={styles.actionGradient}
             >
               <Text style={styles.actionEmoji}>📝</Text>
@@ -91,6 +104,32 @@ export const HomeScreen = ({ navigation }: any) => {
             >
               <Text style={styles.actionEmoji}>🫁</Text>
               <Text style={styles.actionText}>Breathe</Text>
+            </LinearGradient>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.actionCard}
+            onPress={() => navigation.navigate('Insights')}
+            activeOpacity={0.8}
+          >
+            <LinearGradient
+              colors={[colors.accent.softLime, colors.accent.lime]}
+              style={styles.actionGradient}
+            >
+              <Text style={styles.actionEmoji}>📊</Text>
+              <Text style={styles.actionText}>Insights</Text>
+            </LinearGradient>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.actionCard}
+            onPress={() => navigation.navigate('Affirmations')}
+            activeOpacity={0.8}
+          >
+            <LinearGradient
+              colors={[colors.mood.veryHappy, colors.mood.good]}
+              style={styles.actionGradient}
+            >
+              <Text style={styles.actionEmoji}>✨</Text>
+              <Text style={styles.actionText}>Affirmations</Text>
             </LinearGradient>
           </TouchableOpacity>
           <TouchableOpacity

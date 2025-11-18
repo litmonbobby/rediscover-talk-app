@@ -1,0 +1,1 @@
+export { AffirmationsScreen } from './AffirmationsScreen';

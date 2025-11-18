@@ -3,12 +3,15 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { SplashScreen, OnboardingScreen, SignUpScreen, LoginScreen, GoalSelectionScreen } from '../screens/auth';
 import { HomeScreen } from '../screens/home';
-import { MoodCheckInScreen, MoodHistoryScreen } from '../screens/mood';
+import { MoodCheckInScreen, MoodHistoryScreen, MoodCalendarScreen } from '../screens/mood';
 import { MeditationLibraryScreen, MeditationPlayerScreen } from '../screens/meditation';
 import { JournalListScreen, JournalEntryScreen } from '../screens/journal';
 import { BreathworkScreen } from '../screens/breathwork';
 import { SleepSoundsScreen, SoundPlayerScreen } from '../screens/sleep';
 import { ProfileScreen, SettingsScreen } from '../screens/profile';
+import { ChatScreen } from '../screens/chat';
+import { InsightsScreen } from '../screens/insights';
+import { AffirmationsScreen } from '../screens/affirmations';
 
 export type RootStackParamList = {
   Splash: undefined;
@@ -19,6 +22,7 @@ export type RootStackParamList = {
   Main: undefined;
   MoodCheckIn: undefined;
   MoodHistory: undefined;
+  MoodCalendar: undefined;
   MeditationLibrary: undefined;
   MeditationPlayer: { meditation: any };
   JournalList: undefined;
@@ -28,6 +32,9 @@ export type RootStackParamList = {
   SoundPlayer: { sound: any };
   Profile: undefined;
   Settings: undefined;
+  Chat: undefined;
+  Insights: undefined;
+  Affirmations: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -59,6 +66,7 @@ export const AppNavigator = () => {
           }}
         />
         <Stack.Screen name="MoodHistory" component={MoodHistoryScreen} />
+        <Stack.Screen name="MoodCalendar" component={MoodCalendarScreen} />
 
         {/* Meditation Screens */}
         <Stack.Screen name="MeditationLibrary" component={MeditationLibraryScreen} />
@@ -85,6 +93,11 @@ export const AppNavigator = () => {
         {/* Profile Screens */}
         <Stack.Screen name="Profile" component={ProfileScreen} />
         <Stack.Screen name="Settings" component={SettingsScreen} />
+
+        {/* New Feature Screens */}
+        <Stack.Screen name="Chat" component={ChatScreen} />
+        <Stack.Screen name="Insights" component={InsightsScreen} />
+        <Stack.Screen name="Affirmations" component={AffirmationsScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );
