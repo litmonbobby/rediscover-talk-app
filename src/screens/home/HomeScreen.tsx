@@ -1,9 +1,18 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
-import { Colors, Typography, Spacing, BorderRadius, Shadows } from '../../constants';
+import { LinearGradient } from 'expo-linear-gradient';
+import { colors } from '../../constants/colors';
+import { typography } from '../../constants/typography';
+import { spacing } from '../../constants/spacing';
 
-export const HomeScreen = () => {
-  const moods = ['😊', '😐', '😢', '😰', '😴'];
+export const HomeScreen = ({ navigation }: any) => {
+  const moods = [
+    { emoji: '😄', label: 'Amazing' },
+    { emoji: '😊', label: 'Good' },
+    { emoji: '😐', label: 'Okay' },
+    { emoji: '😔', label: 'Bad' },
+    { emoji: '😢', label: 'Terrible' },
+  ];
 
   return (
     <ScrollView style={styles.container}>
@@ -13,36 +22,94 @@ export const HomeScreen = () => {
       </View>
 
       {/* Mood Check-in Widget */}
-      <View style={styles.card}>
+      <TouchableOpacity
+        style={styles.card}
+        onPress={() => navigation.navigate('MoodCheckIn')}
+        activeOpacity={0.9}
+      >
         <Text style={styles.cardTitle}>How are you feeling?</Text>
         <View style={styles.moodSelector}>
           {moods.map((mood, index) => (
-            <TouchableOpacity key={index} style={styles.moodButton}>
-              <Text style={styles.moodEmoji}>{mood}</Text>
-            </TouchableOpacity>
+            <View key={index} style={styles.moodButton}>
+              <Text style={styles.moodEmoji}>{mood.emoji}</Text>
+            </View>
           ))}
         </View>
-      </View>
+        <TouchableOpacity
+          style={styles.viewHistoryButton}
+          onPress={(e) => {
+            e.stopPropagation();
+            navigation.navigate('MoodHistory');
+          }}
+        >
+          <Text style={styles.viewHistoryText}>View History →</Text>
+        </TouchableOpacity>
+      </TouchableOpacity>
 
       {/* Quick Actions */}
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Quick Actions</Text>
         <View style={styles.actionsGrid}>
-          <TouchableOpacity style={[styles.actionCard, { backgroundColor: Colors.primary.light }]}>
-            <Text style={styles.actionEmoji}>🧘</Text>
-            <Text style={styles.actionText}>Meditate</Text>
+          <TouchableOpacity
+            style={styles.actionCard}
+            onPress={() => navigation.navigate('MeditationLibrary')}
+            activeOpacity={0.8}
+          >
+            <LinearGradient
+              colors={[colors.primary.lightBlue, colors.primary.cobaltBlue]}
+              style={styles.actionGradient}
+            >
+              <Text style={styles.actionEmoji}>🧘</Text>
+              <Text style={styles.actionText}>Meditate</Text>
+            </LinearGradient>
           </TouchableOpacity>
-          <TouchableOpacity style={[styles.actionCard, { backgroundColor: Colors.accent.light }]}>
-            <Text style={styles.actionEmoji}>📝</Text>
-            <Text style={styles.actionText}>Journal</Text>
+          <TouchableOpacity
+            style={styles.actionCard}
+            onPress={() => {
+              // TODO: Navigate to Journal screen
+              console.log('Navigate to Journal');
+            }}
+            activeOpacity={0.8}
+          >
+            <LinearGradient
+              colors={[colors.accent.softLime, colors.accent.lime]}
+              style={styles.actionGradient}
+            >
+              <Text style={styles.actionEmoji}>📝</Text>
+              <Text style={styles.actionText}>Journal</Text>
+            </LinearGradient>
           </TouchableOpacity>
-          <TouchableOpacity style={[styles.actionCard, { backgroundColor: Colors.primary.DEFAULT }]}>
-            <Text style={styles.actionEmoji}>🫁</Text>
-            <Text style={styles.actionText}>Breathe</Text>
+          <TouchableOpacity
+            style={styles.actionCard}
+            onPress={() => {
+              // TODO: Navigate to Breathwork screen
+              console.log('Navigate to Breathwork');
+            }}
+            activeOpacity={0.8}
+          >
+            <LinearGradient
+              colors={[colors.primary.cobaltBlue, colors.primary.deepBlue]}
+              style={styles.actionGradient}
+            >
+              <Text style={styles.actionEmoji}>🫁</Text>
+              <Text style={styles.actionText}>Breathe</Text>
+            </LinearGradient>
           </TouchableOpacity>
-          <TouchableOpacity style={[styles.actionCard, { backgroundColor: Colors.mood.calm }]}>
-            <Text style={styles.actionEmoji}>😴</Text>
-            <Text style={styles.actionText}>Sleep</Text>
+          <TouchableOpacity
+            style={styles.actionCard}
+            onPress={() => {
+              // TODO: Navigate to Sleep screen
+              console.log('Navigate to Sleep');
+            }}
+            activeOpacity={0.8}
+          >
+            <LinearGradient
+              colors={[colors.mood.neutral, colors.primary.deepBlue]}
+              style={styles.actionGradient}
+            >
+              <Text style={styles.actionEmoji}>😴</Text>
+              <Text style={styles.actionText}>Sleep</Text>
+            </LinearGradient>
           </TouchableOpacity>
         </View>
       </View>
@@ -61,86 +128,92 @@ export const HomeScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.background.light,
+    backgroundColor: colors.background.light,
   },
   header: {
-    backgroundColor: Colors.primary.DEFAULT,
-    padding: Spacing.xl,
-    paddingTop: Spacing['4xl'],
+    backgroundColor: colors.primary.cobaltBlue,
+    padding: spacing.xl,
+    paddingTop: spacing.xl * 2,
   },
   greeting: {
-    fontSize: Typography.fontSize['2xl'],
-    fontWeight: Typography.fontWeight.bold,
-    color: Colors.text.inverse,
+    ...typography.h1,
+    color: colors.text.primary,
   },
   date: {
-    fontSize: Typography.fontSize.base,
-    color: 'rgba(255, 255, 255, 0.8)',
-    marginTop: Spacing.xs,
+    ...typography.body,
+    color: colors.text.secondary,
+    marginTop: spacing.xs,
   },
   card: {
-    backgroundColor: Colors.background.paper,
-    margin: Spacing.md,
-    padding: Spacing.lg,
-    borderRadius: BorderRadius.lg,
-    ...Shadows.md,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    margin: spacing.md,
+    padding: spacing.lg,
+    borderRadius: spacing.borderRadius.lg,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
   },
   cardTitle: {
-    fontSize: Typography.fontSize.xl,
-    fontWeight: Typography.fontWeight.semiBold,
-    color: Colors.text.primary,
-    marginBottom: Spacing.md,
+    ...typography.h2,
+    color: colors.text.primary,
+    marginBottom: spacing.md,
   },
   moodSelector: {
     flexDirection: 'row',
     justifyContent: 'space-around',
+    marginBottom: spacing.md,
   },
   moodButton: {
-    padding: Spacing.sm,
+    padding: spacing.sm,
   },
   moodEmoji: {
     fontSize: 40,
   },
+  viewHistoryButton: {
+    alignSelf: 'flex-end',
+  },
+  viewHistoryText: {
+    ...typography.bodyBold,
+    color: colors.accent.lime,
+  },
   section: {
-    padding: Spacing.md,
+    padding: spacing.md,
   },
   sectionTitle: {
-    fontSize: Typography.fontSize.xl,
-    fontWeight: Typography.fontWeight.bold,
-    color: Colors.text.primary,
-    marginBottom: Spacing.md,
+    ...typography.h2,
+    color: colors.text.primary,
+    marginBottom: spacing.md,
   },
   actionsGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: Spacing.md,
+    gap: spacing.md,
   },
   actionCard: {
     width: '47%',
-    padding: Spacing.lg,
-    borderRadius: BorderRadius.lg,
+    borderRadius: spacing.borderRadius.lg,
+    overflow: 'hidden',
+  },
+  actionGradient: {
+    padding: spacing.lg,
     alignItems: 'center',
-    ...Shadows.md,
   },
   actionEmoji: {
     fontSize: 36,
-    marginBottom: Spacing.sm,
+    marginBottom: spacing.sm,
   },
   actionText: {
-    fontSize: Typography.fontSize.base,
-    fontWeight: Typography.fontWeight.semiBold,
-    color: Colors.text.inverse,
+    ...typography.bodyBold,
+    color: colors.text.primary,
   },
   quoteText: {
-    fontSize: Typography.fontSize.lg,
+    ...typography.body,
     fontStyle: 'italic',
-    color: Colors.text.secondary,
-    lineHeight: Typography.fontSize.lg * Typography.lineHeight.relaxed,
-    marginBottom: Spacing.md,
+    color: colors.text.secondary,
+    marginBottom: spacing.md,
   },
   quoteAuthor: {
-    fontSize: Typography.fontSize.base,
-    color: Colors.text.tertiary,
+    ...typography.body,
+    color: colors.text.tertiary,
     textAlign: 'right',
   },
 });
