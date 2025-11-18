@@ -1,103 +1,231 @@
-# 🧠 Rediscover Talk
+# Rediscover Talk - Mental Wellness App
 
-A comprehensive mental wellness mobile app built with React Native and Expo, featuring mood tracking, guided meditation, journaling, and sleep sounds.
+A comprehensive mental wellness mobile application built with React Native and Expo, featuring mood tracking, meditation, journaling, family activities, and sleep sounds.
 
-## 🎨 Design
-- **Color Palette:** Blue + Lime (#004BA7, #C7F600)
-- **Platform:** iOS 26+, Android
-- **Accuracy Target:** 85-95% match to Figma designs
+## Features
 
-## 📱 Features
-- ✅ Daily mood tracking with visualizations
-- ✅ Guided meditation library with background audio
-- ✅ Therapeutic journaling with mood tagging
-- ✅ Breathing exercises with animations
-- ✅ Sleep sounds mixer
-- ✅ Progress insights and analytics
-- ✅ Dark/light mode support
+### Mood Tracking
+- **Mood Check-In**: Track your emotional state with 5 mood levels
+- **Mood History**: View your emotional journey with streaks and trends
+- **Mood Notes**: Add context to your mood entries
 
-## 🛠️ Tech Stack
-- **Framework:** Expo SDK 54 + React Native 0.81
-- **Language:** TypeScript
-- **State Management:** Zustand
-- **Backend:** Supabase
-- **Navigation:** React Navigation 6
-- **Animations:** React Native Reanimated 4
-- **UI:** React Native SVG, Expo Linear Gradient
+### Meditation & Mindfulness
+- **Meditation Library**: 6+ guided meditations for different purposes
+- **Categories**: Morning routines, stress relief, sleep preparation, mindfulness
+- **Meditation Player**: Full-featured audio player with controls
 
-## 🚀 Getting Started
+### Journaling
+- **Journal Entries**: Write and save your thoughts with mood indicators
+- **Mood Integration**: Link journal entries to your emotional state
+- **History View**: Browse past entries with search and filters
+
+### Breathwork Exercises
+- **3 Breathing Patterns**: 4-7-8 Relaxation, Box Breathing, Calm Breathing
+- **Animated Guide**: Visual breathing circle with instruction text
+- **Timer**: Track your practice duration
+
+### Family Activities
+- **5 Conversation Activities**: Gratitude Circle, Rose/Bud/Thorn, Story Time, Dream Discussion, Appreciation Round
+- **Activity Details**: Step-by-step instructions for each activity
+- **Duration Tracking**: Suggested time for each activity
+
+### Sleep Sounds
+- **Nature Sounds**: Rain, Ocean Waves, Forest, Thunderstorm, Campfire
+- **Ambient Sounds**: White Noise and more
+- **Sound Player**: Loop and volume controls
+
+### Profile & Settings
+- **User Profile**: Track your progress and achievements
+- **Statistics**: Days active, journal entries, mood streaks
+- **Settings**: Notifications, dark mode, privacy controls
+- **Account Management**: Profile editing, data management
+
+## Tech Stack
+
+- **Framework**: React Native 0.81.5
+- **Build Tool**: Expo SDK 54
+- **Language**: TypeScript
+- **Navigation**: React Navigation (Stack Navigator)
+- **UI Components**: React Native core + expo-linear-gradient
+- **State Management**: React Hooks (useState, useEffect)
+- **Platform Support**: iOS 26.0+ and Android 16 (API 36)
+
+## Design System
+
+### Color Palette
+- **Primary**: Cobalt Blue (#004BA7) - Trust and calm
+- **Accent**: Lime (#C7F600) - Energy and positivity
+- **Mood Colors**: Emotional state indicators
+- **Gradients**: Dark blue backgrounds for focus
+
+### Typography
+- **System Fonts**: Native iOS and Android fonts
+- **Font Sizes**: 8px grid system (xs: 12px to 5xl: 48px)
+- **Weights**: Regular (400) to Bold (700)
+
+### Spacing
+- **8px Grid System**: Consistent spacing throughout
+- **Border Radius**: sm (4px) to full (9999px)
+- **Shadows**: Elevation system for depth
+
+## Project Structure
+
+```
+rediscover-talk/
+├── assets/                  # App icon, splash screen, images
+├── src/
+│   ├── constants/          # Design system (colors, typography, spacing)
+│   ├── navigation/         # React Navigation setup
+│   └── screens/
+│       ├── auth/           # Authentication (Splash, Onboarding, SignUp, Login, Goals)
+│       ├── home/           # Home dashboard
+│       ├── mood/           # Mood tracking (Check-in, History)
+│       ├── meditation/     # Meditation (Library, Player)
+│       ├── journal/        # Journaling (List, Entry)
+│       ├── breathwork/     # Breathing exercises
+│       ├── family/         # Family activities (List, Detail)
+│       ├── sleep/          # Sleep sounds (Library, Player)
+│       └── profile/        # User profile and settings
+├── App.tsx                 # App entry point
+├── app.json                # Expo configuration
+└── package.json            # Dependencies
+```
+
+## Screens Implemented (19 Total)
+
+### Phase 1-2: Authentication
+1. SplashScreen
+2. OnboardingScreen (3 slides)
+3. SignUpScreen
+4. LoginScreen
+5. GoalSelectionScreen
+
+### Phase 3: Home Dashboard
+6. HomeScreen
+
+### Phase 4-5: Core Features
+7. MoodCheckInScreen
+8. MoodHistoryScreen
+9. JournalListScreen
+10. JournalEntryScreen (modal)
+11. BreathworkScreen
+
+### Phase 6: Extended Features
+12. MeditationLibraryScreen
+13. MeditationPlayerScreen
+14. FamilyActivitiesScreen
+15. ActivityDetailScreen
+16. SleepSoundsScreen
+17. SoundPlayerScreen
+18. ProfileScreen
+19. SettingsScreen
+
+## Getting Started
 
 ### Prerequisites
-- Node.js 20.19.4+
-- npm 10.8.2+
-- Xcode 16.1+ (for iOS)
-- iOS Simulator or physical iOS 26+ device
+- Node.js 16+ and npm
+- Expo CLI: `npm install -g expo-cli`
+- iOS Simulator (Mac) or Android Emulator
 
 ### Installation
+
 ```bash
+# Clone the repository
+git clone https://github.com/litmonbobby/rediscover-talk-app.git
+cd rediscover-talk
+
 # Install dependencies
 npm install
 
-# Start development server
+# Start the development server
 npm start
 
-# Run on iOS simulator
+# Run on iOS
 npm run ios
 
 # Run on Android
 npm run android
 ```
 
-## 📦 Project Structure
+### Development Commands
+
+```bash
+# Start Expo dev server
+npm start
+
+# Start with cache cleared
+npx expo start --clear
+
+# iOS simulator
+npm run ios
+
+# Android emulator
+npm run android
+
+# Run type checking
+npx tsc --noEmit
 ```
-src/
-├── screens/          # Screen components
-│   ├── auth/        # Authentication screens
-│   ├── home/        # Home dashboard
-│   ├── meditation/  # Meditation screens
-│   ├── journal/     # Journaling screens
-│   └── ...
-├── components/      # Reusable components
-├── navigation/      # Navigation configuration
-├── services/        # API services (Supabase)
-├── store/           # State management (Zustand)
-├── constants/       # Design system (colors, typography)
-├── types/           # TypeScript types
-└── utils/           # Helper functions
-```
 
-## 🎯 Development Roadmap
-- [x] Phase 1: Project setup & foundation
-- [x] Phase 1: Design system with blue + lime palette
-- [x] Phase 1: iOS 26+ configuration
-- [ ] Phase 2: Authentication & onboarding
-- [ ] Phase 3: Home dashboard & navigation
-- [ ] Phase 4: Mood tracking system
-- [ ] Phase 5: Meditation player
-- [ ] Phase 6: Journaling features
-- [ ] Phase 7: Additional features
-- [ ] Phase 8: Progress insights
-- [ ] Phase 9: Profile & settings
-- [ ] Phase 10: Polish & testing
+## Configuration
 
-## 📊 Accuracy Breakdown
-| Feature | Target Accuracy |
-|---------|----------------|
-| Animations | 95% (Reanimated 4) |
-| Illustrations | 92% (Flaticon + Figma) |
-| Fonts | 95% (Custom fonts) |
-| Shadows/Gradients | 94% (expo-linear-gradient) |
-| Audio | 90% (Free resources) |
+### Expo Configuration (app.json)
+- **iOS**: Deployment target 26.0, foreground service permissions
+- **Android**: SDK 36 (Android 16), background audio permissions
+- **Splash Screen**: Custom splash with fade animation
+- **App Icon**: Professional mental health design
 
-## 🔗 Repository
-https://github.com/litmonbobby/rediscover-talk-app
+### Environment
+- Development: Expo Go app
+- Production: EAS Build for App Store and Play Store
 
-## 📝 License
-Private - All rights reserved
+## Roadmap
 
-## 🤖 Development
-Built with [Claude Code](https://claude.com/claude-code)
+### Upcoming Features
+- [ ] Supabase backend integration
+- [ ] User authentication with OAuth
+- [ ] CloudKit data sync
+- [ ] Push notifications
+- [ ] Dark mode implementation
+- [ ] Accessibility enhancements (WCAG 2.1 AA)
+- [ ] Offline mode with local storage
+- [ ] Data export functionality
+- [ ] Premium features and subscriptions
+
+### Known Issues
+- Metro bundler cache issues (resolved with `--clear` flag)
+- Meditation and sleep sound audio playback (placeholder implementation)
+- Supabase integration pending
+
+## Contributing
+
+This is a personal project, but feedback and suggestions are welcome!
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## License
+
+This project is private and proprietary. All rights reserved.
+
+## Acknowledgments
+
+- Design inspiration from modern mental health apps
+- React Native and Expo communities
+- Mental health and wellness research
+
+## Contact
+
+Project Link: [https://github.com/litmonbobby/rediscover-talk-app](https://github.com/litmonbobby/rediscover-talk-app)
 
 ---
-**Version:** 1.0.0
-**Last Updated:** November 17, 2025
+
+**Built with** React Native, Expo, and TypeScript
+
+**Powered by** Mental wellness principles and evidence-based practices
+
+---
+
+Last Updated: November 17, 2025 - Phase 6 Complete (19 screens)

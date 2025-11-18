@@ -1,177 +1,69 @@
-import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  TouchableOpacity,
-} from 'react-native';
+import React from 'react';
+import { View, Text, ScrollView, StyleSheet } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { colors } from '../../constants/colors';
 import { typography } from '../../constants/typography';
 import { spacing } from '../../constants/spacing';
 
-type MoodType = 'amazing' | 'good' | 'okay' | 'bad' | 'terrible';
-
 interface MoodEntry {
+  id: string;
   date: string;
-  mood: MoodType;
+  time: string;
+  emoji: string;
+  label: string;
   note?: string;
 }
 
-// Mock data - will be replaced with Supabase data
-const mockMoodData: MoodEntry[] = [
-  { date: '2025-01-15', mood: 'amazing', note: 'Great meditation session!' },
-  { date: '2025-01-14', mood: 'good' },
-  { date: '2025-01-13', mood: 'okay', note: 'Feeling neutral today' },
-  { date: '2025-01-12', mood: 'bad' },
-  { date: '2025-01-11', mood: 'good' },
-  { date: '2025-01-10', mood: 'amazing' },
-  { date: '2025-01-09', mood: 'okay' },
-  { date: '2025-01-08', mood: 'good' },
+const MOCK_MOOD_HISTORY: MoodEntry[] = [
+  { id: '1', date: 'Today', time: '2:30 PM', emoji: '😊', label: 'Good', note: 'Had a great meditation session' },
+  { id: '2', date: 'Today', time: '9:00 AM', emoji: '😄', label: 'Amazing', note: 'Feeling energized!' },
+  { id: '3', date: 'Yesterday', time: '8:00 PM', emoji: '😐', label: 'Okay' },
+  { id: '4', date: 'Yesterday', time: '3:15 PM', emoji: '😊', label: 'Good' },
+  { id: '5', date: 'Nov 16', time: '6:30 PM', emoji: '😔', label: 'Bad', note: 'Stressful day at work' },
+  { id: '6', date: 'Nov 16', time: '11:00 AM', emoji: '😐', label: 'Okay' },
+  { id: '7', date: 'Nov 15', time: '7:00 PM', emoji: '😊', label: 'Good' },
 ];
 
-const moodEmojis: Record<MoodType, string> = {
-  amazing: '😄',
-  good: '😊',
-  okay: '😐',
-  bad: '😔',
-  terrible: '😢',
-};
-
-const moodColors: Record<MoodType, string> = {
-  amazing: colors.mood.happy,
-  good: colors.mood.good,
-  okay: colors.mood.neutral,
-  bad: colors.mood.sad,
-  terrible: colors.mood.veryBad,
-};
-
-export const MoodHistoryScreen = ({ navigation }: any) => {
-  const [selectedEntry, setSelectedEntry] = useState<MoodEntry | null>(null);
-
-  const formatDate = (dateStr: string) => {
-    const date = new Date(dateStr);
-    const today = new Date();
-    const yesterday = new Date(today);
-    yesterday.setDate(yesterday.getDate() - 1);
-
-    if (date.toDateString() === today.toDateString()) {
-      return 'Today';
-    } else if (date.toDateString() === yesterday.toDateString()) {
-      return 'Yesterday';
-    } else {
-      return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-    }
-  };
-
-  const getMoodStats = () => {
-    const total = mockMoodData.length;
-    const moodCounts = mockMoodData.reduce((acc, entry) => {
-      acc[entry.mood] = (acc[entry.mood] || 0) + 1;
-      return acc;
-    }, {} as Record<MoodType, number>);
-
-    return Object.entries(moodCounts).map(([mood, count]) => ({
-      mood: mood as MoodType,
-      percentage: Math.round((count / total) * 100),
-    }));
-  };
-
+export const MoodHistoryScreen = () => {
   return (
     <LinearGradient
-      colors={[colors.primary.cobaltBlue, colors.primary.deepBlue]}
+      colors={[colors.primary.darkBlue, colors.primary.cobaltBlue]}
       style={styles.container}
     >
-      <ScrollView
-        style={styles.scrollView}
-        contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={false}
-      >
-        {/* Header */}
+      <ScrollView style={styles.scrollView}>
         <View style={styles.header}>
-          <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-            <Text style={styles.backIcon}>←</Text>
-          </TouchableOpacity>
           <Text style={styles.title}>Mood History</Text>
           <Text style={styles.subtitle}>Track your emotional journey</Text>
         </View>
 
-        {/* Mood Statistics */}
-        <View style={styles.statsContainer}>
-          <Text style={styles.statsTitle}>Your Mood This Week</Text>
-          <View style={styles.statsGrid}>
-            {getMoodStats().map((stat) => (
-              <View key={stat.mood} style={styles.statItem}>
-                <Text style={styles.statEmoji}>{moodEmojis[stat.mood]}</Text>
-                <View style={styles.statBar}>
-                  <View
-                    style={[
-                      styles.statBarFill,
-                      { width: `${stat.percentage}%`, backgroundColor: moodColors[stat.mood] },
-                    ]}
-                  />
-                </View>
-                <Text style={styles.statPercentage}>{stat.percentage}%</Text>
-              </View>
-            ))}
-          </View>
+        <View style={styles.streakCard}>
+          <LinearGradient
+            colors={[colors.accent.lime, colors.accent.brightLime]}
+            style={styles.streakGradient}
+          >
+            <Text style={styles.streakNumber}>7</Text>
+            <Text style={styles.streakLabel}>Day Streak</Text>
+          </LinearGradient>
         </View>
 
-        {/* Calendar View */}
-        <View style={styles.calendarContainer}>
-          <Text style={styles.sectionTitle}>Recent Entries</Text>
-          {mockMoodData.map((entry, index) => (
-            <TouchableOpacity
-              key={`${entry.date}-${index}`}
-              style={styles.entryCard}
-              onPress={() => setSelectedEntry(entry)}
-              activeOpacity={0.7}
-            >
-              <View style={styles.entryLeft}>
-                <View
-                  style={[
-                    styles.entryMoodCircle,
-                    { backgroundColor: moodColors[entry.mood] },
-                  ]}
-                >
-                  <Text style={styles.entryEmoji}>{moodEmojis[entry.mood]}</Text>
-                </View>
-                <View style={styles.entryInfo}>
-                  <Text style={styles.entryDate}>{formatDate(entry.date)}</Text>
-                  {entry.note && (
-                    <Text style={styles.entryNote} numberOfLines={1}>
-                      {entry.note}
-                    </Text>
-                  )}
+        <View style={styles.entriesSection}>
+          {MOCK_MOOD_HISTORY.map((entry) => (
+            <View key={entry.id} style={styles.entryCard}>
+              <View style={styles.entryHeader}>
+                <View style={styles.entryMood}>
+                  <Text style={styles.entryEmoji}>{entry.emoji}</Text>
+                  <View>
+                    <Text style={styles.entryLabel}>{entry.label}</Text>
+                    <Text style={styles.entryTime}>{entry.date} at {entry.time}</Text>
+                  </View>
                 </View>
               </View>
-              <Text style={styles.entryArrow}>›</Text>
-            </TouchableOpacity>
+              {entry.note && (
+                <Text style={styles.entryNote}>{entry.note}</Text>
+              )}
+            </View>
           ))}
         </View>
-
-        {/* Empty State */}
-        {mockMoodData.length === 0 && (
-          <View style={styles.emptyState}>
-            <Text style={styles.emptyEmoji}>📊</Text>
-            <Text style={styles.emptyTitle}>No mood entries yet</Text>
-            <Text style={styles.emptySubtitle}>
-              Start tracking your mood to see your emotional patterns
-            </Text>
-            <TouchableOpacity
-              style={styles.emptyButton}
-              onPress={() => navigation.navigate('MoodCheckIn')}
-            >
-              <LinearGradient
-                colors={[colors.accent.lime, colors.accent.brightLime]}
-                style={styles.emptyButtonGradient}
-              >
-                <Text style={styles.emptyButtonText}>Check In Now</Text>
-              </LinearGradient>
-            </TouchableOpacity>
-          </View>
-        )}
       </ScrollView>
     </LinearGradient>
   );
@@ -184,157 +76,73 @@ const styles = StyleSheet.create({
   scrollView: {
     flex: 1,
   },
-  scrollContent: {
-    paddingHorizontal: spacing.lg,
-    paddingTop: spacing.xl * 2,
-    paddingBottom: spacing.xl,
-  },
   header: {
-    alignItems: 'center',
-    marginBottom: spacing.xl,
-  },
-  backButton: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  backIcon: {
-    ...typography.h2,
-    color: colors.text.primary,
+    padding: spacing.xl,
+    paddingTop: spacing['4xl'],
   },
   title: {
     ...typography.h1,
     color: colors.text.primary,
-    marginBottom: spacing.xs,
+    marginBottom: spacing.sm,
   },
   subtitle: {
     ...typography.body,
     color: colors.text.secondary,
   },
-  statsContainer: {
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderRadius: spacing.borderRadius.lg,
-    padding: spacing.lg,
+  streakCard: {
+    marginHorizontal: spacing.xl,
     marginBottom: spacing.xl,
-  },
-  statsTitle: {
-    ...typography.h3,
-    color: colors.text.primary,
-    marginBottom: spacing.md,
-  },
-  statsGrid: {
-    gap: spacing.md,
-  },
-  statItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-  },
-  statEmoji: {
-    fontSize: 24,
-    width: 32,
-  },
-  statBar: {
-    flex: 1,
-    height: 8,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    borderRadius: spacing.borderRadius.sm,
+    borderRadius: spacing.borderRadius.lg,
     overflow: 'hidden',
   },
-  statBarFill: {
-    height: '100%',
-    borderRadius: spacing.borderRadius.sm,
+  streakGradient: {
+    padding: spacing.xl,
+    alignItems: 'center',
   },
-  statPercentage: {
-    ...typography.caption,
-    color: colors.text.secondary,
-    width: 40,
-    textAlign: 'right',
+  streakNumber: {
+    fontSize: 48,
+    fontWeight: typography.fontWeight.bold,
+    color: colors.primary.cobaltBlue,
+    marginBottom: spacing.xs,
   },
-  calendarContainer: {
-    marginBottom: spacing.xl,
+  streakLabel: {
+    ...typography.h2,
+    color: colors.primary.cobaltBlue,
   },
-  sectionTitle: {
-    ...typography.h3,
-    color: colors.text.primary,
-    marginBottom: spacing.md,
+  entriesSection: {
+    padding: spacing.xl,
+    paddingTop: 0,
   },
   entryCard: {
     backgroundColor: 'rgba(255, 255, 255, 0.05)',
     borderRadius: spacing.borderRadius.md,
     padding: spacing.md,
+    marginBottom: spacing.md,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  entryHeader: {
     marginBottom: spacing.sm,
+  },
+  entryMood: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  entryLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    flex: 1,
-  },
-  entryMoodCircle: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: spacing.md,
   },
   entryEmoji: {
-    fontSize: 24,
+    fontSize: 32,
+    marginRight: spacing.md,
   },
-  entryInfo: {
-    flex: 1,
-  },
-  entryDate: {
+  entryLabel: {
     ...typography.bodyBold,
     color: colors.text.primary,
-    marginBottom: 2,
   },
-  entryNote: {
+  entryTime: {
     ...typography.caption,
-    color: colors.text.secondary,
-  },
-  entryArrow: {
-    ...typography.h2,
     color: colors.text.tertiary,
   },
-  emptyState: {
-    alignItems: 'center',
-    paddingVertical: spacing.xl * 2,
-  },
-  emptyEmoji: {
-    fontSize: 64,
-    marginBottom: spacing.md,
-  },
-  emptyTitle: {
-    ...typography.h2,
-    color: colors.text.primary,
-    marginBottom: spacing.xs,
-  },
-  emptySubtitle: {
+  entryNote: {
     ...typography.body,
     color: colors.text.secondary,
-    textAlign: 'center',
-    marginBottom: spacing.lg,
-  },
-  emptyButton: {
-    borderRadius: spacing.borderRadius.md,
-    overflow: 'hidden',
-  },
-  emptyButtonGradient: {
-    paddingVertical: spacing.md,
-    paddingHorizontal: spacing.xl,
-  },
-  emptyButtonText: {
-    ...typography.button,
-    color: colors.primary.cobaltBlue,
+    fontStyle: 'italic',
   },
 });

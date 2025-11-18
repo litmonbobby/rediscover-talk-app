@@ -95,10 +95,7 @@ export const HomeScreen = ({ navigation }: any) => {
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.actionCard}
-            onPress={() => {
-              // TODO: Navigate to Sleep screen
-              console.log('Navigate to Sleep');
-            }}
+            onPress={() => navigation.navigate('SleepSounds')}
             activeOpacity={0.8}
           >
             <LinearGradient
@@ -107,6 +104,32 @@ export const HomeScreen = ({ navigation }: any) => {
             >
               <Text style={styles.actionEmoji}>😴</Text>
               <Text style={styles.actionText}>Sleep</Text>
+            </LinearGradient>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.actionCard}
+            onPress={() => navigation.navigate('FamilyActivities')}
+            activeOpacity={0.8}
+          >
+            <LinearGradient
+              colors={[colors.accent.softLime, colors.accent.lime]}
+              style={styles.actionGradient}
+            >
+              <Text style={styles.actionEmoji}>👨‍👩‍👧‍👦</Text>
+              <Text style={styles.actionText}>Family</Text>
+            </LinearGradient>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.actionCard}
+            onPress={() => navigation.navigate('Profile')}
+            activeOpacity={0.8}
+          >
+            <LinearGradient
+              colors={[colors.primary.lightBlue, colors.primary.cobaltBlue]}
+              style={styles.actionGradient}
+            >
+              <Text style={styles.actionEmoji}>👤</Text>
+              <Text style={styles.actionText}>Profile</Text>
             </LinearGradient>
           </TouchableOpacity>
         </View>
