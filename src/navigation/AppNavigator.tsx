@@ -7,7 +7,6 @@ import { MoodCheckInScreen, MoodHistoryScreen } from '../screens/mood';
 import { MeditationLibraryScreen, MeditationPlayerScreen } from '../screens/meditation';
 import { JournalListScreen, JournalEntryScreen } from '../screens/journal';
 import { BreathworkScreen } from '../screens/breathwork';
-import { FamilyActivitiesScreen, ActivityDetailScreen } from '../screens/family';
 import { SleepSoundsScreen, SoundPlayerScreen } from '../screens/sleep';
 import { ProfileScreen, SettingsScreen } from '../screens/profile';
 
@@ -25,8 +24,6 @@ export type RootStackParamList = {
   JournalList: undefined;
   JournalEntry: undefined;
   Breathwork: undefined;
-  FamilyActivities: undefined;
-  ActivityDetail: { activity: any };
   SleepSounds: undefined;
   SoundPlayer: { sound: any };
   Profile: undefined;
@@ -80,10 +77,6 @@ export const AppNavigator = () => {
 
         {/* Breathwork Screens */}
         <Stack.Screen name="Breathwork" component={BreathworkScreen} />
-
-        {/* Family Screens */}
-        <Stack.Screen name="FamilyActivities" component={FamilyActivitiesScreen} />
-        <Stack.Screen name="ActivityDetail" component={ActivityDetailScreen} />
 
         {/* Sleep Screens */}
         <Stack.Screen name="SleepSounds" component={SleepSoundsScreen} />

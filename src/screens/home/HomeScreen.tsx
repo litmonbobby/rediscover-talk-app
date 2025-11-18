@@ -108,19 +108,6 @@ export const HomeScreen = ({ navigation }: any) => {
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.actionCard}
-            onPress={() => navigation.navigate('FamilyActivities')}
-            activeOpacity={0.8}
-          >
-            <LinearGradient
-              colors={[colors.accent.softLime, colors.accent.lime]}
-              style={styles.actionGradient}
-            >
-              <Text style={styles.actionEmoji}>👨‍👩‍👧‍👦</Text>
-              <Text style={styles.actionText}>Family</Text>
-            </LinearGradient>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.actionCard}
             onPress={() => navigation.navigate('Profile')}
             activeOpacity={0.8}
           >

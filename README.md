@@ -24,11 +24,6 @@ A comprehensive mental wellness mobile application built with React Native and E
 - **Animated Guide**: Visual breathing circle with instruction text
 - **Timer**: Track your practice duration
 
-### Family Activities
-- **5 Conversation Activities**: Gratitude Circle, Rose/Bud/Thorn, Story Time, Dream Discussion, Appreciation Round
-- **Activity Details**: Step-by-step instructions for each activity
-- **Duration Tracking**: Suggested time for each activity
-
 ### Sleep Sounds
 - **Nature Sounds**: Rain, Ocean Waves, Forest, Thunderstorm, Campfire
 - **Ambient Sounds**: White Noise and more
@@ -83,7 +78,6 @@ rediscover-talk/
 │       ├── meditation/     # Meditation (Library, Player)
 │       ├── journal/        # Journaling (List, Entry)
 │       ├── breathwork/     # Breathing exercises
-│       ├── family/         # Family activities (List, Detail)
 │       ├── sleep/          # Sleep sounds (Library, Player)
 │       └── profile/        # User profile and settings
 ├── App.tsx                 # App entry point
@@ -91,7 +85,7 @@ rediscover-talk/
 └── package.json            # Dependencies
 ```
 
-## Screens Implemented (19 Total)
+## Screens Implemented (17 Total)
 
 ### Phase 1-2: Authentication
 1. SplashScreen
@@ -113,12 +107,10 @@ rediscover-talk/
 ### Phase 6: Extended Features
 12. MeditationLibraryScreen
 13. MeditationPlayerScreen
-14. FamilyActivitiesScreen
-15. ActivityDetailScreen
-16. SleepSoundsScreen
-17. SoundPlayerScreen
-18. ProfileScreen
-19. SettingsScreen
+14. SleepSoundsScreen
+15. SoundPlayerScreen
+16. ProfileScreen
+17. SettingsScreen
 
 ## Getting Started
 
@@ -228,4 +220,6 @@ Project Link: [https://github.com/litmonbobby/rediscover-talk-app](https://githu
 
 ---
 
-Last Updated: November 17, 2025 - Phase 6 Complete (19 screens)
+Last Updated: November 17, 2025 - Phase 6 Complete (17 screens)
+
+**Note**: Family Activities screens were removed to align with Figma design specifications.
