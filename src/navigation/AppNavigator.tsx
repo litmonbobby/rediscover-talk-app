@@ -8,10 +8,13 @@ import { MeditationLibraryScreen, MeditationPlayerScreen } from '../screens/medi
 import { JournalListScreen, JournalEntryScreen } from '../screens/journal';
 import { BreathworkScreen } from '../screens/breathwork';
 import { SleepSoundsScreen, SoundPlayerScreen } from '../screens/sleep';
-import { ProfileScreen, SettingsScreen } from '../screens/profile';
+import { ProfileScreen, SettingsScreen, HelpScreen, AboutScreen } from '../screens/profile';
 import { ChatScreen } from '../screens/chat';
 import { InsightsScreen } from '../screens/insights';
 import { AffirmationsScreen } from '../screens/affirmations';
+import { ArticlesListScreen, ArticleDetailScreen } from '../screens/articles';
+import { MediaGalleryScreen } from '../screens/media';
+import { SubscriptionScreen, PaymentMethodsScreen } from '../screens/subscription';
 
 export type RootStackParamList = {
   Splash: undefined;
@@ -35,6 +38,13 @@ export type RootStackParamList = {
   Chat: undefined;
   Insights: undefined;
   Affirmations: undefined;
+  ArticlesList: undefined;
+  ArticleDetail: { article: any };
+  MediaGallery: undefined;
+  Subscription: undefined;
+  PaymentMethods: undefined;
+  Help: undefined;
+  About: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -98,6 +108,21 @@ export const AppNavigator = () => {
         <Stack.Screen name="Chat" component={ChatScreen} />
         <Stack.Screen name="Insights" component={InsightsScreen} />
         <Stack.Screen name="Affirmations" component={AffirmationsScreen} />
+
+        {/* Articles Screens */}
+        <Stack.Screen name="ArticlesList" component={ArticlesListScreen} />
+        <Stack.Screen name="ArticleDetail" component={ArticleDetailScreen} />
+
+        {/* Media Screens */}
+        <Stack.Screen name="MediaGallery" component={MediaGalleryScreen} />
+
+        {/* Subscription Screens */}
+        <Stack.Screen name="Subscription" component={SubscriptionScreen} />
+        <Stack.Screen name="PaymentMethods" component={PaymentMethodsScreen} />
+
+        {/* Additional Profile Screens */}
+        <Stack.Screen name="Help" component={HelpScreen} />
+        <Stack.Screen name="About" component={AboutScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

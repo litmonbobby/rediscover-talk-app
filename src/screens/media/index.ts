@@ -1,0 +1,1 @@
+export { MediaGalleryScreen } from './MediaGalleryScreen';
