@@ -86,7 +86,4 @@ export const typography = {
   },
 } as const;
 
-// Legacy export for backwards compatibility
-export const Typography = typography;
-
 export type TypographyScheme = typeof typography;

@@ -100,7 +100,4 @@ export const colors = {
   },
 } as const;
 
-// Legacy export for backwards compatibility
-export const Colors = colors;
-
 export type ColorScheme = typeof colors;

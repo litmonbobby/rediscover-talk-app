@@ -4,9 +4,9 @@
  */
 
 // Export design constants directly from their source files
-export { colors, Colors } from './colors';
-export { typography, Typography } from './typography';
-export { spacing, Spacing, BorderRadius, Shadows } from './spacing';
+export { colors } from './colors';
+export { typography } from './typography';
+export { spacing } from './spacing';
 
 export const Layout = {
   window: {

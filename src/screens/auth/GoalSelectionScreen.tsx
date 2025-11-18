@@ -3,7 +3,7 @@ import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-nati
 import { LinearGradient } from 'expo-linear-gradient';
 import { colors } from '../../constants/colors';
 import { typography } from '../../constants/typography';
-import { spacing, BorderRadius, Shadows } from '../../constants/spacing';
+import { spacing } from '../../constants/spacing';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 
 type Props = NativeStackScreenProps<any, 'GoalSelection'>;
@@ -79,7 +79,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background.DEFAULT,
   },
   header: {
-    paddingTop: Spacing['4xl'],
+    paddingTop: spacing['4xl'],
     paddingBottom: spacing.xl,
     paddingHorizontal: spacing.xl,
   },
@@ -107,12 +107,16 @@ const styles = StyleSheet.create({
   goalCard: {
     width: '47%',
     backgroundColor: colors.background.paper,
-    borderRadius: BorderRadius.lg,
+    borderRadius: spacing.borderRadius.lg,
     padding: spacing.lg,
     alignItems: 'center',
     borderWidth: 2,
     borderColor: colors.background.light,
-    ...Shadows.sm,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 2,
+    elevation: 2,
   },
   goalCardSelected: {
     borderColor: colors.accent.DEFAULT,
@@ -134,14 +138,18 @@ const styles = StyleSheet.create({
   },
   footer: {
     padding: spacing.xl,
-    paddingBottom: Spacing['2xl'],
+    paddingBottom: spacing['2xl'],
   },
   continueButton: {
     backgroundColor: colors.accent.DEFAULT,
-    borderRadius: BorderRadius.xl,
+    borderRadius: spacing.borderRadius.xl,
     padding: spacing.md,
     alignItems: 'center',
-    ...Shadows.md,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 4,
   },
   continueButtonDisabled: {
     backgroundColor: colors.background.light,
