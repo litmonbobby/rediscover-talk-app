@@ -1,269 +1,245 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView, SafeAreaView } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { colors } from '../../constants/colors';
-import { typography } from '../../constants/typography';
-import { spacing } from '../../constants/spacing';
+import { theme } from '../../constants/theme';
+import { Card } from '../../components/ui/Card';
 
 export const HomeScreen = ({ navigation }: any) => {
   const moods = [
-    { emoji: '😄', label: 'Amazing' },
-    { emoji: '😊', label: 'Good' },
-    { emoji: '😐', label: 'Okay' },
-    { emoji: '😔', label: 'Bad' },
-    { emoji: '😢', label: 'Terrible' },
+    { emoji: '😄', label: 'Amazing', color: theme.colors.mood.amazing },
+    { emoji: '😊', label: 'Good', color: theme.colors.mood.good },
+    { emoji: '😐', label: 'Okay', color: theme.colors.mood.okay },
+    { emoji: '😔', label: 'Bad', color: theme.colors.mood.bad },
+    { emoji: '😢', label: 'Terrible', color: theme.colors.mood.terrible },
+  ];
+
+  const quickActions = [
+    { icon: '💬', label: 'AI Coach', screen: 'Chat', gradient: [theme.colors.primary[400], theme.colors.primary[600]] },
+    { icon: '🧘', label: 'Meditate', screen: 'MeditationLibrary', gradient: [theme.colors.primary[500], theme.colors.primary[700]] },
+    { icon: '📝', label: 'Journal', screen: 'JournalList', gradient: [theme.colors.accent[400], theme.colors.accent[600]] },
+    { icon: '🫁', label: 'Breathe', screen: 'Breathwork', gradient: [theme.colors.primary[600], theme.colors.primary[800]] },
+    { icon: '📊', label: 'Insights', screen: 'Insights', gradient: [theme.colors.info, theme.colors.primary[600]] },
+    { icon: '✨', label: 'Affirmations', screen: 'Affirmations', gradient: [theme.colors.accent[300], theme.colors.accent[500]] },
   ];
 
   return (
     <LinearGradient
-      colors={[colors.primary.darkBlue, colors.primary.cobaltBlue]}
-      style={styles.container}
+      colors={theme.colors.background.gradient}
+      style={styles.gradient}
     >
-      <ScrollView style={styles.scrollView}>
-        <View style={styles.header}>
-          <Text style={styles.greeting}>Good Morning</Text>
-          <Text style={styles.date}>Sunday, November 17</Text>
-        </View>
+      <SafeAreaView style={styles.safeArea}>
+        <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
+          {/* Header */}
+          <View style={styles.header}>
+            <Text style={styles.greeting}>Good Morning</Text>
+            <Text style={styles.date}>Sunday, November 17</Text>
+          </View>
 
-      {/* Mood Check-in Widget */}
-      <TouchableOpacity
-        style={styles.card}
-        onPress={() => navigation.navigate('MoodCheckIn')}
-        activeOpacity={0.9}
-      >
-        <Text style={styles.cardTitle}>How are you feeling?</Text>
-        <View style={styles.moodSelector}>
-          {moods.map((mood, index) => (
-            <View key={index} style={styles.moodButton}>
-              <Text style={styles.moodEmoji}>{mood.emoji}</Text>
+          {/* Mood Check-in Card */}
+          <Card style={styles.moodCard} variant="glass">
+            <View style={styles.cardHeader}>
+              <Text style={styles.cardTitle}>How are you feeling?</Text>
+              <Text style={styles.cardSubtitle}>Track your mood daily</Text>
             </View>
-          ))}
-        </View>
-        <TouchableOpacity
-          style={styles.viewHistoryButton}
-          onPress={(e) => {
-            e.stopPropagation();
-            navigation.navigate('MoodHistory');
-          }}
-        >
-          <Text style={styles.viewHistoryText}>View History →</Text>
-        </TouchableOpacity>
-      </TouchableOpacity>
 
-      {/* Quick Actions */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Quick Actions</Text>
-        <View style={styles.actionsGrid}>
-          <TouchableOpacity
-            style={styles.actionCard}
-            onPress={() => navigation.navigate('Chat')}
-            activeOpacity={0.8}
-          >
-            <LinearGradient
-              colors={[colors.accent.lime, colors.accent.brightLime]}
-              style={styles.actionGradient}
-            >
-              <Text style={styles.actionEmoji}>💬</Text>
-              <Text style={styles.actionText}>AI Coach</Text>
-            </LinearGradient>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.actionCard}
-            onPress={() => navigation.navigate('MeditationLibrary')}
-            activeOpacity={0.8}
-          >
-            <LinearGradient
-              colors={[colors.primary.lightBlue, colors.primary.cobaltBlue]}
-              style={styles.actionGradient}
-            >
-              <Text style={styles.actionEmoji}>🧘</Text>
-              <Text style={styles.actionText}>Meditate</Text>
-            </LinearGradient>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.actionCard}
-            onPress={() => navigation.navigate('JournalList')}
-            activeOpacity={0.8}
-          >
-            <LinearGradient
-              colors={[colors.mood.good, colors.mood.veryHappy]}
-              style={styles.actionGradient}
-            >
-              <Text style={styles.actionEmoji}>📝</Text>
-              <Text style={styles.actionText}>Journal</Text>
-            </LinearGradient>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.actionCard}
-            onPress={() => navigation.navigate('Breathwork')}
-            activeOpacity={0.8}
-          >
-            <LinearGradient
-              colors={[colors.primary.cobaltBlue, colors.primary.deepBlue]}
-              style={styles.actionGradient}
-            >
-              <Text style={styles.actionEmoji}>🫁</Text>
-              <Text style={styles.actionText}>Breathe</Text>
-            </LinearGradient>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.actionCard}
-            onPress={() => navigation.navigate('Insights')}
-            activeOpacity={0.8}
-          >
-            <LinearGradient
-              colors={[colors.accent.softLime, colors.accent.lime]}
-              style={styles.actionGradient}
-            >
-              <Text style={styles.actionEmoji}>📊</Text>
-              <Text style={styles.actionText}>Insights</Text>
-            </LinearGradient>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.actionCard}
-            onPress={() => navigation.navigate('Affirmations')}
-            activeOpacity={0.8}
-          >
-            <LinearGradient
-              colors={[colors.mood.veryHappy, colors.mood.good]}
-              style={styles.actionGradient}
-            >
-              <Text style={styles.actionEmoji}>✨</Text>
-              <Text style={styles.actionText}>Affirmations</Text>
-            </LinearGradient>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.actionCard}
-            onPress={() => navigation.navigate('SleepSounds')}
-            activeOpacity={0.8}
-          >
-            <LinearGradient
-              colors={[colors.mood.neutral, colors.primary.deepBlue]}
-              style={styles.actionGradient}
-            >
-              <Text style={styles.actionEmoji}>😴</Text>
-              <Text style={styles.actionText}>Sleep</Text>
-            </LinearGradient>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.actionCard}
-            onPress={() => navigation.navigate('Profile')}
-            activeOpacity={0.8}
-          >
-            <LinearGradient
-              colors={[colors.primary.lightBlue, colors.primary.cobaltBlue]}
-              style={styles.actionGradient}
-            >
-              <Text style={styles.actionEmoji}>👤</Text>
-              <Text style={styles.actionText}>Profile</Text>
-            </LinearGradient>
-          </TouchableOpacity>
-        </View>
-      </View>
+            <View style={styles.moodSelector}>
+              {moods.map((mood, index) => (
+                <TouchableOpacity
+                  key={index}
+                  style={styles.moodButton}
+                  onPress={() => navigation.navigate('MoodCheckIn')}
+                  activeOpacity={0.7}
+                >
+                  <View style={[styles.moodCircle, {
+                    backgroundColor: mood.color + '20',
+                    borderWidth: 2,
+                    borderColor: mood.color + '40',
+                  }]}>
+                    <Text style={styles.moodEmoji}>{mood.emoji}</Text>
+                  </View>
+                  <Text style={styles.moodLabel}>{mood.label}</Text>
+                </TouchableOpacity>
+              ))}
+            </View>
 
-        {/* Daily Quote */}
-        <View style={styles.card}>
-          <Text style={styles.quoteText}>
-            "The present moment is filled with joy and happiness. If you are attentive, you will see it."
-          </Text>
-          <Text style={styles.quoteAuthor}>— Thích Nhất Hạnh</Text>
-        </View>
-      </ScrollView>
+            <TouchableOpacity
+              style={styles.viewHistoryButton}
+              onPress={() => navigation.navigate('MoodHistory')}
+            >
+              <Text style={styles.viewHistoryText}>View History →</Text>
+            </TouchableOpacity>
+          </Card>
+
+          {/* Quick Actions */}
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Quick Actions</Text>
+            <View style={styles.actionsGrid}>
+              {quickActions.map((action, index) => (
+                <TouchableOpacity
+                  key={index}
+                  onPress={() => navigation.navigate(action.screen)}
+                  activeOpacity={0.8}
+                  style={styles.actionCardWrapper}
+                >
+                  <LinearGradient
+                    colors={action.gradient}
+                    style={styles.actionCard}
+                  >
+                    <Text style={styles.actionIcon}>{action.icon}</Text>
+                    <Text style={styles.actionLabel}>{action.label}</Text>
+                  </LinearGradient>
+                </TouchableOpacity>
+              ))}
+            </View>
+          </View>
+
+          {/* Daily Quote */}
+          <Card style={styles.quoteCard} variant="glass">
+            <Text style={styles.quoteText}>
+              "The present moment is filled with joy and happiness. If you are attentive, you will see it."
+            </Text>
+            <Text style={styles.quoteAuthor}>— Thích Nhất Hạnh</Text>
+          </Card>
+
+          {/* Bottom spacing */}
+          <View style={{ height: theme.spacing[8] }} />
+        </ScrollView>
+      </SafeAreaView>
     </LinearGradient>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
+  gradient: {
+    flex: 1,
+  },
+  safeArea: {
     flex: 1,
   },
   scrollView: {
     flex: 1,
   },
   header: {
-    padding: spacing.xl,
-    paddingTop: spacing.xl * 2,
-    marginBottom: spacing.md,
+    padding: theme.spacing[5],
+    paddingTop: theme.spacing[4],
   },
   greeting: {
-    ...typography.h1,
-    color: colors.text.primary,
+    fontSize: theme.typography.fontSize['3xl'],
+    fontWeight: theme.typography.fontWeight.bold,
+    color: theme.colors.text.primary,
+    marginBottom: theme.spacing[1],
   },
   date: {
-    ...typography.body,
-    color: colors.text.secondary,
-    marginTop: spacing.xs,
+    fontSize: theme.typography.fontSize.base,
+    color: theme.colors.text.secondary,
   },
-  card: {
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    margin: spacing.md,
-    padding: spacing.lg,
-    borderRadius: spacing.borderRadius.lg,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
+
+  // Mood Card
+  moodCard: {
+    marginHorizontal: theme.spacing[5],
+    marginBottom: theme.spacing[5],
+  },
+  cardHeader: {
+    marginBottom: theme.spacing[4],
   },
   cardTitle: {
-    ...typography.h2,
-    color: colors.text.primary,
-    marginBottom: spacing.md,
+    fontSize: theme.typography.fontSize.xl,
+    fontWeight: theme.typography.fontWeight.semibold,
+    color: theme.colors.text.primary,
+    marginBottom: theme.spacing[1],
+  },
+  cardSubtitle: {
+    fontSize: theme.typography.fontSize.sm,
+    color: theme.colors.text.secondary,
   },
   moodSelector: {
     flexDirection: 'row',
-    justifyContent: 'space-around',
-    marginBottom: spacing.md,
+    justifyContent: 'space-between',
+    marginBottom: theme.spacing[4],
   },
   moodButton: {
-    padding: spacing.sm,
+    alignItems: 'center',
+    flex: 1,
+  },
+  moodCircle: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: theme.spacing[2],
   },
   moodEmoji: {
-    fontSize: 40,
+    fontSize: 28,
+  },
+  moodLabel: {
+    fontSize: theme.typography.fontSize.xs,
+    color: theme.colors.text.secondary,
+    textAlign: 'center',
   },
   viewHistoryButton: {
     alignSelf: 'flex-end',
   },
   viewHistoryText: {
-    ...typography.bodyBold,
-    color: colors.accent.lime,
+    fontSize: theme.typography.fontSize.sm,
+    fontWeight: theme.typography.fontWeight.semibold,
+    color: theme.colors.accent[400],
   },
+
+  // Quick Actions
   section: {
-    padding: spacing.md,
+    paddingHorizontal: theme.spacing[5],
+    marginBottom: theme.spacing[5],
   },
   sectionTitle: {
-    ...typography.h2,
-    color: colors.text.primary,
-    marginBottom: spacing.md,
+    fontSize: theme.typography.fontSize.xl,
+    fontWeight: theme.typography.fontWeight.semibold,
+    color: theme.colors.text.primary,
+    marginBottom: theme.spacing[4],
   },
   actionsGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: spacing.md,
+    gap: theme.spacing[3],
+  },
+  actionCardWrapper: {
+    width: (360 - theme.spacing[5] * 2 - theme.spacing[3]) / 2,
+    borderRadius: theme.borderRadius.lg,
+    overflow: 'hidden',
+    ...theme.shadows.md,
   },
   actionCard: {
-    width: '47%',
-    borderRadius: spacing.borderRadius.lg,
-    overflow: 'hidden',
-  },
-  actionGradient: {
-    padding: spacing.lg,
+    padding: theme.spacing[4],
     alignItems: 'center',
+    minHeight: 120,
+    justifyContent: 'center',
   },
-  actionEmoji: {
-    fontSize: 36,
-    marginBottom: spacing.sm,
+  actionIcon: {
+    fontSize: 32,
+    marginBottom: theme.spacing[3],
   },
-  actionText: {
-    ...typography.bodyBold,
-    color: colors.text.primary,
+  actionLabel: {
+    fontSize: theme.typography.fontSize.sm,
+    fontWeight: theme.typography.fontWeight.semibold,
+    color: theme.colors.text.primary,
+    textAlign: 'center',
+  },
+
+  // Quote Card
+  quoteCard: {
+    marginHorizontal: theme.spacing[5],
+    marginBottom: theme.spacing[5],
   },
   quoteText: {
-    ...typography.body,
+    fontSize: theme.typography.fontSize.base,
     fontStyle: 'italic',
-    color: colors.text.secondary,
-    marginBottom: spacing.md,
+    color: theme.colors.text.secondary,
+    marginBottom: theme.spacing[3],
+    lineHeight: theme.typography.fontSize.base * theme.typography.lineHeight.relaxed,
   },
   quoteAuthor: {
-    ...typography.body,
-    color: colors.text.tertiary,
+    fontSize: theme.typography.fontSize.sm,
+    color: theme.colors.text.tertiary,
     textAlign: 'right',
   },
 });
