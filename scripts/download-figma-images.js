@@ -144,10 +144,12 @@ const main = async () => {
   // Load summary
   const summary = loadSummary();
 
-  console.log(`📦 Components to download:`);
-  console.log(`  ├─ Design System: ${summary.components.design.length}`);
-  console.log(`  ├─ Light Theme: ${summary.components.light.length}`);
-  console.log(`  └─ Dark Theme: ${summary.components.dark.length}`);
+  console.log(`📦 Content to download:`);
+  console.log(`  ├─ Design System Components: ${summary.components.design.length}`);
+  console.log(`  ├─ Light Theme Components: ${summary.components.light.length}`);
+  console.log(`  ├─ Dark Theme Components: ${summary.components.dark.length}`);
+  console.log(`  ├─ Light Theme Screens: ${summary.screens?.light?.length || 0}`);
+  console.log(`  └─ Dark Theme Screens: ${summary.screens?.dark?.length || 0}`);
 
   let totalDownloaded = 0;
 
@@ -167,6 +169,18 @@ const main = async () => {
   // Download dark theme components
   if (summary.components.dark.length > 0) {
     const count = await downloadComponents(summary.components.dark, 'dark-theme');
+    totalDownloaded += count;
+  }
+
+  // Download light theme screens
+  if (summary.screens?.light?.length > 0) {
+    const count = await downloadComponents(summary.screens.light, 'screens/light-theme');
+    totalDownloaded += count;
+  }
+
+  // Download dark theme screens
+  if (summary.screens?.dark?.length > 0) {
+    const count = await downloadComponents(summary.screens.dark, 'screens/dark-theme');
     totalDownloaded += count;
   }
 

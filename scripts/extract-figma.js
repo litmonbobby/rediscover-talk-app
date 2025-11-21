@@ -124,23 +124,26 @@ const extractComponents = (page) => {
 const extractScreens = (page, theme) => {
   const screens = [];
 
-  const traverse = (node) => {
-    if (node.type === 'FRAME' && node.name.includes('Screen')) {
+  const traverse = (node, depth = 0) => {
+    // Capture all top-level FRAME nodes directly under the page
+    // These represent the actual screen designs (e.g., "138_Light_logout", "137_Light_settings")
+    if (node.type === 'FRAME' && depth === 1) {
       screens.push({
         id: node.id,
         name: node.name,
         theme,
         width: node.absoluteBoundingBox?.width,
         height: node.absoluteBoundingBox?.height,
+        children: node.children?.length || 0,
       });
     }
 
     if (node.children) {
-      node.children.forEach(traverse);
+      node.children.forEach(child => traverse(child, depth + 1));
     }
   };
 
-  traverse(page);
+  traverse(page, 0);
   return screens;
 };
 
