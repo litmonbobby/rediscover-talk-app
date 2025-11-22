@@ -1,1 +1,8 @@
-// Explore screens - exports will be added as screens are created
+/**
+ * Explore Screens Barrel Export
+ */
+
+export { MeditationsScreen } from './MeditationsScreen';
+export { MeditationDetailScreen } from './MeditationDetailScreen';
+export { MeditationPlayerScreen } from './MeditationPlayerScreen';
+export { BreathingScreen } from './BreathingScreen';
