@@ -24,7 +24,7 @@ interface Affirmation {
 }
 
 const affirmations: Affirmation[] = [
-  // Self-Love (10 affirmations)
+  // Self-Love (18 affirmations)
   { id: '1', text: 'I am worthy of love and respect', category: 'Self-Love', icon: '❤️' },
   { id: '2', text: 'I accept myself unconditionally', category: 'Self-Love', icon: '❤️' },
   { id: '3', text: 'I am enough just as I am', category: 'Self-Love', icon: '❤️' },
@@ -35,8 +35,16 @@ const affirmations: Affirmation[] = [
   { id: '8', text: 'I am proud of who I am becoming', category: 'Self-Love', icon: '❤️' },
   { id: '9', text: 'I treat myself with compassion and understanding', category: 'Self-Love', icon: '❤️' },
   { id: '10', text: 'My self-worth comes from within', category: 'Self-Love', icon: '❤️' },
+  { id: '89', text: 'I celebrate my individuality', category: 'Self-Love', icon: '❤️' },
+  { id: '90', text: 'I am gentle with myself on difficult days', category: 'Self-Love', icon: '❤️' },
+  { id: '91', text: 'I love and accept all parts of myself', category: 'Self-Love', icon: '❤️' },
+  { id: '92', text: 'My flaws make me beautifully human', category: 'Self-Love', icon: '❤️' },
+  { id: '93', text: 'I prioritize my well-being without guilt', category: 'Self-Love', icon: '❤️' },
+  { id: '94', text: 'I am my own best friend', category: 'Self-Love', icon: '❤️' },
+  { id: '95', text: 'I speak to myself with love and encouragement', category: 'Self-Love', icon: '❤️' },
+  { id: '96', text: 'I am whole and complete on my own', category: 'Self-Love', icon: '❤️' },
 
-  // Confidence (10 affirmations)
+  // Confidence (18 affirmations)
   { id: '11', text: 'I am confident in my abilities', category: 'Confidence', icon: '💪' },
   { id: '12', text: 'I trust myself to make good decisions', category: 'Confidence', icon: '💪' },
   { id: '13', text: 'I am capable of achieving my goals', category: 'Confidence', icon: '💪' },
@@ -47,8 +55,16 @@ const affirmations: Affirmation[] = [
   { id: '18', text: 'I embrace new opportunities with confidence', category: 'Confidence', icon: '💪' },
   { id: '19', text: 'I trust my intuition and inner wisdom', category: 'Confidence', icon: '💪' },
   { id: '20', text: 'I am becoming more confident every day', category: 'Confidence', icon: '💪' },
+  { id: '97', text: 'I stand tall in my truth', category: 'Confidence', icon: '💪' },
+  { id: '98', text: 'I have valuable contributions to make', category: 'Confidence', icon: '💪' },
+  { id: '99', text: 'I am proud of my accomplishments', category: 'Confidence', icon: '💪' },
+  { id: '100', text: 'I step out of my comfort zone with ease', category: 'Confidence', icon: '💪' },
+  { id: '101', text: 'My opinions and ideas are valuable', category: 'Confidence', icon: '💪' },
+  { id: '102', text: 'I am capable of learning anything I set my mind to', category: 'Confidence', icon: '💪' },
+  { id: '103', text: 'I believe in myself completely', category: 'Confidence', icon: '💪' },
+  { id: '104', text: 'I walk confidently toward my dreams', category: 'Confidence', icon: '💪' },
 
-  // Peace (10 affirmations)
+  // Peace (18 affirmations)
   { id: '21', text: 'I am calm and at peace', category: 'Peace', icon: '🕊️' },
   { id: '22', text: 'I release all tension and worry', category: 'Peace', icon: '🕊️' },
   { id: '23', text: 'I choose peace over worry', category: 'Peace', icon: '🕊️' },
@@ -59,8 +75,16 @@ const affirmations: Affirmation[] = [
   { id: '28', text: 'I breathe in calm and exhale stress', category: 'Peace', icon: '🕊️' },
   { id: '29', text: 'I create peaceful spaces in my life', category: 'Peace', icon: '🕊️' },
   { id: '30', text: 'Inner peace is my natural state', category: 'Peace', icon: '🕊️' },
+  { id: '105', text: 'I am anchored in stillness', category: 'Peace', icon: '🕊️' },
+  { id: '106', text: 'I trust the timing of my life', category: 'Peace', icon: '🕊️' },
+  { id: '107', text: 'I am patient with myself and others', category: 'Peace', icon: '🕊️' },
+  { id: '108', text: 'Serenity surrounds me always', category: 'Peace', icon: '🕊️' },
+  { id: '109', text: 'I accept things as they are', category: 'Peace', icon: '🕊️' },
+  { id: '110', text: 'My thoughts are peaceful and harmonious', category: 'Peace', icon: '🕊️' },
+  { id: '111', text: 'I respond to challenges with calmness', category: 'Peace', icon: '🕊️' },
+  { id: '112', text: 'I am at ease with uncertainty', category: 'Peace', icon: '🕊️' },
 
-  // Gratitude (10 affirmations)
+  // Gratitude (18 affirmations)
   { id: '31', text: 'I am grateful for this moment', category: 'Gratitude', icon: '🙏' },
   { id: '32', text: 'I appreciate all the good in my life', category: 'Gratitude', icon: '🙏' },
   { id: '33', text: 'I am thankful for my journey', category: 'Gratitude', icon: '🙏' },
@@ -71,8 +95,16 @@ const affirmations: Affirmation[] = [
   { id: '38', text: 'I am thankful for lessons learned', category: 'Gratitude', icon: '🙏' },
   { id: '39', text: 'Gratitude fills my heart with joy', category: 'Gratitude', icon: '🙏' },
   { id: '40', text: 'I acknowledge and celebrate small victories', category: 'Gratitude', icon: '🙏' },
+  { id: '113', text: 'I am blessed with amazing opportunities', category: 'Gratitude', icon: '🙏' },
+  { id: '114', text: 'I appreciate the simple pleasures in life', category: 'Gratitude', icon: '🙏' },
+  { id: '115', text: 'I am thankful for my body and all it does', category: 'Gratitude', icon: '🙏' },
+  { id: '116', text: 'I find reasons to be grateful every day', category: 'Gratitude', icon: '🙏' },
+  { id: '117', text: 'I am grateful for the people who support me', category: 'Gratitude', icon: '🙏' },
+  { id: '118', text: 'I appreciate my past experiences that shaped me', category: 'Gratitude', icon: '🙏' },
+  { id: '119', text: 'I am thankful for new beginnings', category: 'Gratitude', icon: '🙏' },
+  { id: '120', text: 'My heart overflows with gratitude', category: 'Gratitude', icon: '🙏' },
 
-  // Strength (10 affirmations)
+  // Strength (18 affirmations)
   { id: '41', text: 'I am strong and resilient', category: 'Strength', icon: '⚡' },
   { id: '42', text: 'I can handle whatever comes my way', category: 'Strength', icon: '⚡' },
   { id: '43', text: 'I overcome challenges with grace', category: 'Strength', icon: '⚡' },
@@ -83,8 +115,16 @@ const affirmations: Affirmation[] = [
   { id: '48', text: 'Difficult times help me grow stronger', category: 'Strength', icon: '⚡' },
   { id: '49', text: 'I trust in my ability to persevere', category: 'Strength', icon: '⚡' },
   { id: '50', text: 'My inner strength carries me forward', category: 'Strength', icon: '⚡' },
+  { id: '121', text: 'I am unshakeable in my core', category: 'Strength', icon: '⚡' },
+  { id: '122', text: 'Challenges reveal my hidden strengths', category: 'Strength', icon: '⚡' },
+  { id: '123', text: 'I have the courage to keep going', category: 'Strength', icon: '⚡' },
+  { id: '124', text: 'My spirit is unconquerable', category: 'Strength', icon: '⚡' },
+  { id: '125', text: 'I am stronger than my fears', category: 'Strength', icon: '⚡' },
+  { id: '126', text: 'I bounce back from setbacks', category: 'Strength', icon: '⚡' },
+  { id: '127', text: 'My determination is unwavering', category: 'Strength', icon: '⚡' },
+  { id: '128', text: 'I rise above adversity with grace', category: 'Strength', icon: '⚡' },
 
-  // Success (10 affirmations)
+  // Success (18 affirmations)
   { id: '51', text: 'I am worthy of success', category: 'Success', icon: '🌟' },
   { id: '52', text: 'Success flows to me naturally', category: 'Success', icon: '🌟' },
   { id: '53', text: 'I create my own opportunities', category: 'Success', icon: '🌟' },
@@ -95,8 +135,16 @@ const affirmations: Affirmation[] = [
   { id: '58', text: 'Every step forward is progress', category: 'Success', icon: '🌟' },
   { id: '59', text: 'I am focused and determined', category: 'Success', icon: '🌟' },
   { id: '60', text: 'My dreams are within reach', category: 'Success', icon: '🌟' },
+  { id: '129', text: 'I am destined for greatness', category: 'Success', icon: '🌟' },
+  { id: '130', text: 'I make progress every single day', category: 'Success', icon: '🌟' },
+  { id: '131', text: 'My hard work pays off abundantly', category: 'Success', icon: '🌟' },
+  { id: '132', text: 'I am open to infinite possibilities', category: 'Success', icon: '🌟' },
+  { id: '133', text: 'Success is my birthright', category: 'Success', icon: '🌟' },
+  { id: '134', text: 'I turn my vision into reality', category: 'Success', icon: '🌟' },
+  { id: '135', text: 'I am worthy of all my achievements', category: 'Success', icon: '🌟' },
+  { id: '136', text: 'My success inspires others', category: 'Success', icon: '🌟' },
 
-  // Healing (10 affirmations)
+  // Healing (18 affirmations)
   { id: '61', text: 'I am healing and growing every day', category: 'Healing', icon: '🌱' },
   { id: '62', text: 'I release what no longer serves me', category: 'Healing', icon: '🌱' },
   { id: '63', text: 'I am becoming my best self', category: 'Healing', icon: '🌱' },
@@ -107,8 +155,16 @@ const affirmations: Affirmation[] = [
   { id: '68', text: 'I welcome positive change in my life', category: 'Healing', icon: '🌱' },
   { id: '69', text: 'I am creating a brighter future', category: 'Healing', icon: '🌱' },
   { id: '70', text: 'Healing is a journey, and I am on my way', category: 'Healing', icon: '🌱' },
+  { id: '137', text: 'I am stronger in my broken places', category: 'Healing', icon: '🌱' },
+  { id: '138', text: 'Every breath brings me closer to wholeness', category: 'Healing', icon: '🌱' },
+  { id: '139', text: 'I trust the process of my healing', category: 'Healing', icon: '🌱' },
+  { id: '140', text: 'I am gentle with my healing heart', category: 'Healing', icon: '🌱' },
+  { id: '141', text: 'New growth comes from letting go', category: 'Healing', icon: '🌱' },
+  { id: '142', text: 'I honor my healing process', category: 'Healing', icon: '🌱' },
+  { id: '143', text: 'I am evolving into my highest self', category: 'Healing', icon: '🌱' },
+  { id: '144', text: 'My wounds are becoming my wisdom', category: 'Healing', icon: '🌱' },
 
-  // Positivity (10 affirmations)
+  // Positivity (18 affirmations)
   { id: '71', text: 'I choose joy and happiness', category: 'Positivity', icon: '😊' },
   { id: '72', text: 'Positive energy flows through me', category: 'Positivity', icon: '😊' },
   { id: '73', text: 'I attract positivity into my life', category: 'Positivity', icon: '😊' },
@@ -119,6 +175,14 @@ const affirmations: Affirmation[] = [
   { id: '78', text: 'My positive mindset creates positive outcomes', category: 'Positivity', icon: '😊' },
   { id: '79', text: 'I see opportunities instead of obstacles', category: 'Positivity', icon: '😊' },
   { id: '80', text: 'Optimism guides my thoughts and actions', category: 'Positivity', icon: '😊' },
+  { id: '81', text: 'I am surrounded by love and support', category: 'Positivity', icon: '😊' },
+  { id: '82', text: 'Every moment is a fresh start', category: 'Positivity', icon: '😊' },
+  { id: '83', text: 'I choose to see the good in every situation', category: 'Positivity', icon: '😊' },
+  { id: '84', text: 'My life is filled with joy and abundance', category: 'Positivity', icon: '😊' },
+  { id: '85', text: 'I embrace each day with enthusiasm', category: 'Positivity', icon: '😊' },
+  { id: '86', text: 'Happiness is my natural state of being', category: 'Positivity', icon: '😊' },
+  { id: '87', text: 'I am open to receiving all the good life offers', category: 'Positivity', icon: '😊' },
+  { id: '88', text: 'My positive attitude is contagious', category: 'Positivity', icon: '😊' },
 ];
 
 const categories = ['All', 'Self-Love', 'Confidence', 'Peace', 'Gratitude', 'Strength', 'Success', 'Healing', 'Positivity'];
