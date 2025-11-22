@@ -7,7 +7,13 @@ import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import type { RootStackParamList } from './types';
-import { SplashScreen, WalkthroughScreen } from '../screens/auth';
+import {
+  SplashScreen,
+  WalkthroughScreen,
+  WelcomeScreen,
+  SignInScreen,
+  SignUpScreen,
+} from '../screens/auth';
 
 // Create the stack navigator
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -29,6 +35,9 @@ export function AppNavigator() {
         {/* Auth Screens */}
         <Stack.Screen name="Splash" component={SplashScreen} />
         <Stack.Screen name="Walkthrough" component={WalkthroughScreen} />
+        <Stack.Screen name="Welcome" component={WelcomeScreen} />
+        <Stack.Screen name="SignIn" component={SignInScreen} />
+        <Stack.Screen name="SignUp" component={SignUpScreen} />
 
         {/* Main App Screens will be added here */}
       </Stack.Navigator>
