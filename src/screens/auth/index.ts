@@ -3,3 +3,4 @@
  */
 
 export { SplashScreen } from './SplashScreen';
+export { WalkthroughScreen } from './WalkthroughScreen';
