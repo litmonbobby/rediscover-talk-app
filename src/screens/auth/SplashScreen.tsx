@@ -1,25 +1,26 @@
+/**
+ * SplashScreen
+ * Initial loading screen with app logo
+ * Reference: Figma screen 1-light-splash-screen.png
+ */
+
 import React, { useEffect } from 'react';
-import { View, Image, StyleSheet, Animated, Dimensions } from 'react-native';
-import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { View, Text, StyleSheet } from 'react-native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../../navigation/types';
+import { theme } from '../../theme';
 
-const { width, height } = Dimensions.get('window');
+type SplashScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Splash'>;
 
-type Props = NativeStackScreenProps<any, 'Splash'>;
+interface SplashScreenProps {
+  navigation: SplashScreenNavigationProp;
+}
 
-export const SplashScreen: React.FC<Props> = ({ navigation }) => {
-  const fadeAnim = new Animated.Value(0);
-
+export function SplashScreen({ navigation }: SplashScreenProps) {
   useEffect(() => {
-    // Fade in animation
-    Animated.timing(fadeAnim, {
-      toValue: 1,
-      duration: 1000,
-      useNativeDriver: true,
-    }).start();
-
-    // Navigate to onboarding after 2.5 seconds
+    // Navigate to Walkthrough after 2.5 seconds
     const timer = setTimeout(() => {
-      navigation.replace('Onboarding');
+      navigation.replace('Walkthrough');
     }, 2500);
 
     return () => clearTimeout(timer);
@@ -27,27 +28,52 @@ export const SplashScreen: React.FC<Props> = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <Animated.Image
-        source={require('../../../assets/splash-icon.png')}
-        style={[
-          styles.splashImage,
-          {
-            opacity: fadeAnim,
-          },
-        ]}
-        resizeMode="cover"
-      />
+      <View style={styles.content}>
+        <Text style={styles.logo}>🧠</Text>
+        <Text style={styles.title}>Rediscover Talk</Text>
+        <Text style={styles.subtitle}>Mental Wellness Companion</Text>
+      </View>
+
+      <Text style={styles.footer}>Take a moment for yourself</Text>
     </View>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#004BA7',
+    backgroundColor: theme.colors.primary.DEFAULT,
+    justifyContent: 'space-between',
+    paddingVertical: theme.spacing['4xl'],
   },
-  splashImage: {
-    width: width,
-    height: height,
+
+  content: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+
+  logo: {
+    fontSize: 80,
+    marginBottom: theme.spacing.xl,
+  },
+
+  title: {
+    ...theme.typography.heading1,
+    color: theme.colors.text.inverse,
+    marginBottom: theme.spacing.sm,
+  },
+
+  subtitle: {
+    ...theme.typography.body,
+    color: theme.colors.text.inverse,
+    opacity: 0.9,
+  },
+
+  footer: {
+    ...theme.typography.caption,
+    color: theme.colors.text.inverse,
+    opacity: 0.7,
+    textAlign: 'center',
   },
 });

@@ -1,5 +1,14 @@
+/**
+ * Auth Screens Barrel Export
+ */
+
 export { SplashScreen } from './SplashScreen';
-export { OnboardingScreen } from './OnboardingScreen';
+export { WalkthroughScreen } from './WalkthroughScreen';
+export { WelcomeScreen } from './WelcomeScreen';
+export { SignInScreen } from './SignInScreen';
 export { SignUpScreen } from './SignUpScreen';
-export { LoginScreen } from './LoginScreen';
-export { GoalSelectionScreen } from './GoalSelectionScreen';
+export { ForgotPasswordScreen } from './ForgotPasswordScreen';
+export { OTPScreen } from './OTPScreen';
+export { NewPasswordScreen } from './NewPasswordScreen';
+export { PasswordResetSuccessScreen } from './PasswordResetSuccessScreen';
+export { PreparingPlansScreen } from './PreparingPlansScreen';

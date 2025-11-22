@@ -1,55 +1,34 @@
+/**
+ * App Navigator
+ * Main navigation configuration for the app
+ */
+
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { SplashScreen, OnboardingScreen, SignUpScreen, LoginScreen, GoalSelectionScreen } from '../screens/auth';
-import { HomeScreen } from '../screens/home';
-import { MoodCheckInScreen, MoodHistoryScreen, MoodCalendarScreen } from '../screens/mood';
-import { MeditationLibraryScreen, MeditationPlayerScreen } from '../screens/meditation';
-import { JournalListScreen, JournalEntryScreen } from '../screens/journal';
-import { BreathworkScreen } from '../screens/breathwork';
-import { SleepSoundsScreen, SoundPlayerScreen } from '../screens/sleep';
-import { ProfileScreen, SettingsScreen, HelpScreen, AboutScreen } from '../screens/profile';
-import { ChatScreen } from '../screens/chat';
-import { InsightsScreen } from '../screens/insights';
-import { AffirmationsScreen } from '../screens/affirmations';
-import { ArticlesListScreen, ArticleDetailScreen } from '../screens/articles';
-import { MediaGalleryScreen } from '../screens/media';
-import { SubscriptionScreen, PaymentMethodsScreen } from '../screens/subscription';
+import type { RootStackParamList } from './types';
+import {
+  SplashScreen,
+  WalkthroughScreen,
+  WelcomeScreen,
+  SignInScreen,
+  SignUpScreen,
+  ForgotPasswordScreen,
+  OTPScreen,
+  NewPasswordScreen,
+  PasswordResetSuccessScreen,
+  PreparingPlansScreen,
+} from '../screens/auth';
+import { MainTabs } from './MainTabs';
 
-export type RootStackParamList = {
-  Splash: undefined;
-  Onboarding: undefined;
-  SignUp: undefined;
-  Login: undefined;
-  GoalSelection: undefined;
-  Main: undefined;
-  MoodCheckIn: undefined;
-  MoodHistory: undefined;
-  MoodCalendar: undefined;
-  MeditationLibrary: undefined;
-  MeditationPlayer: { meditation: any };
-  JournalList: undefined;
-  JournalEntry: undefined;
-  Breathwork: undefined;
-  SleepSounds: undefined;
-  SoundPlayer: { sound: any };
-  Profile: undefined;
-  Settings: undefined;
-  Chat: undefined;
-  Insights: undefined;
-  Affirmations: undefined;
-  ArticlesList: undefined;
-  ArticleDetail: { article: any };
-  MediaGallery: undefined;
-  Subscription: undefined;
-  PaymentMethods: undefined;
-  Help: undefined;
-  About: undefined;
-};
-
+// Create the stack navigator
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
-export const AppNavigator = () => {
+/**
+ * AppNavigator
+ * Root navigation component
+ */
+export function AppNavigator() {
   return (
     <NavigationContainer>
       <Stack.Navigator
@@ -59,71 +38,21 @@ export const AppNavigator = () => {
           animation: 'fade',
         }}
       >
+        {/* Auth Screens */}
         <Stack.Screen name="Splash" component={SplashScreen} />
-        <Stack.Screen name="Onboarding" component={OnboardingScreen} />
+        <Stack.Screen name="Walkthrough" component={WalkthroughScreen} />
+        <Stack.Screen name="Welcome" component={WelcomeScreen} />
+        <Stack.Screen name="SignIn" component={SignInScreen} />
         <Stack.Screen name="SignUp" component={SignUpScreen} />
-        <Stack.Screen name="Login" component={LoginScreen} />
-        <Stack.Screen name="GoalSelection" component={GoalSelectionScreen} />
-        <Stack.Screen name="Main" component={HomeScreen} />
+        <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} />
+        <Stack.Screen name="OTP" component={OTPScreen} />
+        <Stack.Screen name="NewPassword" component={NewPasswordScreen} />
+        <Stack.Screen name="PasswordResetSuccess" component={PasswordResetSuccessScreen} />
+        <Stack.Screen name="PreparingPlans" component={PreparingPlansScreen} />
 
-        {/* Mood Screens */}
-        <Stack.Screen
-          name="MoodCheckIn"
-          component={MoodCheckInScreen}
-          options={{
-            presentation: 'modal',
-            animation: 'slide_from_bottom',
-          }}
-        />
-        <Stack.Screen name="MoodHistory" component={MoodHistoryScreen} />
-        <Stack.Screen name="MoodCalendar" component={MoodCalendarScreen} />
-
-        {/* Meditation Screens */}
-        <Stack.Screen name="MeditationLibrary" component={MeditationLibraryScreen} />
-        <Stack.Screen name="MeditationPlayer" component={MeditationPlayerScreen} />
-
-        {/* Journal Screens */}
-        <Stack.Screen name="JournalList" component={JournalListScreen} />
-        <Stack.Screen
-          name="JournalEntry"
-          component={JournalEntryScreen}
-          options={{
-            presentation: 'modal',
-            animation: 'slide_from_bottom',
-          }}
-        />
-
-        {/* Breathwork Screens */}
-        <Stack.Screen name="Breathwork" component={BreathworkScreen} />
-
-        {/* Sleep Screens */}
-        <Stack.Screen name="SleepSounds" component={SleepSoundsScreen} />
-        <Stack.Screen name="SoundPlayer" component={SoundPlayerScreen} />
-
-        {/* Profile Screens */}
-        <Stack.Screen name="Profile" component={ProfileScreen} />
-        <Stack.Screen name="Settings" component={SettingsScreen} />
-
-        {/* New Feature Screens */}
-        <Stack.Screen name="Chat" component={ChatScreen} />
-        <Stack.Screen name="Insights" component={InsightsScreen} />
-        <Stack.Screen name="Affirmations" component={AffirmationsScreen} />
-
-        {/* Articles Screens */}
-        <Stack.Screen name="ArticlesList" component={ArticlesListScreen} />
-        <Stack.Screen name="ArticleDetail" component={ArticleDetailScreen} />
-
-        {/* Media Screens */}
-        <Stack.Screen name="MediaGallery" component={MediaGalleryScreen} />
-
-        {/* Subscription Screens */}
-        <Stack.Screen name="Subscription" component={SubscriptionScreen} />
-        <Stack.Screen name="PaymentMethods" component={PaymentMethodsScreen} />
-
-        {/* Additional Profile Screens */}
-        <Stack.Screen name="Help" component={HelpScreen} />
-        <Stack.Screen name="About" component={AboutScreen} />
+        {/* Main App */}
+        <Stack.Screen name="MainTabs" component={MainTabs} />
       </Stack.Navigator>
     </NavigationContainer>
   );
-};
+}

@@ -1,7 +1,7 @@
 /**
- * SignUpScreen
- * User registration with email/password or social auth
- * Reference: Figma screens 6-8 (sign-up-blank/filled/loading)
+ * SignInScreen
+ * User login with email/password or social auth
+ * Reference: Figma screens 20-22 (sign-in-blank/filled/loading)
  */
 
 import React, { useState } from 'react';
@@ -11,50 +11,40 @@ import { RootStackParamList } from '../../navigation/types';
 import { theme } from '../../theme';
 import { Button, Input, Header } from '../../components';
 
-type SignUpScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'SignUp'>;
+type SignInScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'SignIn'>;
 
-interface SignUpScreenProps {
-  navigation: SignUpScreenNavigationProp;
+interface SignInScreenProps {
+  navigation: SignInScreenNavigationProp;
 }
 
-export function SignUpScreen({ navigation }: SignUpScreenProps) {
-  const [name, setName] = useState('');
+export function SignInScreen({ navigation }: SignInScreenProps) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const handleSignUp = async () => {
+  const handleSignIn = async () => {
     setLoading(true);
     // TODO: Implement Supabase authentication
     setTimeout(() => {
       setLoading(false);
-      navigation.replace('PreparingPlans');
+      navigation.replace('MainTabs');
     }, 1500);
   };
 
   return (
     <View style={styles.container}>
       <Header
-        title="Sign Up"
+        title="Sign In"
         showBack
         onBackPress={() => navigation.goBack()}
       />
 
       <ScrollView style={styles.content} contentContainerStyle={styles.contentContainer}>
-        <Text style={styles.title}>Create Account</Text>
-        <Text style={styles.subtitle}>Join us and start your mental wellness journey</Text>
+        <Text style={styles.title}>Welcome Back</Text>
+        <Text style={styles.subtitle}>Sign in to continue your wellness journey</Text>
 
         <View style={styles.form}>
-          <Input
-            label="Full Name"
-            placeholder="John Doe"
-            value={name}
-            onChangeText={setName}
-            autoCapitalize="words"
-            required
-          />
-
           <Input
             label="Email"
             placeholder="your@email.com"
@@ -67,36 +57,36 @@ export function SignUpScreen({ navigation }: SignUpScreenProps) {
 
           <Input
             label="Password"
-            placeholder="Create a password"
+            placeholder="Enter your password"
             value={password}
             onChangeText={setPassword}
             secureTextEntry={!showPassword}
             required
-            helperText="Must be at least 8 characters"
             rightIcon={<Text>{showPassword ? '👁️' : '👁️‍🗨️'}</Text>}
             onRightIconPress={() => setShowPassword(!showPassword)}
           />
 
+          <TouchableOpacity
+            style={styles.forgotPassword}
+            onPress={() => navigation.navigate('ForgotPassword')}
+          >
+            <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
+          </TouchableOpacity>
+
           <Button
-            title="Sign Up"
-            onPress={handleSignUp}
+            title="Sign In"
+            onPress={handleSignIn}
             loading={loading}
             fullWidth
-            style={styles.signUpButton}
+            style={styles.signInButton}
           />
-
-          <Text style={styles.terms}>
-            By signing up, you agree to our{' '}
-            <Text style={styles.link}>Terms of Service</Text> and{' '}
-            <Text style={styles.link}>Privacy Policy</Text>
-          </Text>
         </View>
 
-        {/* Social Sign Up */}
+        {/* Social Sign In */}
         <View style={styles.socialSection}>
           <View style={styles.divider}>
             <View style={styles.dividerLine} />
-            <Text style={styles.dividerText}>Or sign up with</Text>
+            <Text style={styles.dividerText}>Or continue with</Text>
             <View style={styles.dividerLine} />
           </View>
 
@@ -116,10 +106,10 @@ export function SignUpScreen({ navigation }: SignUpScreenProps) {
           </View>
         </View>
 
-        <View style={styles.signInPrompt}>
-          <Text style={styles.signInText}>Already have an account? </Text>
-          <TouchableOpacity onPress={() => navigation.navigate('SignIn')}>
-            <Text style={styles.signInLink}>Sign In</Text>
+        <View style={styles.signUpPrompt}>
+          <Text style={styles.signUpText}>Don't have an account? </Text>
+          <TouchableOpacity onPress={() => navigation.navigate('SignUp')}>
+            <Text style={styles.signUpLink}>Sign Up</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
@@ -157,21 +147,18 @@ const styles = StyleSheet.create({
     marginBottom: theme.spacing.xl,
   },
 
-  signUpButton: {
-    marginTop: theme.spacing.lg,
-    marginBottom: theme.spacing.md,
+  forgotPassword: {
+    alignSelf: 'flex-end',
+    marginBottom: theme.spacing.lg,
   },
 
-  terms: {
-    ...theme.typography.caption,
-    color: theme.colors.text.tertiary,
-    textAlign: 'center',
-    lineHeight: 18,
-  },
-
-  link: {
+  forgotPasswordText: {
+    ...theme.typography.bodyMedium,
     color: theme.colors.primary.DEFAULT,
-    textDecorationLine: 'underline',
+  },
+
+  signInButton: {
+    marginTop: theme.spacing.md,
   },
 
   socialSection: {
@@ -205,18 +192,18 @@ const styles = StyleSheet.create({
     flex: 1,
   },
 
-  signInPrompt: {
+  signUpPrompt: {
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
   },
 
-  signInText: {
+  signUpText: {
     ...theme.typography.body,
     color: theme.colors.text.secondary,
   },
 
-  signInLink: {
+  signUpLink: {
     ...theme.typography.bodyMedium,
     color: theme.colors.primary.DEFAULT,
   },
