@@ -19,6 +19,7 @@ import {
   PasswordResetSuccessScreen,
   PreparingPlansScreen,
 } from '../screens/auth';
+import { MainTabs } from './MainTabs';
 
 // Create the stack navigator
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -49,7 +50,8 @@ export function AppNavigator() {
         <Stack.Screen name="PasswordResetSuccess" component={PasswordResetSuccessScreen} />
         <Stack.Screen name="PreparingPlans" component={PreparingPlansScreen} />
 
-        {/* Main App Screens will be added here */}
+        {/* Main App */}
+        <Stack.Screen name="MainTabs" component={MainTabs} />
       </Stack.Navigator>
     </NavigationContainer>
   );
