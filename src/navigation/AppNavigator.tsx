@@ -13,6 +13,11 @@ import {
   WelcomeScreen,
   SignInScreen,
   SignUpScreen,
+  ForgotPasswordScreen,
+  OTPScreen,
+  NewPasswordScreen,
+  PasswordResetSuccessScreen,
+  PreparingPlansScreen,
 } from '../screens/auth';
 
 // Create the stack navigator
@@ -38,6 +43,11 @@ export function AppNavigator() {
         <Stack.Screen name="Welcome" component={WelcomeScreen} />
         <Stack.Screen name="SignIn" component={SignInScreen} />
         <Stack.Screen name="SignUp" component={SignUpScreen} />
+        <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} />
+        <Stack.Screen name="OTP" component={OTPScreen} />
+        <Stack.Screen name="NewPassword" component={NewPasswordScreen} />
+        <Stack.Screen name="PasswordResetSuccess" component={PasswordResetSuccessScreen} />
+        <Stack.Screen name="PreparingPlans" component={PreparingPlansScreen} />
 
         {/* Main App Screens will be added here */}
       </Stack.Navigator>
