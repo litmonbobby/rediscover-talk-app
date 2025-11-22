@@ -23,3 +23,9 @@ export type { BadgeProps } from './Badge';
 
 export { Avatar } from './Avatar';
 export type { AvatarProps, AvatarSize } from './Avatar';
+
+export { MoodHistory } from './MoodHistory';
+export type { MoodHistoryProps, MoodEntry } from './MoodHistory';
+
+export { MoodCalendar } from './MoodCalendar';
+export type { MoodCalendarProps, MoodCalendarEntry } from './MoodCalendar';

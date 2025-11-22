@@ -15,12 +15,15 @@ import {
 } from 'react-native';
 import { theme } from '../../theme';
 import { Card, Button } from '../../components';
+import { MoodCheckInModal } from '../modals';
+import type { MoodType } from '../../types';
 
 export function HomeScreen() {
-  const [selectedMood, setSelectedMood] = useState<string | null>(null);
+  const [selectedMood, setSelectedMood] = useState<MoodType | null>(null);
   const [tasksCompleted, setTasksCompleted] = useState<boolean[]>([false, false, false]);
+  const [showMoodModal, setShowMoodModal] = useState(false);
 
-  const moods = [
+  const moods: Array<{ emoji: string; label: string; value: MoodType }> = [
     { emoji: '😭', label: 'Very Sad', value: 'very-sad' },
     { emoji: '😔', label: 'Sad', value: 'sad' },
     { emoji: '😐', label: 'Neutral', value: 'neutral' },
@@ -34,9 +37,15 @@ export function HomeScreen() {
     { id: '3', title: 'Breathing Exercise', duration: '5 min', icon: '🫁' },
   ];
 
-  const handleMoodSelect = (moodValue: string) => {
+  const handleMoodSelect = (moodValue: MoodType) => {
     setSelectedMood(moodValue);
-    // TODO: Save mood to backend
+    setShowMoodModal(true);
+  };
+
+  const handleMoodSubmit = (mood: MoodType, note?: string, tags?: string[]) => {
+    setSelectedMood(mood);
+    // TODO: Save mood entry to backend with note and tags
+    console.log('Mood saved:', { mood, note, tags });
   };
 
   const toggleTask = (index: number) => {
@@ -170,6 +179,14 @@ export function HomeScreen() {
           <Button title="Start Now" onPress={() => {}} style={styles.startButton} />
         </Card>
       </ScrollView>
+
+      {/* Mood Check-In Modal */}
+      <MoodCheckInModal
+        visible={showMoodModal}
+        onClose={() => setShowMoodModal(false)}
+        onSubmit={handleMoodSubmit}
+        initialMood={selectedMood || undefined}
+      />
     </SafeAreaView>
   );
 }

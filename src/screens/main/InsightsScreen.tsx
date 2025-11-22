@@ -4,29 +4,61 @@
  * Reference: Figma screen 99-light-insights.png
  */
 
-import React from 'react';
-import { View, Text, StyleSheet, ScrollView, SafeAreaView } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, SafeAreaView } from 'react-native';
 import { theme } from '../../theme';
+import { MoodHistory, type MoodEntry } from '../../components';
+
+// Sample data for demonstration
+const sampleMoodEntries: MoodEntry[] = [
+  {
+    id: '1',
+    mood: 'happy',
+    note: 'Had a great workout this morning! Feeling energized and positive.',
+    tags: ['🏋️ Exercise', '😴 Sleep'],
+    timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000), // 2 hours ago
+  },
+  {
+    id: '2',
+    mood: 'neutral',
+    note: 'Just a regular day at work.',
+    tags: ['💼 Work'],
+    timestamp: new Date(Date.now() - 5 * 60 * 60 * 1000), // 5 hours ago
+  },
+  {
+    id: '3',
+    mood: 'calm',
+    note: 'Meditation session was really helpful today.',
+    tags: ['🎯 Goals'],
+    timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000), // 1 day ago
+  },
+  {
+    id: '4',
+    mood: 'energetic',
+    note: 'Got a lot done today! Feeling productive.',
+    tags: ['💼 Work', '🎯 Goals'],
+    timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000 - 3 * 60 * 60 * 1000), // 1 day 3 hours ago
+  },
+];
 
 export function InsightsScreen() {
+  const [moodEntries] = useState<MoodEntry[]>(sampleMoodEntries);
+
+  const handleEntryPress = (entry: MoodEntry) => {
+    // TODO: Navigate to mood entry detail or edit screen
+    console.log('Entry pressed:', entry);
+  };
+
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView style={styles.scrollView}>
-        <View style={styles.header}>
-          <Text style={styles.title}>Insights</Text>
-          <Text style={styles.subtitle}>
-            Track your mood patterns and wellness journey
-          </Text>
-        </View>
+      <View style={styles.header}>
+        <Text style={styles.title}>Insights</Text>
+        <Text style={styles.subtitle}>
+          Track your mood patterns and wellness journey
+        </Text>
+      </View>
 
-        <View style={styles.content}>
-          <Text style={styles.comingSoon}>📊</Text>
-          <Text style={styles.comingSoonText}>
-            Coming Soon{'\n'}
-            Mood insights and analytics will be available here
-          </Text>
-        </View>
-      </ScrollView>
+      <MoodHistory entries={moodEntries} onEntryPress={handleEntryPress} />
     </SafeAreaView>
   );
 }
@@ -37,12 +69,9 @@ const styles = StyleSheet.create({
     backgroundColor: theme.colors.background.light,
   },
 
-  scrollView: {
-    flex: 1,
-  },
-
   header: {
     padding: theme.spacing.lg,
+    paddingBottom: theme.spacing.md,
   },
 
   title: {
@@ -54,23 +83,5 @@ const styles = StyleSheet.create({
   subtitle: {
     ...theme.typography.body,
     color: theme.colors.text.secondary,
-  },
-
-  content: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingVertical: theme.spacing['4xl'],
-  },
-
-  comingSoon: {
-    fontSize: 80,
-    marginBottom: theme.spacing.lg,
-  },
-
-  comingSoonText: {
-    ...theme.typography.body,
-    color: theme.colors.text.secondary,
-    textAlign: 'center',
   },
 });
