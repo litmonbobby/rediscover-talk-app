@@ -1,9 +1,7 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
-import { colors } from '../../constants/colors';
-import { typography } from '../../constants/typography';
-import { spacing } from '../../constants/spacing';
+import { View, Text, TouchableOpacity, ScrollView, StyleSheet, SafeAreaView } from 'react-native';
+import Animated, { FadeInUp, FadeIn } from 'react-native-reanimated';
+import { useTheme } from '../../theme/useTheme';
 
 interface Sound {
   id: string;
@@ -22,37 +20,63 @@ const SOUNDS: Sound[] = [
 ];
 
 export const SleepSoundsScreen = ({ navigation }: any) => {
+  const { colors, typography, spacing, borderRadius, shadows } = useTheme();
+
   return (
-    <LinearGradient
-      colors={[colors.primary.darkBlue, colors.primary.cobaltBlue]}
-      style={styles.container}
-    >
-      <ScrollView style={styles.scrollView}>
-        <View style={styles.header}>
-          <Text style={styles.title}>Sleep Sounds</Text>
-          <Text style={styles.subtitle}>Peaceful sounds for better rest</Text>
-        </View>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background.primary }]}>
+      <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
+        <Animated.View entering={FadeInUp.delay(100).springify()} style={styles.header}>
+          <Text style={[styles.title, {
+            color: colors.text.primary,
+            fontFamily: typography.fontFamily.secondary,
+            fontWeight: typography.fontWeight.bold
+          }]}>
+            Sleep Sounds
+          </Text>
+          <Text style={[styles.subtitle, {
+            color: colors.text.secondary,
+            fontFamily: typography.fontFamily.primary
+          }]}>
+            Peaceful sounds for better rest
+          </Text>
+        </Animated.View>
 
         <View style={styles.soundsGrid}>
-          {SOUNDS.map((sound) => (
-            <TouchableOpacity
+          {SOUNDS.map((sound, index) => (
+            <Animated.View
               key={sound.id}
-              style={styles.soundCard}
-              onPress={() => navigation.navigate('SoundPlayer', { sound })}
+              entering={FadeInUp.delay(200 + index * 60).springify().damping(15)}
+              style={styles.soundCardWrapper}
             >
-              <LinearGradient
-                colors={[colors.mood.neutral, colors.primary.deepBlue]}
-                style={styles.cardGradient}
+              <TouchableOpacity
+                style={[styles.soundCard, {
+                  backgroundColor: colors.background.card,
+                  borderRadius: borderRadius.xl,
+                  ...shadows.md
+                }]}
+                onPress={() => navigation.navigate('SoundPlayer', { sound })}
+                activeOpacity={0.7}
               >
                 <Text style={styles.soundEmoji}>{sound.emoji}</Text>
-                <Text style={styles.soundTitle}>{sound.title}</Text>
-                <Text style={styles.soundCategory}>{sound.category}</Text>
-              </LinearGradient>
-            </TouchableOpacity>
+                <Text style={[styles.soundTitle, {
+                  color: colors.text.primary,
+                  fontFamily: typography.fontFamily.primary,
+                  fontWeight: typography.fontWeight.semibold
+                }]}>
+                  {sound.title}
+                </Text>
+                <Text style={[styles.soundCategory, {
+                  color: colors.text.tertiary,
+                  fontFamily: typography.fontFamily.primary
+                }]}>
+                  {sound.category}
+                </Text>
+              </TouchableOpacity>
+            </Animated.View>
           ))}
         </View>
       </ScrollView>
-    </LinearGradient>
+    </SafeAreaView>
   );
 };
 
@@ -63,47 +87,45 @@ const styles = StyleSheet.create({
   scrollView: {
     flex: 1,
   },
+  scrollContent: {
+    paddingBottom: 24,
+  },
   header: {
-    padding: spacing.xl,
-    paddingTop: spacing['4xl'],
+    padding: 24,
+    paddingTop: 48,
   },
   title: {
-    ...typography.h1,
-    color: colors.text.primary,
-    marginBottom: spacing.sm,
+    fontSize: 32,
+    marginBottom: 8,
   },
   subtitle: {
-    ...typography.body,
-    color: colors.text.secondary,
+    fontSize: 16,
+    lineHeight: 24,
   },
   soundsGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: spacing.md,
-    padding: spacing.xl,
+    gap: 12,
+    padding: 24,
     paddingTop: 0,
   },
-  soundCard: {
+  soundCardWrapper: {
     width: '47%',
-    borderRadius: spacing.borderRadius.lg,
-    overflow: 'hidden',
   },
-  cardGradient: {
-    padding: spacing.lg,
+  soundCard: {
+    padding: 20,
     alignItems: 'center',
   },
   soundEmoji: {
     fontSize: 48,
-    marginBottom: spacing.sm,
+    marginBottom: 12,
   },
   soundTitle: {
-    ...typography.bodyBold,
-    color: colors.text.primary,
+    fontSize: 16,
     textAlign: 'center',
-    marginBottom: spacing.xs,
+    marginBottom: 4,
   },
   soundCategory: {
-    ...typography.caption,
-    color: colors.text.tertiary,
+    fontSize: 12,
   },
 });
