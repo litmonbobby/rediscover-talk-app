@@ -1,9 +1,7 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
-import { colors } from '../../constants/colors';
-import { typography } from '../../constants/typography';
-import { spacing } from '../../constants/spacing';
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView, SafeAreaView } from 'react-native';
+import Animated, { FadeInUp, FadeIn } from 'react-native-reanimated';
+import { useTheme } from '../../theme/useTheme';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 
 type Props = NativeStackScreenProps<any, 'GoalSelection'>;
@@ -19,6 +17,7 @@ const GOALS = [
 
 export const GoalSelectionScreen: React.FC<Props> = ({ navigation }) => {
   const [selectedGoals, setSelectedGoals] = useState<string[]>([]);
+  const { colors, typography, spacing, borderRadius, shadows } = useTheme();
 
   const toggleGoal = (id: string) => {
     setSelectedGoals(prev =>
@@ -31,133 +30,142 @@ export const GoalSelectionScreen: React.FC<Props> = ({ navigation }) => {
   };
 
   return (
-    <View style={styles.container}>
-      <LinearGradient
-        colors={[colors.primary.cobaltBlue, colors.primary.darkBlue]}
-        style={styles.header}
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background.primary }]}>
+      <Animated.View
+        entering={FadeInUp.delay(100).springify()}
+        style={[styles.header, { backgroundColor: colors.primary.main }]}
       >
-        <Text style={styles.title}>What are your goals?</Text>
-        <Text style={styles.subtitle}>Select all that apply</Text>
-      </LinearGradient>
+        <Text style={[styles.title, {
+          color: colors.text.inverse,
+          fontFamily: typography.fontFamily.secondary
+        }]}>
+          What are your goals?
+        </Text>
+        <Text style={[styles.subtitle, {
+          color: colors.text.inverse,
+          fontFamily: typography.fontFamily.primary
+        }]}>
+          Select all that apply
+        </Text>
+      </Animated.View>
 
       <ScrollView style={styles.content} contentContainerStyle={styles.scrollContent}>
-        <View style={styles.goalsGrid}>
-          {GOALS.map(goal => {
+        <Animated.View
+          entering={FadeIn.delay(200).duration(500)}
+          style={styles.goalsGrid}
+        >
+          {GOALS.map((goal, index) => {
             const isSelected = selectedGoals.includes(goal.id);
             return (
-              <TouchableOpacity
+              <Animated.View
                 key={goal.id}
-                style={[styles.goalCard, isSelected && styles.goalCardSelected]}
-                onPress={() => toggleGoal(goal.id)}
+                entering={FadeInUp.delay(300 + index * 50).springify()}
               >
-                <Text style={styles.goalEmoji}>{goal.emoji}</Text>
-                <Text style={[styles.goalTitle, isSelected && styles.goalTitleSelected]}>
-                  {goal.title}
-                </Text>
-              </TouchableOpacity>
+                <TouchableOpacity
+                  style={[
+                    styles.goalCard,
+                    {
+                      backgroundColor: colors.background.card,
+                      borderColor: isSelected ? colors.primary.main : colors.border.light,
+                      borderRadius: borderRadius.lg,
+                      ...shadows.sm
+                    }
+                  ]}
+                  onPress={() => toggleGoal(goal.id)}
+                >
+                  <Text style={styles.goalEmoji}>{goal.emoji}</Text>
+                  <Text style={[styles.goalTitle, {
+                    color: isSelected ? colors.primary.main : colors.text.primary,
+                    fontFamily: typography.fontFamily.primary,
+                    fontWeight: isSelected ? typography.fontWeight.bold : typography.fontWeight.medium
+                  }]}>
+                    {goal.title}
+                  </Text>
+                </TouchableOpacity>
+              </Animated.View>
             );
           })}
-        </View>
+        </Animated.View>
       </ScrollView>
 
-      <View style={styles.footer}>
+      <Animated.View
+        entering={FadeInUp.delay(400).springify()}
+        style={styles.footer}
+      >
         <TouchableOpacity
-          style={[styles.continueButton, selectedGoals.length === 0 && styles.continueButtonDisabled]}
+          style={[styles.continueButton, {
+            backgroundColor: selectedGoals.length === 0 ? colors.border.main : colors.primary.main,
+            borderRadius: borderRadius.xl,
+            opacity: selectedGoals.length === 0 ? 0.5 : 1,
+            ...shadows.lg
+          }]}
           onPress={handleContinue}
           disabled={selectedGoals.length === 0}
         >
-          <Text style={styles.continueButtonText}>Continue</Text>
+          <Text style={[styles.continueButtonText, {
+            color: colors.text.inverse,
+            fontFamily: typography.fontFamily.primary,
+            fontWeight: typography.fontWeight.bold
+          }]}>
+            Continue
+          </Text>
         </TouchableOpacity>
-      </View>
-    </View>
+      </Animated.View>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.background.DEFAULT,
   },
   header: {
-    paddingTop: spacing['4xl'],
-    paddingBottom: spacing.xl,
-    paddingHorizontal: spacing.xl,
+    paddingTop: 48,
+    paddingBottom: 24,
+    paddingHorizontal: 24,
   },
   title: {
-    fontSize: typography.fontSize['3xl'],
-    fontWeight: typography.fontWeight.bold,
-    color: colors.text.inverse,
-    marginBottom: spacing.sm,
+    fontSize: 28,
+    marginBottom: 8,
   },
   subtitle: {
-    fontSize: typography.fontSize.lg,
-    color: 'rgba(255, 255, 255, 0.9)',
+    fontSize: 18,
   },
   content: {
     flex: 1,
   },
   scrollContent: {
-    padding: spacing.xl,
+    padding: 24,
   },
   goalsGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: spacing.md,
+    gap: 16,
   },
   goalCard: {
     width: '47%',
-    backgroundColor: colors.background.paper,
-    borderRadius: spacing.borderRadius.lg,
-    padding: spacing.lg,
+    padding: 20,
     alignItems: 'center',
     borderWidth: 2,
-    borderColor: colors.background.light,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 2,
-    elevation: 2,
-  },
-  goalCardSelected: {
-    borderColor: colors.accent.DEFAULT,
-    backgroundColor: 'rgba(199, 246, 0, 0.1)',
   },
   goalEmoji: {
     fontSize: 48,
-    marginBottom: spacing.sm,
+    marginBottom: 8,
   },
   goalTitle: {
-    fontSize: typography.fontSize.base,
-    fontWeight: typography.fontWeight.medium,
-    color: colors.text.primary,
+    fontSize: 16,
     textAlign: 'center',
   },
-  goalTitleSelected: {
-    color: colors.primary.DEFAULT,
-    fontWeight: typography.fontWeight.bold,
-  },
   footer: {
-    padding: spacing.xl,
-    paddingBottom: spacing['2xl'],
+    padding: 24,
+    paddingBottom: 32,
   },
   continueButton: {
-    backgroundColor: colors.accent.DEFAULT,
-    borderRadius: spacing.borderRadius.xl,
-    padding: spacing.md,
+    paddingVertical: 16,
+    paddingHorizontal: 16,
     alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 4,
-  },
-  continueButtonDisabled: {
-    backgroundColor: colors.background.light,
-    opacity: 0.5,
   },
   continueButtonText: {
-    fontSize: typography.fontSize.lg,
-    fontWeight: typography.fontWeight.bold,
-    color: colors.primary.DEFAULT,
+    fontSize: 18,
   },
 });
