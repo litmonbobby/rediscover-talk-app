@@ -1,9 +1,7 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
-import { colors } from '../../constants/colors';
-import { typography } from '../../constants/typography';
-import { spacing } from '../../constants/spacing';
+import { View, Text, TouchableOpacity, ScrollView, StyleSheet, SafeAreaView } from 'react-native';
+import Animated, { FadeInUp } from 'react-native-reanimated';
+import { useTheme } from '../../theme/useTheme';
 
 type FAQ = {
   id: string;
@@ -13,6 +11,7 @@ type FAQ = {
 };
 
 export const HelpScreen = ({ navigation }: any) => {
+  const { colors, typography, spacing, borderRadius, shadows } = useTheme();
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
   const faqs: FAQ[] = [
@@ -62,79 +61,156 @@ export const HelpScreen = ({ navigation }: any) => {
     : faqs.filter(faq => faq.category === selectedCategory);
 
   return (
-    <LinearGradient
-      colors={[colors.primary.darkBlue, colors.primary.cobaltBlue]}
-      style={styles.container}
-    >
-      <ScrollView style={styles.scrollView}>
-        <View style={styles.header}>
-          <TouchableOpacity onPress={() => navigation.goBack()}>
-            <Text style={styles.backText}>← Back</Text>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background.primary }]}>
+      <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
+        <Animated.View entering={FadeInUp.delay(100).springify()} style={styles.header}>
+          <TouchableOpacity
+            onPress={() => navigation.goBack()}
+            style={[styles.backButton, { backgroundColor: colors.background.secondary, borderRadius: borderRadius.lg }]}
+          >
+            <Text style={[styles.backText, { color: colors.text.primary, fontFamily: typography.fontFamily.primary }]}>
+              ← Back
+            </Text>
           </TouchableOpacity>
-          <Text style={styles.title}>Help & Support</Text>
-          <Text style={styles.subtitle}>Frequently asked questions</Text>
-        </View>
+          <Text style={[styles.title, {
+            color: colors.text.primary,
+            fontFamily: typography.fontFamily.secondary,
+            fontWeight: typography.fontWeight.bold
+          }]}>
+            Help & Support
+          </Text>
+          <Text style={[styles.subtitle, {
+            color: colors.text.secondary,
+            fontFamily: typography.fontFamily.primary
+          }]}>
+            Frequently asked questions
+          </Text>
+        </Animated.View>
 
         {/* Category Filter */}
-        <ScrollView
-          horizontal
-          style={styles.categoriesScroll}
-          showsHorizontalScrollIndicator={false}
-        >
-          {categories.map((category) => (
-            <TouchableOpacity
-              key={category}
-              style={[
-                styles.categoryChip,
-                selectedCategory === category && styles.categoryChipActive,
-              ]}
-              onPress={() => setSelectedCategory(category)}
-            >
-              <Text style={[
-                styles.categoryChipText,
-                selectedCategory === category && styles.categoryChipTextActive,
-              ]}>
-                {category}
-              </Text>
-            </TouchableOpacity>
-          ))}
-        </ScrollView>
+        <Animated.View entering={FadeInUp.delay(200).springify()}>
+          <ScrollView
+            horizontal
+            style={styles.categoriesScroll}
+            contentContainerStyle={styles.categoriesContent}
+            showsHorizontalScrollIndicator={false}
+          >
+            {categories.map((category, index) => (
+              <TouchableOpacity
+                key={category}
+                style={[
+                  styles.categoryChip,
+                  {
+                    backgroundColor: selectedCategory === category ? colors.primary.main : colors.background.card,
+                    borderRadius: borderRadius.full,
+                    borderColor: selectedCategory === category ? colors.primary.main : colors.border.light
+                  }
+                ]}
+                onPress={() => setSelectedCategory(category)}
+                activeOpacity={0.7}
+              >
+                <Text style={[
+                  styles.categoryChipText,
+                  {
+                    color: selectedCategory === category ? colors.text.inverse : colors.text.primary,
+                    fontFamily: typography.fontFamily.primary,
+                    fontWeight: selectedCategory === category ? typography.fontWeight.semibold : typography.fontWeight.regular
+                  }
+                ]}>
+                  {category}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+        </Animated.View>
 
         {/* FAQs */}
         <View style={styles.faqsList}>
-          {filteredFAQs.map((faq) => (
-            <View key={faq.id} style={styles.faqCard}>
-              <TouchableOpacity
-                style={styles.faqHeader}
-                onPress={() => setExpandedId(expandedId === faq.id ? null : faq.id)}
-              >
-                <Text style={styles.faqQuestion}>{faq.question}</Text>
-                <Text style={styles.expandIcon}>{expandedId === faq.id ? '−' : '+'}</Text>
-              </TouchableOpacity>
-              {expandedId === faq.id && (
-                <Text style={styles.faqAnswer}>{faq.answer}</Text>
-              )}
-            </View>
+          {filteredFAQs.map((faq, index) => (
+            <Animated.View
+              key={faq.id}
+              entering={FadeInUp.delay(300 + index * 50).springify()}
+            >
+              <View style={[styles.faqCard, {
+                backgroundColor: colors.background.card,
+                borderRadius: borderRadius.lg,
+                borderColor: colors.border.light,
+                ...shadows.sm
+              }]}>
+                <TouchableOpacity
+                  style={styles.faqHeader}
+                  onPress={() => setExpandedId(expandedId === faq.id ? null : faq.id)}
+                  activeOpacity={0.7}
+                >
+                  <Text style={[styles.faqQuestion, {
+                    color: colors.text.primary,
+                    fontFamily: typography.fontFamily.primary,
+                    fontWeight: typography.fontWeight.semibold
+                  }]}>
+                    {faq.question}
+                  </Text>
+                  <Text style={[styles.expandIcon, { color: colors.primary.main }]}>
+                    {expandedId === faq.id ? '−' : '+'}
+                  </Text>
+                </TouchableOpacity>
+                {expandedId === faq.id && (
+                  <Text style={[styles.faqAnswer, {
+                    color: colors.text.secondary,
+                    fontFamily: typography.fontFamily.primary
+                  }]}>
+                    {faq.answer}
+                  </Text>
+                )}
+              </View>
+            </Animated.View>
           ))}
         </View>
 
         {/* Contact Support */}
-        <View style={styles.contactSection}>
-          <Text style={styles.contactTitle}>Still need help?</Text>
-          <TouchableOpacity style={styles.contactButton}>
-            <LinearGradient
-              colors={[colors.accent.lime, colors.accent.brightLime]}
-              style={styles.contactGradient}
-            >
-              <Text style={styles.contactButtonText}>📧 Contact Support</Text>
-            </LinearGradient>
+        <Animated.View entering={FadeInUp.delay(600).springify()} style={styles.contactSection}>
+          <Text style={[styles.contactTitle, {
+            color: colors.text.primary,
+            fontFamily: typography.fontFamily.primary,
+            fontWeight: typography.fontWeight.bold
+          }]}>
+            Still need help?
+          </Text>
+          <TouchableOpacity
+            style={[styles.contactButton, {
+              backgroundColor: colors.primary.main,
+              borderRadius: borderRadius.lg,
+              ...shadows.lg
+            }]}
+            activeOpacity={0.8}
+          >
+            <Text style={[styles.contactButtonText, {
+              color: colors.text.inverse,
+              fontFamily: typography.fontFamily.primary,
+              fontWeight: typography.fontWeight.bold
+            }]}>
+              📧 Contact Support
+            </Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.secondaryButton}>
-            <Text style={styles.secondaryButtonText}>📖 View Documentation</Text>
+          <TouchableOpacity
+            style={[styles.secondaryButton, {
+              backgroundColor: colors.background.card,
+              borderRadius: borderRadius.lg,
+              borderColor: colors.border.light,
+              ...shadows.sm
+            }]}
+            activeOpacity={0.7}
+          >
+            <Text style={[styles.secondaryButtonText, {
+              color: colors.text.primary,
+              fontFamily: typography.fontFamily.primary,
+              fontWeight: typography.fontWeight.semibold
+            }]}>
+              📖 View Documentation
+            </Text>
           </TouchableOpacity>
-        </View>
+        </Animated.View>
       </ScrollView>
-    </LinearGradient>
+    </SafeAreaView>
   );
 };
 
@@ -145,117 +221,98 @@ const styles = StyleSheet.create({
   scrollView: {
     flex: 1,
   },
+  scrollContent: {
+    paddingBottom: 24,
+  },
   header: {
-    padding: spacing.xl,
-    paddingTop: spacing['4xl'],
+    padding: 24,
+    paddingTop: 48,
+  },
+  backButton: {
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    alignSelf: 'flex-start',
+    marginBottom: 12,
   },
   backText: {
-    ...typography.bodyBold,
-    color: colors.accent.lime,
-    marginBottom: spacing.md,
+    fontSize: 16,
   },
   title: {
-    ...typography.h1,
-    color: colors.text.primary,
-    marginBottom: spacing.xs,
+    fontSize: 32,
+    marginBottom: 4,
   },
   subtitle: {
-    ...typography.body,
-    color: colors.text.secondary,
+    fontSize: 16,
+    lineHeight: 24,
   },
   categoriesScroll: {
-    paddingHorizontal: spacing.md,
     maxHeight: 50,
-    marginBottom: spacing.md,
+    marginBottom: 12,
+  },
+  categoriesContent: {
+    paddingHorizontal: 24,
+    gap: 8,
   },
   categoryChip: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-    borderRadius: spacing.borderRadius.full,
-    marginRight: spacing.sm,
+    paddingHorizontal: 16,
+    paddingVertical: 8,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.2)',
-  },
-  categoryChipActive: {
-    backgroundColor: colors.accent.lime,
   },
   categoryChipText: {
-    ...typography.body,
-    color: colors.text.primary,
-  },
-  categoryChipTextActive: {
-    ...typography.bodyBold,
-    color: colors.primary.darkBlue,
+    fontSize: 14,
   },
   faqsList: {
-    padding: spacing.md,
-    gap: spacing.sm,
+    padding: 16,
+    gap: 12,
   },
   faqCard: {
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderRadius: spacing.borderRadius.lg,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
     overflow: 'hidden',
   },
   faqHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: spacing.lg,
+    padding: 20,
   },
   faqQuestion: {
-    ...typography.bodyBold,
-    color: colors.text.primary,
+    fontSize: 16,
     flex: 1,
-    marginRight: spacing.md,
+    marginRight: 12,
   },
   expandIcon: {
-    ...typography.h2,
-    color: colors.accent.lime,
+    fontSize: 28,
   },
   faqAnswer: {
-    ...typography.body,
-    color: colors.text.secondary,
-    paddingHorizontal: spacing.lg,
-    paddingBottom: spacing.lg,
+    fontSize: 16,
+    paddingHorizontal: 20,
+    paddingBottom: 20,
     lineHeight: 22,
   },
   contactSection: {
-    padding: spacing.xl,
+    padding: 24,
     alignItems: 'center',
   },
   contactTitle: {
-    ...typography.h3,
-    color: colors.text.primary,
-    marginBottom: spacing.lg,
+    fontSize: 20,
+    marginBottom: 20,
   },
   contactButton: {
     width: '100%',
-    borderRadius: spacing.borderRadius.lg,
-    overflow: 'hidden',
-    marginBottom: spacing.md,
-  },
-  contactGradient: {
-    paddingVertical: spacing.md,
+    paddingVertical: 16,
     alignItems: 'center',
+    marginBottom: 12,
   },
   contactButtonText: {
-    ...typography.h3,
-    color: colors.primary.darkBlue,
+    fontSize: 18,
   },
   secondaryButton: {
     width: '100%',
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    paddingVertical: spacing.md,
-    borderRadius: spacing.borderRadius.lg,
+    paddingVertical: 16,
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.2)',
   },
   secondaryButtonText: {
-    ...typography.bodyBold,
-    color: colors.text.primary,
+    fontSize: 16,
   },
 });
