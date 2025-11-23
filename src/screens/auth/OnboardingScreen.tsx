@@ -72,7 +72,7 @@ export const OnboardingScreen: React.FC<Props> = ({ navigation }) => {
         scrollEventThrottle={16}
         style={styles.scrollView}
       >
-        {slides.map((slide) => (
+        {slides.map((slide, index) => (
           <View key={slide.id} style={styles.slide}>
             <Image
               source={slide.image}
@@ -80,18 +80,32 @@ export const OnboardingScreen: React.FC<Props> = ({ navigation }) => {
               resizeMode="cover"
             />
 
-            {/* Invisible touchable areas for Skip and Continue buttons */}
-            <TouchableOpacity
-              style={styles.skipButtonArea}
-              onPress={handleSkip}
-              activeOpacity={1}
-            />
+            {/* Skip button - only on slides 1 and 2 */}
+            {index < 2 && (
+              <TouchableOpacity
+                style={styles.skipButtonArea}
+                onPress={handleSkip}
+                activeOpacity={1}
+              />
+            )}
 
-            <TouchableOpacity
-              style={styles.continueButtonArea}
-              onPress={handleNext}
-              activeOpacity={1}
-            />
+            {/* Continue button - slides 1 and 2 */}
+            {index < 2 && (
+              <TouchableOpacity
+                style={styles.continueButtonArea}
+                onPress={handleNext}
+                activeOpacity={1}
+              />
+            )}
+
+            {/* Let's Get Started button - only on slide 3 */}
+            {index === 2 && (
+              <TouchableOpacity
+                style={styles.getStartedButtonArea}
+                onPress={handleNext}
+                activeOpacity={1}
+              />
+            )}
           </View>
         ))}
       </ScrollView>
@@ -117,16 +131,23 @@ const styles = StyleSheet.create({
   },
   skipButtonArea: {
     position: 'absolute',
-    bottom: height * 0.05,
-    left: 20,
+    bottom: 50,
+    left: 40,
     width: 100,
     height: 60,
   },
   continueButtonArea: {
     position: 'absolute',
-    bottom: height * 0.05,
-    right: 20,
-    width: width * 0.5,
-    height: 60,
+    bottom: 50,
+    right: 30,
+    width: width * 0.55,
+    height: 70,
+  },
+  getStartedButtonArea: {
+    position: 'absolute',
+    bottom: 50,
+    left: width * 0.08,
+    right: width * 0.08,
+    height: 70,
   },
 });
