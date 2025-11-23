@@ -5,11 +5,10 @@ import {
   StyleSheet,
   ScrollView,
   TouchableOpacity,
+  SafeAreaView,
 } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
-import { colors } from '../../constants/colors';
-import { typography } from '../../constants/typography';
-import { spacing } from '../../constants/spacing';
+import Animated, { FadeInUp, FadeIn } from 'react-native-reanimated';
+import { useTheme } from '../../theme/useTheme';
 
 interface JournalEntry {
   id: string;
@@ -52,6 +51,8 @@ const mockEntries: JournalEntry[] = [
 ];
 
 export const JournalListScreen = ({ navigation }: any) => {
+  const { colors, typography, spacing, borderRadius, shadows } = useTheme();
+
   const formatDate = (dateStr: string) => {
     const date = new Date(dateStr);
     return date.toLocaleDateString('en-US', {
@@ -62,82 +63,152 @@ export const JournalListScreen = ({ navigation }: any) => {
   };
 
   return (
-    <LinearGradient
-      colors={[colors.primary.darkBlue, colors.primary.cobaltBlue]}
-      style={styles.container}
-    >
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background.primary }]}>
       <ScrollView
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
         {/* Header */}
-        <View style={styles.header}>
-          <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-            <Text style={styles.backIcon}>←</Text>
+        <Animated.View entering={FadeInUp.delay(100).springify()} style={styles.header}>
+          <TouchableOpacity
+            onPress={() => navigation.goBack()}
+            style={[styles.backButton, {
+              backgroundColor: colors.background.secondary,
+              borderRadius: borderRadius.lg
+            }]}
+          >
+            <Text style={[styles.backIcon, {
+              color: colors.text.primary,
+              fontFamily: typography.fontFamily.primary
+            }]}>
+              ←
+            </Text>
           </TouchableOpacity>
-          <Text style={styles.title}>My Journal</Text>
-          <Text style={styles.subtitle}>Your thoughts and reflections</Text>
-        </View>
+          <Text style={[styles.title, {
+            color: colors.text.primary,
+            fontFamily: typography.fontFamily.secondary
+          }]}>
+            My Journal
+          </Text>
+          <Text style={[styles.subtitle, {
+            color: colors.text.secondary,
+            fontFamily: typography.fontFamily.primary
+          }]}>
+            Your thoughts and reflections
+          </Text>
+        </Animated.View>
 
         {/* New Entry Button */}
-        <TouchableOpacity
-          style={styles.newEntryButton}
-          onPress={() => navigation.navigate('JournalEntry')}
-          activeOpacity={0.8}
-        >
-          <LinearGradient
-            colors={[colors.accent.lime, colors.accent.brightLime]}
-            style={styles.newEntryGradient}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 0 }}
+        <Animated.View entering={FadeInUp.delay(200).springify()}>
+          <TouchableOpacity
+            style={[styles.newEntryButton, {
+              backgroundColor: colors.primary.main,
+              borderRadius: borderRadius.lg,
+              ...shadows.md
+            }]}
+            onPress={() => navigation.navigate('JournalEntry')}
+            activeOpacity={0.8}
           >
             <Text style={styles.newEntryIcon}>✏️</Text>
-            <Text style={styles.newEntryText}>New Entry</Text>
-          </LinearGradient>
-        </TouchableOpacity>
+            <Text style={[styles.newEntryText, {
+              color: colors.text.inverse,
+              fontFamily: typography.fontFamily.primary,
+              fontWeight: typography.fontWeight.bold
+            }]}>
+              New Entry
+            </Text>
+          </TouchableOpacity>
+        </Animated.View>
 
         {/* Journal Entries */}
         <View style={styles.entriesContainer}>
-          <Text style={styles.sectionTitle}>Recent Entries</Text>
-          {mockEntries.map((entry) => (
-            <TouchableOpacity
+          <Animated.Text
+            entering={FadeInUp.delay(250).springify()}
+            style={[styles.sectionTitle, {
+              color: colors.text.primary,
+              fontFamily: typography.fontFamily.primary,
+              fontWeight: typography.fontWeight.semibold
+            }]}
+          >
+            Recent Entries
+          </Animated.Text>
+          {mockEntries.map((entry, index) => (
+            <Animated.View
               key={entry.id}
-              style={styles.entryCard}
-              onPress={() => {
-                // TODO: Navigate to entry detail
-                console.log('View entry:', entry.id);
-              }}
-              activeOpacity={0.7}
+              entering={FadeInUp.delay(300 + index * 50).springify()}
             >
-              <View style={styles.entryHeader}>
-                <View style={styles.entryMoodContainer}>
-                  <Text style={styles.entryMood}>{entry.mood}</Text>
+              <TouchableOpacity
+                style={[styles.entryCard, {
+                  backgroundColor: colors.background.card,
+                  borderColor: colors.border.light,
+                  borderRadius: borderRadius.lg,
+                  ...shadows.sm
+                }]}
+                onPress={() => {
+                  // TODO: Navigate to entry detail
+                  console.log('View entry:', entry.id);
+                }}
+                activeOpacity={0.7}
+              >
+                <View style={styles.entryHeader}>
+                  <View style={[styles.entryMoodContainer, {
+                    backgroundColor: colors.background.secondary,
+                    borderRadius: borderRadius.lg
+                  }]}>
+                    <Text style={styles.entryMood}>{entry.mood}</Text>
+                  </View>
+                  <View style={styles.entryHeaderText}>
+                    <Text style={[styles.entryTitle, {
+                      color: colors.text.primary,
+                      fontFamily: typography.fontFamily.primary,
+                      fontWeight: typography.fontWeight.semibold
+                    }]}>
+                      {entry.title}
+                    </Text>
+                    <Text style={[styles.entryDate, {
+                      color: colors.text.tertiary,
+                      fontFamily: typography.fontFamily.primary
+                    }]}>
+                      {formatDate(entry.date)}
+                    </Text>
+                  </View>
                 </View>
-                <View style={styles.entryHeaderText}>
-                  <Text style={styles.entryTitle}>{entry.title}</Text>
-                  <Text style={styles.entryDate}>{formatDate(entry.date)}</Text>
-                </View>
-              </View>
-              <Text style={styles.entryPreview} numberOfLines={2}>
-                {entry.preview}
-              </Text>
-            </TouchableOpacity>
+                <Text
+                  style={[styles.entryPreview, {
+                    color: colors.text.secondary,
+                    fontFamily: typography.fontFamily.primary
+                  }]}
+                  numberOfLines={2}
+                >
+                  {entry.preview}
+                </Text>
+              </TouchableOpacity>
+            </Animated.View>
           ))}
         </View>
 
         {/* Empty State */}
         {mockEntries.length === 0 && (
-          <View style={styles.emptyState}>
+          <Animated.View entering={FadeInUp.delay(300).springify()} style={styles.emptyState}>
             <Text style={styles.emptyEmoji}>📝</Text>
-            <Text style={styles.emptyTitle}>No journal entries yet</Text>
-            <Text style={styles.emptySubtitle}>
+            <Text style={[styles.emptyTitle, {
+              color: colors.text.primary,
+              fontFamily: typography.fontFamily.primary,
+              fontWeight: typography.fontWeight.semibold
+            }]}>
+              No journal entries yet
+            </Text>
+            <Text style={[styles.emptySubtitle, {
+              color: colors.text.secondary,
+              fontFamily: typography.fontFamily.primary
+            }]}>
               Start writing to track your thoughts and feelings
             </Text>
-          </View>
+          </Animated.View>
         )}
       </ScrollView>
-    </LinearGradient>
+    </SafeAreaView>
   );
 };
 
@@ -149,13 +220,13 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollContent: {
-    paddingHorizontal: spacing.lg,
-    paddingTop: spacing.xl * 2,
-    paddingBottom: spacing.xl,
+    paddingHorizontal: 20,
+    paddingTop: 40,
+    paddingBottom: 20,
   },
   header: {
     alignItems: 'center',
-    marginBottom: spacing.xl,
+    marginBottom: 20,
   },
   backButton: {
     position: 'absolute',
@@ -163,73 +234,58 @@ const styles = StyleSheet.create({
     left: 0,
     width: 40,
     height: 40,
-    borderRadius: 20,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
     justifyContent: 'center',
     alignItems: 'center',
   },
   backIcon: {
-    ...typography.h2,
-    color: colors.text.primary,
+    fontSize: 24,
   },
   title: {
-    ...typography.h1,
-    color: colors.text.primary,
-    marginBottom: spacing.xs,
+    fontSize: 28,
+    marginBottom: 4,
   },
   subtitle: {
-    ...typography.body,
-    color: colors.text.secondary,
+    fontSize: 16,
+    lineHeight: 24,
   },
   newEntryButton: {
-    borderRadius: spacing.borderRadius.lg,
-    overflow: 'hidden',
-    marginBottom: spacing.xl,
-  },
-  newEntryGradient: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: spacing.md,
-    paddingHorizontal: spacing.lg,
-    gap: spacing.sm,
+    paddingVertical: 16,
+    paddingHorizontal: 20,
+    marginBottom: 20,
+    gap: 8,
   },
   newEntryIcon: {
     fontSize: 24,
   },
   newEntryText: {
-    ...typography.h3,
-    color: colors.primary.cobaltBlue,
+    fontSize: 18,
   },
   entriesContainer: {
-    marginBottom: spacing.xl,
+    marginBottom: 20,
   },
   sectionTitle: {
-    ...typography.h3,
-    color: colors.text.primary,
-    marginBottom: spacing.md,
+    fontSize: 18,
+    marginBottom: 12,
   },
   entryCard: {
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderRadius: spacing.borderRadius.md,
-    padding: spacing.md,
-    marginBottom: spacing.sm,
+    padding: 16,
+    marginBottom: 8,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
   },
   entryHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: spacing.sm,
+    marginBottom: 8,
   },
   entryMoodContainer: {
     width: 48,
     height: 48,
-    borderRadius: 24,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
     justifyContent: 'center',
     alignItems: 'center',
-    marginRight: spacing.md,
+    marginRight: 12,
   },
   entryMood: {
     fontSize: 24,
@@ -238,35 +294,30 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   entryTitle: {
-    ...typography.h3,
-    color: colors.text.primary,
+    fontSize: 16,
     marginBottom: 2,
   },
   entryDate: {
-    ...typography.caption,
-    color: colors.text.tertiary,
+    fontSize: 12,
   },
   entryPreview: {
-    ...typography.body,
-    color: colors.text.secondary,
+    fontSize: 14,
     lineHeight: 22,
   },
   emptyState: {
     alignItems: 'center',
-    paddingVertical: spacing.xl * 2,
+    paddingVertical: 40,
   },
   emptyEmoji: {
     fontSize: 64,
-    marginBottom: spacing.md,
+    marginBottom: 12,
   },
   emptyTitle: {
-    ...typography.h2,
-    color: colors.text.primary,
-    marginBottom: spacing.xs,
+    fontSize: 20,
+    marginBottom: 4,
   },
   emptySubtitle: {
-    ...typography.body,
-    color: colors.text.secondary,
+    fontSize: 14,
     textAlign: 'center',
   },
 });
