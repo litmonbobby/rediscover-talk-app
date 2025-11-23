@@ -44,7 +44,7 @@ export const SplashScreen: React.FC<Props> = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#004BA7',
+    backgroundColor: '#9eb567',
   },
   splashImage: {
     width: width,

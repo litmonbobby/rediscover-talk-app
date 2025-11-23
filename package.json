@@ -4,11 +4,14 @@
   "main": "index.ts",
   "scripts": {
     "start": "expo start",
-    "android": "expo start --android",
-    "ios": "expo start --ios",
+    "android": "expo run:android",
+    "ios": "expo run:ios",
     "web": "expo start --web"
   },
   "dependencies": {
+    "@expo-google-fonts/playfair-display": "^0.4.2",
+    "@expo-google-fonts/roboto-flex": "^0.4.1",
+    "@expo-google-fonts/urbanist": "^0.4.2",
     "@metafic-co/react-native-glassmorphism": "^0.1.2",
     "@react-native-community/blur": "^4.4.1",
     "@react-navigation/bottom-tabs": "^7.8.5",
