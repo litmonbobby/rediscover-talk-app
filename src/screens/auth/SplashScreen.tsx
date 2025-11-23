@@ -28,7 +28,7 @@ export const SplashScreen: React.FC<Props> = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <Animated.Image
-        source={require('../../../assets/splash-icon.png')}
+        source={require('../../figma-extracted/assets/screens/light-theme/1-light-splash-screen.png')}
         style={[
           styles.splashImage,
           {
