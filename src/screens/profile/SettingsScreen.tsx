@@ -1,98 +1,281 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, ScrollView, StyleSheet, Switch } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
-import { colors } from '../../constants/colors';
-import { typography } from '../../constants/typography';
-import { spacing } from '../../constants/spacing';
+import { View, Text, TouchableOpacity, ScrollView, StyleSheet, Switch, SafeAreaView } from 'react-native';
+import Animated, { FadeInUp } from 'react-native-reanimated';
+import { useTheme } from '../../theme/useTheme';
 
 export const SettingsScreen = () => {
+  const { colors, typography, spacing, borderRadius, shadows } = useTheme();
   const [notifications, setNotifications] = React.useState(true);
   const [darkMode, setDarkMode] = React.useState(false);
 
   return (
-    <LinearGradient
-      colors={[colors.primary.darkBlue, colors.primary.cobaltBlue]}
-      style={styles.container}
-    >
-      <ScrollView style={styles.scrollView}>
-        <View style={styles.header}>
-          <Text style={styles.title}>Settings</Text>
-          <Text style={styles.subtitle}>Customize your experience</Text>
-        </View>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background.primary }]}>
+      <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
+        <Animated.View entering={FadeInUp.delay(100).springify()} style={styles.header}>
+          <Text style={[styles.title, {
+            color: colors.text.primary,
+            fontFamily: typography.fontFamily.secondary,
+            fontWeight: typography.fontWeight.bold
+          }]}>
+            Settings
+          </Text>
+          <Text style={[styles.subtitle, {
+            color: colors.text.secondary,
+            fontFamily: typography.fontFamily.primary
+          }]}>
+            Customize your experience
+          </Text>
+        </Animated.View>
 
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Preferences</Text>
+          <Animated.Text
+            entering={FadeInUp.delay(150).springify()}
+            style={[styles.sectionTitle, {
+              color: colors.text.primary,
+              fontFamily: typography.fontFamily.primary,
+              fontWeight: typography.fontWeight.bold
+            }]}
+          >
+            Preferences
+          </Animated.Text>
 
-          <View style={styles.settingItem}>
+          <Animated.View
+            entering={FadeInUp.delay(200).springify()}
+            style={[styles.settingItem, {
+              backgroundColor: colors.background.card,
+              borderRadius: borderRadius.md,
+              borderColor: colors.border.light,
+              ...shadows.sm
+            }]}
+          >
             <View style={styles.settingInfo}>
-              <Text style={styles.settingLabel}>Push Notifications</Text>
-              <Text style={styles.settingDescription}>Get reminders and updates</Text>
+              <Text style={[styles.settingLabel, {
+                color: colors.text.primary,
+                fontFamily: typography.fontFamily.primary,
+                fontWeight: typography.fontWeight.semibold
+              }]}>
+                Push Notifications
+              </Text>
+              <Text style={[styles.settingDescription, {
+                color: colors.text.tertiary,
+                fontFamily: typography.fontFamily.primary
+              }]}>
+                Get reminders and updates
+              </Text>
             </View>
             <Switch
               value={notifications}
               onValueChange={setNotifications}
-              trackColor={{ false: 'rgba(255, 255, 255, 0.1)', true: colors.accent.lime }}
-              thumbColor={colors.background.paper}
+              trackColor={{ false: colors.background.secondary, true: colors.primary.main }}
+              thumbColor={colors.background.primary}
             />
-          </View>
+          </Animated.View>
 
-          <View style={styles.settingItem}>
+          <Animated.View
+            entering={FadeInUp.delay(250).springify()}
+            style={[styles.settingItem, {
+              backgroundColor: colors.background.card,
+              borderRadius: borderRadius.md,
+              borderColor: colors.border.light,
+              ...shadows.sm
+            }]}
+          >
             <View style={styles.settingInfo}>
-              <Text style={styles.settingLabel}>Dark Mode</Text>
-              <Text style={styles.settingDescription}>Toggle dark theme</Text>
+              <Text style={[styles.settingLabel, {
+                color: colors.text.primary,
+                fontFamily: typography.fontFamily.primary,
+                fontWeight: typography.fontWeight.semibold
+              }]}>
+                Dark Mode
+              </Text>
+              <Text style={[styles.settingDescription, {
+                color: colors.text.tertiary,
+                fontFamily: typography.fontFamily.primary
+              }]}>
+                Toggle dark theme
+              </Text>
             </View>
             <Switch
               value={darkMode}
               onValueChange={setDarkMode}
-              trackColor={{ false: 'rgba(255, 255, 255, 0.1)', true: colors.accent.lime }}
-              thumbColor={colors.background.paper}
+              trackColor={{ false: colors.background.secondary, true: colors.primary.main }}
+              thumbColor={colors.background.primary}
             />
-          </View>
+          </Animated.View>
         </View>
 
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Account</Text>
+          <Animated.Text
+            entering={FadeInUp.delay(300).springify()}
+            style={[styles.sectionTitle, {
+              color: colors.text.primary,
+              fontFamily: typography.fontFamily.primary,
+              fontWeight: typography.fontWeight.bold
+            }]}
+          >
+            Account
+          </Animated.Text>
 
-          <TouchableOpacity style={styles.menuItem}>
-            <Text style={styles.menuText}>Edit Profile</Text>
-            <Text style={styles.menuArrow}>→</Text>
-          </TouchableOpacity>
+          <Animated.View entering={FadeInUp.delay(350).springify()}>
+            <TouchableOpacity
+              style={[styles.menuItem, {
+                backgroundColor: colors.background.card,
+                borderRadius: borderRadius.md,
+                borderColor: colors.border.light,
+                ...shadows.sm
+              }]}
+              activeOpacity={0.7}
+            >
+              <Text style={[styles.menuText, {
+                color: colors.text.primary,
+                fontFamily: typography.fontFamily.primary,
+                fontWeight: typography.fontWeight.semibold
+              }]}>
+                Edit Profile
+              </Text>
+              <Text style={[styles.menuArrow, { color: colors.text.tertiary }]}>→</Text>
+            </TouchableOpacity>
+          </Animated.View>
 
-          <TouchableOpacity style={styles.menuItem}>
-            <Text style={styles.menuText}>Privacy & Security</Text>
-            <Text style={styles.menuArrow}>→</Text>
-          </TouchableOpacity>
+          <Animated.View entering={FadeInUp.delay(400).springify()}>
+            <TouchableOpacity
+              style={[styles.menuItem, {
+                backgroundColor: colors.background.card,
+                borderRadius: borderRadius.md,
+                borderColor: colors.border.light,
+                ...shadows.sm
+              }]}
+              activeOpacity={0.7}
+            >
+              <Text style={[styles.menuText, {
+                color: colors.text.primary,
+                fontFamily: typography.fontFamily.primary,
+                fontWeight: typography.fontWeight.semibold
+              }]}>
+                Privacy & Security
+              </Text>
+              <Text style={[styles.menuArrow, { color: colors.text.tertiary }]}>→</Text>
+            </TouchableOpacity>
+          </Animated.View>
 
-          <TouchableOpacity style={styles.menuItem}>
-            <Text style={styles.menuText}>Data & Storage</Text>
-            <Text style={styles.menuArrow}>→</Text>
-          </TouchableOpacity>
+          <Animated.View entering={FadeInUp.delay(450).springify()}>
+            <TouchableOpacity
+              style={[styles.menuItem, {
+                backgroundColor: colors.background.card,
+                borderRadius: borderRadius.md,
+                borderColor: colors.border.light,
+                ...shadows.sm
+              }]}
+              activeOpacity={0.7}
+            >
+              <Text style={[styles.menuText, {
+                color: colors.text.primary,
+                fontFamily: typography.fontFamily.primary,
+                fontWeight: typography.fontWeight.semibold
+              }]}>
+                Data & Storage
+              </Text>
+              <Text style={[styles.menuArrow, { color: colors.text.tertiary }]}>→</Text>
+            </TouchableOpacity>
+          </Animated.View>
         </View>
 
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Support</Text>
+          <Animated.Text
+            entering={FadeInUp.delay(500).springify()}
+            style={[styles.sectionTitle, {
+              color: colors.text.primary,
+              fontFamily: typography.fontFamily.primary,
+              fontWeight: typography.fontWeight.bold
+            }]}
+          >
+            Support
+          </Animated.Text>
 
-          <TouchableOpacity style={styles.menuItem}>
-            <Text style={styles.menuText}>Help Center</Text>
-            <Text style={styles.menuArrow}>→</Text>
-          </TouchableOpacity>
+          <Animated.View entering={FadeInUp.delay(550).springify()}>
+            <TouchableOpacity
+              style={[styles.menuItem, {
+                backgroundColor: colors.background.card,
+                borderRadius: borderRadius.md,
+                borderColor: colors.border.light,
+                ...shadows.sm
+              }]}
+              activeOpacity={0.7}
+            >
+              <Text style={[styles.menuText, {
+                color: colors.text.primary,
+                fontFamily: typography.fontFamily.primary,
+                fontWeight: typography.fontWeight.semibold
+              }]}>
+                Help Center
+              </Text>
+              <Text style={[styles.menuArrow, { color: colors.text.tertiary }]}>→</Text>
+            </TouchableOpacity>
+          </Animated.View>
 
-          <TouchableOpacity style={styles.menuItem}>
-            <Text style={styles.menuText}>Terms of Service</Text>
-            <Text style={styles.menuArrow}>→</Text>
-          </TouchableOpacity>
+          <Animated.View entering={FadeInUp.delay(600).springify()}>
+            <TouchableOpacity
+              style={[styles.menuItem, {
+                backgroundColor: colors.background.card,
+                borderRadius: borderRadius.md,
+                borderColor: colors.border.light,
+                ...shadows.sm
+              }]}
+              activeOpacity={0.7}
+            >
+              <Text style={[styles.menuText, {
+                color: colors.text.primary,
+                fontFamily: typography.fontFamily.primary,
+                fontWeight: typography.fontWeight.semibold
+              }]}>
+                Terms of Service
+              </Text>
+              <Text style={[styles.menuArrow, { color: colors.text.tertiary }]}>→</Text>
+            </TouchableOpacity>
+          </Animated.View>
 
-          <TouchableOpacity style={styles.menuItem}>
-            <Text style={styles.menuText}>Privacy Policy</Text>
-            <Text style={styles.menuArrow}>→</Text>
-          </TouchableOpacity>
+          <Animated.View entering={FadeInUp.delay(650).springify()}>
+            <TouchableOpacity
+              style={[styles.menuItem, {
+                backgroundColor: colors.background.card,
+                borderRadius: borderRadius.md,
+                borderColor: colors.border.light,
+                ...shadows.sm
+              }]}
+              activeOpacity={0.7}
+            >
+              <Text style={[styles.menuText, {
+                color: colors.text.primary,
+                fontFamily: typography.fontFamily.primary,
+                fontWeight: typography.fontWeight.semibold
+              }]}>
+                Privacy Policy
+              </Text>
+              <Text style={[styles.menuArrow, { color: colors.text.tertiary }]}>→</Text>
+            </TouchableOpacity>
+          </Animated.View>
         </View>
 
-        <TouchableOpacity style={styles.logoutButton}>
-          <Text style={styles.logoutText}>Log Out</Text>
-        </TouchableOpacity>
+        <Animated.View entering={FadeInUp.delay(700).springify()}>
+          <TouchableOpacity
+            style={[styles.logoutButton, {
+              backgroundColor: colors.status.error + '33',
+              borderColor: colors.status.error + '80',
+              borderRadius: borderRadius.md
+            }]}
+            activeOpacity={0.7}
+          >
+            <Text style={[styles.logoutText, {
+              color: colors.status.error,
+              fontFamily: typography.fontFamily.primary,
+              fontWeight: typography.fontWeight.bold
+            }]}>
+              Log Out
+            </Text>
+          </TouchableOpacity>
+        </Animated.View>
       </ScrollView>
-    </LinearGradient>
+    </SafeAreaView>
   );
 };
 
@@ -103,84 +286,71 @@ const styles = StyleSheet.create({
   scrollView: {
     flex: 1,
   },
+  scrollContent: {
+    paddingBottom: 24,
+  },
   header: {
-    padding: spacing.xl,
-    paddingTop: spacing['4xl'],
+    padding: 24,
+    paddingTop: 48,
   },
   title: {
-    ...typography.h1,
-    color: colors.text.primary,
-    marginBottom: spacing.sm,
+    fontSize: 32,
+    marginBottom: 8,
   },
   subtitle: {
-    ...typography.body,
-    color: colors.text.secondary,
+    fontSize: 16,
+    lineHeight: 24,
   },
   section: {
-    padding: spacing.xl,
+    padding: 24,
     paddingTop: 0,
-    marginBottom: spacing.md,
+    marginBottom: 12,
   },
   sectionTitle: {
-    ...typography.h2,
-    color: colors.text.primary,
-    marginBottom: spacing.md,
+    fontSize: 22,
+    marginBottom: 12,
   },
   settingItem: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderRadius: spacing.borderRadius.md,
-    padding: spacing.md,
-    marginBottom: spacing.md,
+    padding: 16,
+    marginBottom: 12,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
   },
   settingInfo: {
     flex: 1,
-    marginRight: spacing.md,
+    marginRight: 12,
   },
   settingLabel: {
-    ...typography.bodyBold,
-    color: colors.text.primary,
-    marginBottom: spacing.xs,
+    fontSize: 16,
+    marginBottom: 4,
   },
   settingDescription: {
-    ...typography.caption,
-    color: colors.text.tertiary,
+    fontSize: 12,
   },
   menuItem: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderRadius: spacing.borderRadius.md,
-    padding: spacing.md,
-    marginBottom: spacing.md,
+    padding: 16,
+    marginBottom: 12,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
   },
   menuText: {
-    ...typography.bodyBold,
-    color: colors.text.primary,
+    fontSize: 16,
   },
   menuArrow: {
     fontSize: 20,
-    color: colors.text.tertiary,
   },
   logoutButton: {
-    margin: spacing.xl,
-    marginTop: spacing['2xl'],
-    padding: spacing.md,
-    backgroundColor: 'rgba(239, 68, 68, 0.2)',
-    borderRadius: spacing.borderRadius.md,
+    margin: 24,
+    marginTop: 32,
+    padding: 16,
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: 'rgba(239, 68, 68, 0.5)',
   },
   logoutText: {
-    ...typography.bodyBold,
-    color: colors.error,
+    fontSize: 16,
   },
 });
