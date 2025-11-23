@@ -1,251 +1,120 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   View,
-  Text,
-  TextInput,
-  TouchableOpacity,
   StyleSheet,
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
-  Alert,
+  TouchableOpacity,
   SafeAreaView,
+  Image,
+  Dimensions,
 } from 'react-native';
-import Animated, { FadeInUp, FadeIn } from 'react-native-reanimated';
-import { useTheme } from '../../theme/useTheme';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+
+const { width, height } = Dimensions.get('window');
 
 type Props = NativeStackScreenProps<any, 'SignUp'>;
 
 export const SignUpScreen: React.FC<Props> = ({ navigation }) => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [name, setName] = useState('');
-  const [loading, setLoading] = useState(false);
-  const { colors, typography, spacing, borderRadius, shadows } = useTheme();
-
-  const validateForm = (): boolean => {
-    if (!name.trim()) {
-      Alert.alert('Error', 'Please enter your name');
-      return false;
-    }
-    if (!email.trim()) {
-      Alert.alert('Error', 'Please enter your email');
-      return false;
-    }
-    if (!email.includes('@')) {
-      Alert.alert('Error', 'Please enter a valid email');
-      return false;
-    }
-    if (password.length < 6) {
-      Alert.alert('Error', 'Password must be at least 6 characters');
-      return false;
-    }
-    if (password !== confirmPassword) {
-      Alert.alert('Error', 'Passwords do not match');
-      return false;
-    }
-    return true;
+  const handleGoogleSignIn = () => {
+    // TODO: Implement Google Sign In
+    navigation.replace('GoalSelection');
   };
 
-  const handleSignUp = async () => {
-    if (!validateForm()) return;
-
-    setLoading(true);
-    try {
-      // TODO: Implement Supabase sign up
-      // const { data, error } = await supabase.auth.signUp({
-      //   email,
-      //   password,
-      //   options: {
-      //     data: { name }
-      //   }
-      // });
-
-      // For now, navigate to goal selection
-      setTimeout(() => {
-        setLoading(false);
-        navigation.replace('GoalSelection');
-      }, 1000);
-    } catch (error) {
-      setLoading(false);
-      Alert.alert('Error', 'Failed to create account');
-    }
+  const handleAppleSignIn = () => {
+    // TODO: Implement Apple Sign In
+    navigation.replace('GoalSelection');
   };
 
-  const handleSocialLogin = (provider: string) => {
-    Alert.alert('Coming Soon', `${provider} login will be available soon!`);
+  const handleFacebookSignIn = () => {
+    // TODO: Implement Facebook Sign In
+    navigation.replace('GoalSelection');
+  };
+
+  const handleTwitterSignIn = () => {
+    // TODO: Implement Twitter/X Sign In
+    navigation.replace('GoalSelection');
+  };
+
+  const handleSignUp = () => {
+    // TODO: Implement email/password sign up
+    navigation.replace('GoalSelection');
+  };
+
+  const handleSignIn = () => {
+    navigation.navigate('Login');
   };
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: colors.background.primary }]}>
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        style={styles.keyboardView}
-      >
-        <ScrollView
-          contentContainerStyle={styles.scrollContent}
-          showsVerticalScrollIndicator={false}
-        >
-          <Animated.View
-            entering={FadeInUp.delay(100).springify()}
-            style={styles.header}
-          >
-            <Text style={[styles.headerTitle, {
-              color: colors.text.primary,
-              fontFamily: typography.fontFamily.secondary
-            }]}>
-              Create Account
-            </Text>
-            <Text style={[styles.headerSubtitle, {
-              color: colors.text.secondary,
-              fontFamily: typography.fontFamily.primary
-            }]}>
-              Start your mental wellness journey
-            </Text>
-          </Animated.View>
+    <SafeAreaView style={styles.container}>
+      <View style={styles.content}>
+        {/* Full-screen Figma design */}
+        <Image
+          source={require('../../figma-extracted/assets/screens/light-theme/6-light-sign-up-blank-form.png')}
+          style={styles.fullScreenImage}
+          resizeMode="cover"
+        />
 
-          <Animated.View
-            entering={FadeInUp.delay(200).springify()}
-            style={styles.formContainer}
-          >
-            {/* Name Input */}
-            <View style={styles.inputGroup}>
-              <Text style={[styles.label, {
-                color: colors.text.secondary,
-                fontFamily: typography.fontFamily.primary
-              }]}>
-                Full Name
-              </Text>
-              <TextInput
-                style={[styles.input, {
-                  backgroundColor: colors.background.card,
-                  borderColor: colors.border.light,
-                  color: colors.text.primary,
-                  borderRadius: borderRadius.md
-                }]}
-                placeholder="Enter your name"
-                placeholderTextColor={colors.text.tertiary}
-                value={name}
-                onChangeText={setName}
-                autoCapitalize="words"
-              />
-            </View>
+        {/* Invisible touchable areas for buttons */}
 
-            {/* Email Input */}
-            <View style={styles.inputGroup}>
-              <Text style={[styles.label, {
-                color: colors.text.secondary,
-                fontFamily: typography.fontFamily.primary
-              }]}>
-                Email
-              </Text>
-              <TextInput
-                style={[styles.input, {
-                  backgroundColor: colors.background.card,
-                  borderColor: colors.border.light,
-                  color: colors.text.primary,
-                  borderRadius: borderRadius.md
-                }]}
-                placeholder="Enter your email"
-                placeholderTextColor={colors.text.tertiary}
-                value={email}
-                onChangeText={setEmail}
-                keyboardType="email-address"
-                autoCapitalize="none"
-                autoComplete="email"
-              />
-            </View>
+        {/* Email input area (tap to focus - will need real implementation later) */}
+        <TouchableOpacity
+          style={[styles.inputArea, { top: height * 0.30 }]}
+          activeOpacity={1}
+        />
 
-            {/* Password Input */}
-            <View style={styles.inputGroup}>
-              <Text style={[styles.label, {
-                color: colors.text.secondary,
-                fontFamily: typography.fontFamily.primary
-              }]}>
-                Password
-              </Text>
-              <TextInput
-                style={[styles.input, {
-                  backgroundColor: colors.background.card,
-                  borderColor: colors.border.light,
-                  color: colors.text.primary,
-                  borderRadius: borderRadius.md
-                }]}
-                placeholder="Create a password"
-                placeholderTextColor={colors.text.tertiary}
-                value={password}
-                onChangeText={setPassword}
-                secureTextEntry
-                autoCapitalize="none"
-              />
-            </View>
+        {/* Password input area (tap to focus - will need real implementation later) */}
+        <TouchableOpacity
+          style={[styles.inputArea, { top: height * 0.43 }]}
+          activeOpacity={1}
+        />
 
-            {/* Confirm Password Input */}
-            <View style={styles.inputGroup}>
-              <Text style={[styles.label, {
-                color: colors.text.secondary,
-                fontFamily: typography.fontFamily.primary
-              }]}>
-                Confirm Password
-              </Text>
-              <TextInput
-                style={[styles.input, {
-                  backgroundColor: colors.background.card,
-                  borderColor: colors.border.light,
-                  color: colors.text.primary,
-                  borderRadius: borderRadius.md
-                }]}
-                placeholder="Confirm your password"
-                placeholderTextColor={colors.text.tertiary}
-                value={confirmPassword}
-                onChangeText={setConfirmPassword}
-                secureTextEntry
-                autoCapitalize="none"
-              />
-            </View>
+        {/* Terms & Conditions checkbox area */}
+        <TouchableOpacity
+          style={styles.termsCheckboxArea}
+          activeOpacity={1}
+        />
 
-            {/* Sign Up Button */}
-            <TouchableOpacity
-              style={[styles.signUpButton, {
-                backgroundColor: colors.primary.main,
-                borderRadius: borderRadius.xl,
-                ...shadows.lg
-              }]}
-              onPress={handleSignUp}
-              disabled={loading}
-            >
-              <Text style={[styles.signUpButtonText, {
-                color: colors.text.inverse,
-                fontFamily: typography.fontFamily.primary,
-                fontWeight: typography.fontWeight.bold
-              }]}>
-                {loading ? 'Creating Account...' : 'Sign Up'}
-              </Text>
-            </TouchableOpacity>
+        {/* "Sign in" link area (Already have an account?) */}
+        <TouchableOpacity
+          style={styles.signInLinkArea}
+          onPress={handleSignIn}
+          activeOpacity={1}
+        />
 
-            {/* Login Link */}
-            <TouchableOpacity
-              style={styles.loginLink}
-              onPress={() => navigation.navigate('Login')}
-            >
-              <Text style={[styles.loginLinkText, {
-                color: colors.text.secondary,
-                fontFamily: typography.fontFamily.primary
-              }]}>
-                Already have an account?{' '}
-                <Text style={[styles.loginLinkBold, {
-                  color: colors.primary.main,
-                  fontWeight: typography.fontWeight.semibold
-                }]}>
-                  Log In
-                </Text>
-              </Text>
-            </TouchableOpacity>
-          </Animated.View>
-        </ScrollView>
-      </KeyboardAvoidingView>
+        {/* Google button area */}
+        <TouchableOpacity
+          style={[styles.socialButtonArea, { top: height * 0.68 }]}
+          onPress={handleGoogleSignIn}
+          activeOpacity={1}
+        />
+
+        {/* Apple button area */}
+        <TouchableOpacity
+          style={[styles.socialButtonArea, { top: height * 0.75 }]}
+          onPress={handleAppleSignIn}
+          activeOpacity={1}
+        />
+
+        {/* Facebook button area */}
+        <TouchableOpacity
+          style={[styles.socialButtonArea, { top: height * 0.82 }]}
+          onPress={handleFacebookSignIn}
+          activeOpacity={1}
+        />
+
+        {/* X/Twitter button area */}
+        <TouchableOpacity
+          style={[styles.socialButtonArea, { top: height * 0.89 }]}
+          onPress={handleTwitterSignIn}
+          activeOpacity={1}
+        />
+
+        {/* Sign up button area */}
+        <TouchableOpacity
+          style={styles.signUpButtonArea}
+          onPress={handleSignUp}
+          activeOpacity={1}
+        />
+      </View>
     </SafeAreaView>
   );
 };
@@ -253,61 +122,47 @@ export const SignUpScreen: React.FC<Props> = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#FFFFFF',
   },
-  keyboardView: {
+  content: {
     flex: 1,
   },
-  scrollContent: {
-    flexGrow: 1,
-    paddingBottom: 20,
+  fullScreenImage: {
+    width,
+    height,
+    position: 'absolute',
   },
-  header: {
-    paddingTop: 40,
-    paddingBottom: 20,
-    paddingHorizontal: 16,
-    alignItems: 'center',
-    marginBottom: 16,
+  inputArea: {
+    position: 'absolute',
+    left: width * 0.05,
+    right: width * 0.05,
+    height: 60,
   },
-  headerTitle: {
-    fontSize: 28,
-    marginBottom: 4,
+  termsCheckboxArea: {
+    position: 'absolute',
+    top: height * 0.52,
+    left: width * 0.05,
+    right: width * 0.05,
+    height: 40,
   },
-  headerSubtitle: {
-    fontSize: 16,
+  signInLinkArea: {
+    position: 'absolute',
+    top: height * 0.60,
+    left: width * 0.25,
+    right: width * 0.25,
+    height: 40,
   },
-  formContainer: {
-    flex: 1,
-    paddingHorizontal: 16,
+  socialButtonArea: {
+    position: 'absolute',
+    left: width * 0.05,
+    right: width * 0.05,
+    height: 60,
   },
-  inputGroup: {
-    marginBottom: 12,
-  },
-  label: {
-    fontSize: 14,
-    fontWeight: '600',
-    marginBottom: 8,
-  },
-  input: {
-    padding: 12,
-    fontSize: 16,
-    borderWidth: 1,
-  },
-  signUpButton: {
-    paddingVertical: 16,
-    alignItems: 'center',
-    marginTop: 12,
-  },
-  signUpButtonText: {
-    fontSize: 18,
-  },
-  loginLink: {
-    marginTop: 20,
-    alignItems: 'center',
-  },
-  loginLinkText: {
-    fontSize: 14,
-  },
-  loginLinkBold: {
-    fontSize: 14,
+  signUpButtonArea: {
+    position: 'absolute',
+    bottom: height * 0.02,
+    left: width * 0.05,
+    right: width * 0.05,
+    height: 60,
   },
 });
