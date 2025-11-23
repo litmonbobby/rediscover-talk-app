@@ -1,9 +1,17 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, ScrollView, StyleSheet, Image } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
-import { colors } from '../../constants/colors';
-import { typography } from '../../constants/typography';
-import { spacing } from '../../constants/spacing';
+import {
+  View,
+  StyleSheet,
+  TouchableOpacity,
+  SafeAreaView,
+  Image,
+  Dimensions,
+} from 'react-native';
+import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+
+const { width, height } = Dimensions.get('window');
+
+type Props = NativeStackScreenProps<any, 'ArticlesList'>;
 
 type Article = {
   id: string;
@@ -14,7 +22,7 @@ type Article = {
   image: string;
 };
 
-export const ArticlesListScreen = ({ navigation }: any) => {
+export const ArticlesListScreen: React.FC<Props> = ({ navigation }) => {
   const articles: Article[] = [
     {
       id: '1',
@@ -40,190 +48,84 @@ export const ArticlesListScreen = ({ navigation }: any) => {
       readTime: '6 min read',
       image: '😴',
     },
-    {
-      id: '4',
-      title: 'Journaling for Mental Clarity',
-      excerpt: 'How writing down your thoughts can help process emotions and gain insights.',
-      category: 'Self-Care',
-      readTime: '4 min read',
-      image: '📝',
-    },
-    {
-      id: '5',
-      title: 'Managing Stress at Work',
-      excerpt: 'Practical strategies to reduce workplace stress and maintain work-life balance.',
-      category: 'Stress Management',
-      readTime: '8 min read',
-      image: '💼',
-    },
   ];
 
-  const categories = ['All', 'Mental Health', 'Mindfulness', 'Sleep', 'Self-Care', 'Stress Management'];
-  const [selectedCategory, setSelectedCategory] = React.useState('All');
+  const handleArticlePress = (article: Article) => {
+    navigation.navigate('ArticleDetail', { article });
+  };
 
-  const filteredArticles = selectedCategory === 'All'
-    ? articles
-    : articles.filter(article => article.category === selectedCategory);
+  const handleBack = () => {
+    navigation.goBack();
+  };
 
   return (
-    <LinearGradient
-      colors={[colors.primary.darkBlue, colors.primary.cobaltBlue]}
-      style={styles.container}
-    >
-      <ScrollView style={styles.scrollView}>
-        <View style={styles.header}>
-          <Text style={styles.title}>Articles & Resources</Text>
-          <Text style={styles.subtitle}>Expert insights on mental wellness</Text>
-        </View>
+    <SafeAreaView style={styles.container}>
+      <View style={styles.content}>
+        {/* Full-screen Figma design - Explore Articles */}
+        <Image
+          source={require('../../figma-extracted/assets/screens/light-theme/68-light-explore-articles.png')}
+          style={styles.fullScreenImage}
+          resizeMode="cover"
+        />
 
-        {/* Category Filter */}
-        <ScrollView
-          horizontal
-          style={styles.categoriesScroll}
-          showsHorizontalScrollIndicator={false}
-        >
-          {categories.map((category) => (
-            <TouchableOpacity
-              key={category}
-              style={[
-                styles.categoryChip,
-                selectedCategory === category && styles.categoryChipActive,
-              ]}
-              onPress={() => setSelectedCategory(category)}
-            >
-              <Text style={[
-                styles.categoryChipText,
-                selectedCategory === category && styles.categoryChipTextActive,
-              ]}>
-                {category}
-              </Text>
-            </TouchableOpacity>
-          ))}
-        </ScrollView>
+        {/* Back button area */}
+        <TouchableOpacity
+          style={styles.backButtonArea}
+          onPress={handleBack}
+          activeOpacity={1}
+        />
 
-        {/* Articles List */}
-        <View style={styles.articlesList}>
-          {filteredArticles.map((article) => (
-            <TouchableOpacity
-              key={article.id}
-              style={styles.articleCard}
-              onPress={() => navigation.navigate('ArticleDetail', { article })}
-              activeOpacity={0.8}
-            >
-              <View style={styles.articleImage}>
-                <Text style={styles.articleEmoji}>{article.image}</Text>
-              </View>
-              <View style={styles.articleContent}>
-                <Text style={styles.categoryBadge}>{article.category}</Text>
-                <Text style={styles.articleTitle}>{article.title}</Text>
-                <Text style={styles.articleExcerpt}>{article.excerpt}</Text>
-                <View style={styles.articleMeta}>
-                  <Text style={styles.readTime}>⏱ {article.readTime}</Text>
-                </View>
-              </View>
-            </TouchableOpacity>
-          ))}
-        </View>
-      </ScrollView>
-    </LinearGradient>
+        {/* Article cards - clickable areas */}
+        {/* Article 1 */}
+        <TouchableOpacity
+          style={[styles.articleCardArea, { top: height * 0.22 }]}
+          onPress={() => handleArticlePress(articles[0])}
+          activeOpacity={1}
+        />
+
+        {/* Article 2 */}
+        <TouchableOpacity
+          style={[styles.articleCardArea, { top: height * 0.40 }]}
+          onPress={() => handleArticlePress(articles[1])}
+          activeOpacity={1}
+        />
+
+        {/* Article 3 */}
+        <TouchableOpacity
+          style={[styles.articleCardArea, { top: height * 0.58 }]}
+          onPress={() => handleArticlePress(articles[2])}
+          activeOpacity={1}
+        />
+      </View>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#FFFFFF',
   },
-  scrollView: {
+  content: {
     flex: 1,
   },
-  header: {
-    padding: spacing.xl,
-    paddingTop: spacing['4xl'],
+  fullScreenImage: {
+    width,
+    height,
+    position: 'absolute',
   },
-  title: {
-    ...typography.h1,
-    color: colors.text.primary,
+  backButtonArea: {
+    position: 'absolute',
+    top: 60,
+    left: 20,
+    width: 50,
+    height: 50,
+    zIndex: 10,
   },
-  subtitle: {
-    ...typography.body,
-    color: colors.text.secondary,
-    marginTop: spacing.xs,
-  },
-  categoriesScroll: {
-    paddingHorizontal: spacing.md,
-    maxHeight: 50,
-    marginBottom: spacing.md,
-  },
-  categoryChip: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-    borderRadius: spacing.borderRadius.full,
-    marginRight: spacing.sm,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.2)',
-  },
-  categoryChipActive: {
-    backgroundColor: colors.accent.lime,
-  },
-  categoryChipText: {
-    ...typography.body,
-    color: colors.text.primary,
-  },
-  categoryChipTextActive: {
-    ...typography.bodyBold,
-    color: colors.primary.darkBlue,
-  },
-  articlesList: {
-    padding: spacing.md,
-    gap: spacing.md,
-  },
-  articleCard: {
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderRadius: spacing.borderRadius.lg,
-    overflow: 'hidden',
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
-  },
-  articleImage: {
-    height: 120,
-    backgroundColor: 'rgba(199, 246, 0, 0.1)',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  articleEmoji: {
-    fontSize: 48,
-  },
-  articleContent: {
-    padding: spacing.lg,
-  },
-  categoryBadge: {
-    ...typography.caption,
-    color: colors.accent.lime,
-    backgroundColor: 'rgba(199, 246, 0, 0.1)',
-    paddingHorizontal: spacing.sm,
-    paddingVertical: spacing.xs,
-    borderRadius: spacing.borderRadius.sm,
-    alignSelf: 'flex-start',
-    marginBottom: spacing.sm,
-  },
-  articleTitle: {
-    ...typography.h3,
-    color: colors.text.primary,
-    marginBottom: spacing.sm,
-  },
-  articleExcerpt: {
-    ...typography.body,
-    color: colors.text.secondary,
-    marginBottom: spacing.md,
-    lineHeight: 22,
-  },
-  articleMeta: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  readTime: {
-    ...typography.caption,
-    color: colors.text.tertiary,
+  articleCardArea: {
+    position: 'absolute',
+    left: width * 0.05,
+    right: width * 0.05,
+    height: 150,
   },
 });

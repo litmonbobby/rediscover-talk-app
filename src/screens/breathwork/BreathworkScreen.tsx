@@ -1,262 +1,105 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   View,
-  Text,
   StyleSheet,
   TouchableOpacity,
-  Animated as RNAnimated,
   SafeAreaView,
+  Image,
+  Dimensions,
 } from 'react-native';
-import Animated, { FadeInUp, FadeIn } from 'react-native-reanimated';
-import { useTheme } from '../../theme/useTheme';
+import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 
-type BreathPhase = 'inhale' | 'hold' | 'exhale' | 'pause';
+const { width, height } = Dimensions.get('window');
 
-const breathPatterns = {
-  '4-7-8': {
-    name: '4-7-8 Relaxation',
-    description: 'Perfect for stress relief and better sleep',
-    inhale: 4,
-    hold: 7,
-    exhale: 8,
-    pause: 0,
-  },
-  'box': {
-    name: 'Box Breathing',
-    description: 'Used by Navy SEALs for focus and calm',
-    inhale: 4,
-    hold: 4,
-    exhale: 4,
-    pause: 4,
-  },
-  'calm': {
-    name: 'Calm Breathing',
-    description: 'Simple technique for quick relaxation',
-    inhale: 4,
-    hold: 0,
-    exhale: 6,
-    pause: 0,
-  },
-};
+type Props = NativeStackScreenProps<any, 'Breathwork'>;
 
-export const BreathworkScreen = ({ navigation }: any) => {
-  const { colors, typography, spacing, borderRadius, shadows } = useTheme();
+type BreathPattern = '4-7-8' | 'box' | 'calm';
+
+export const BreathworkScreen: React.FC<Props> = ({ navigation }) => {
+  const [selectedPattern, setSelectedPattern] = useState<BreathPattern>('4-7-8');
   const [isActive, setIsActive] = useState(false);
-  const [phase, setPhase] = useState<BreathPhase>('inhale');
-  const [count, setCount] = useState(4);
-  const [selectedPattern, setSelectedPattern] = useState<keyof typeof breathPatterns>('4-7-8');
-  const scaleAnim = useState(new RNAnimated.Value(1))[0];
 
-  const pattern = breathPatterns[selectedPattern];
-
-  useEffect(() => {
-    if (!isActive) return;
-
-    const timer = setInterval(() => {
-      setCount((prev) => {
-        if (prev > 1) return prev - 1;
-
-        // Move to next phase
-        switch (phase) {
-          case 'inhale':
-            setPhase(pattern.hold > 0 ? 'hold' : 'exhale');
-            return pattern.hold > 0 ? pattern.hold : pattern.exhale;
-          case 'hold':
-            setPhase('exhale');
-            return pattern.exhale;
-          case 'exhale':
-            setPhase(pattern.pause > 0 ? 'pause' : 'inhale');
-            return pattern.pause > 0 ? pattern.pause : pattern.inhale;
-          case 'pause':
-            setPhase('inhale');
-            return pattern.inhale;
-        }
-        return prev;
-      });
-    }, 1000);
-
-    return () => clearInterval(timer);
-  }, [isActive, phase]);
-
-  useEffect(() => {
-    if (!isActive) return;
-
-    const scale = phase === 'inhale' ? 1.5 : phase === 'exhale' ? 0.7 : 1.2;
-    RNAnimated.timing(scaleAnim, {
-      toValue: scale,
-      duration: 1000,
-      useNativeDriver: true,
-    }).start();
-  }, [phase, isActive]);
-
-  const handleStart = () => {
-    setIsActive(true);
-    setPhase('inhale');
-    setCount(pattern.inhale);
+  const handleBack = () => {
+    navigation.goBack();
   };
 
-  const handleStop = () => {
+  const handlePattern478 = () => {
+    setSelectedPattern('4-7-8');
     setIsActive(false);
-    setPhase('inhale');
-    setCount(pattern.inhale);
-    scaleAnim.setValue(1);
   };
 
-  const getPhaseText = () => {
-    switch (phase) {
-      case 'inhale':
-        return 'Breathe In';
-      case 'hold':
-        return 'Hold';
-      case 'exhale':
-        return 'Breathe Out';
-      case 'pause':
-        return 'Pause';
-    }
+  const handlePatternBox = () => {
+    setSelectedPattern('box');
+    setIsActive(false);
+  };
+
+  const handlePatternCalm = () => {
+    setSelectedPattern('calm');
+    setIsActive(false);
+  };
+
+  const handleStartStop = () => {
+    setIsActive(!isActive);
+    // TODO: Implement actual breathing animation and timer
+    console.log(isActive ? 'Stopping' : 'Starting', selectedPattern, 'breathing');
   };
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: colors.background.primary }]}>
-      {/* Header */}
-      <Animated.View entering={FadeInUp.delay(100).springify()} style={styles.header}>
+    <SafeAreaView style={styles.container}>
+      <View style={styles.content}>
+        {/* Full-screen Figma design - Breathing (showing inhale state) */}
+        <Image
+          source={require('../../figma-extracted/assets/screens/light-theme/64-light-start-or-play-breathing-inhale.png')}
+          style={styles.fullScreenImage}
+          resizeMode="cover"
+        />
+
+        {/* Back button area */}
         <TouchableOpacity
-          onPress={() => navigation.goBack()}
-          style={[styles.backButton, {
-            backgroundColor: colors.background.secondary,
-            borderRadius: borderRadius.lg
-          }]}
-        >
-          <Text style={[styles.backIcon, {
-            color: colors.text.primary,
-            fontFamily: typography.fontFamily.primary
-          }]}>
-            ←
-          </Text>
-        </TouchableOpacity>
-        <Text style={[styles.title, {
-          color: colors.text.primary,
-          fontFamily: typography.fontFamily.secondary
-        }]}>
-          Breathwork
-        </Text>
-        <Text style={[styles.subtitle, {
-          color: colors.text.secondary,
-          fontFamily: typography.fontFamily.primary
-        }]}>
-          Find your calm through breathing
-        </Text>
-      </Animated.View>
+          style={styles.backButtonArea}
+          onPress={handleBack}
+          activeOpacity={1}
+        />
 
-      {/* Pattern Selector */}
-      {!isActive && (
-        <View style={styles.patternSelector}>
-          {(Object.keys(breathPatterns) as Array<keyof typeof breathPatterns>).map((key, index) => (
-            <Animated.View
-              key={key}
-              entering={FadeInUp.delay(200 + index * 50).springify()}
-            >
-              <TouchableOpacity
-                style={[
-                  styles.patternCard,
-                  {
-                    backgroundColor: selectedPattern === key ? colors.background.card : colors.background.secondary,
-                    borderColor: selectedPattern === key ? colors.primary.main : colors.border.light,
-                    borderRadius: borderRadius.lg,
-                    ...shadows.sm
-                  }
-                ]}
-                onPress={() => setSelectedPattern(key)}
-                activeOpacity={0.7}
-              >
-                <Text style={[styles.patternName, {
-                  color: colors.text.primary,
-                  fontFamily: typography.fontFamily.primary,
-                  fontWeight: typography.fontWeight.semibold
-                }]}>
-                  {breathPatterns[key].name}
-                </Text>
-                <Text style={[styles.patternDescription, {
-                  color: colors.text.secondary,
-                  fontFamily: typography.fontFamily.primary
-                }]}>
-                  {breathPatterns[key].description}
-                </Text>
-              </TouchableOpacity>
-            </Animated.View>
-          ))}
-        </View>
-      )}
+        {/* Pattern selection cards (only shown when not active) */}
+        {!isActive && (
+          <>
+            {/* 4-7-8 Pattern card */}
+            <TouchableOpacity
+              style={[styles.patternCardArea, { top: height * 0.20 }]}
+              onPress={handlePattern478}
+              activeOpacity={1}
+            />
 
-      {/* Breathing Circle */}
-      <View style={styles.breathingContainer}>
-        <Animated.View
-          style={[
-            styles.breathingCircle,
-            {
-              backgroundColor: colors.primary.main,
-              borderRadius: borderRadius.full,
-              transform: [{ scale: scaleAnim }],
-            },
-          ]}
-        >
-          <Text style={[styles.countText, {
-            color: colors.text.inverse,
-            fontFamily: typography.fontFamily.secondary,
-            fontWeight: typography.fontWeight.bold
-          }]}>
-            {count}
-          </Text>
-        </Animated.View>
-        {isActive && (
-          <Text style={[styles.phaseText, {
-            color: colors.text.primary,
-            fontFamily: typography.fontFamily.primary,
-            fontWeight: typography.fontWeight.semibold
-          }]}>
-            {getPhaseText()}
-          </Text>
+            {/* Box Breathing card */}
+            <TouchableOpacity
+              style={[styles.patternCardArea, { top: height * 0.32 }]}
+              onPress={handlePatternBox}
+              activeOpacity={1}
+            />
+
+            {/* Calm Breathing card */}
+            <TouchableOpacity
+              style={[styles.patternCardArea, { top: height * 0.44 }]}
+              onPress={handlePatternCalm}
+              activeOpacity={1}
+            />
+          </>
         )}
-      </View>
 
-      {/* Control Buttons */}
-      <View style={styles.controls}>
-        {!isActive ? (
-          <TouchableOpacity
-            style={[styles.startButton, {
-              backgroundColor: colors.primary.main,
-              borderRadius: borderRadius.xl,
-              ...shadows.lg
-            }]}
-            onPress={handleStart}
-            activeOpacity={0.8}
-          >
-            <Text style={[styles.startButtonText, {
-              color: colors.text.inverse,
-              fontFamily: typography.fontFamily.primary,
-              fontWeight: typography.fontWeight.bold
-            }]}>
-              Start
-            </Text>
-          </TouchableOpacity>
-        ) : (
-          <TouchableOpacity
-            style={[styles.stopButton, {
-              backgroundColor: colors.background.secondary,
-              borderColor: colors.primary.main,
-              borderRadius: borderRadius.xl
-            }]}
-            onPress={handleStop}
-            activeOpacity={0.8}
-          >
-            <Text style={[styles.stopButtonText, {
-              color: colors.text.primary,
-              fontFamily: typography.fontFamily.primary,
-              fontWeight: typography.fontWeight.semibold
-            }]}>
-              Stop
-            </Text>
-          </TouchableOpacity>
-        )}
+        {/* Central breathing circle area (tap to start/stop) */}
+        <TouchableOpacity
+          style={styles.breathingCircleArea}
+          onPress={handleStartStop}
+          activeOpacity={1}
+        />
+
+        {/* Start/Stop button at bottom */}
+        <TouchableOpacity
+          style={styles.controlButtonArea}
+          onPress={handleStartStop}
+          activeOpacity={1}
+        />
       </View>
     </SafeAreaView>
   );
@@ -265,83 +108,42 @@ export const BreathworkScreen = ({ navigation }: any) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingHorizontal: 20,
-    paddingTop: 48,
+    backgroundColor: '#FFFFFF',
   },
-  header: {
-    alignItems: 'center',
-    marginBottom: 24,
-  },
-  backButton: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    width: 40,
-    height: 40,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  backIcon: {
-    fontSize: 24,
-  },
-  title: {
-    fontSize: 28,
-    marginBottom: 4,
-  },
-  subtitle: {
-    fontSize: 16,
-    lineHeight: 24,
-  },
-  patternSelector: {
-    gap: 12,
-    marginBottom: 24,
-  },
-  patternCard: {
-    padding: 16,
-    borderWidth: 2,
-  },
-  patternName: {
-    fontSize: 18,
-    marginBottom: 4,
-  },
-  patternDescription: {
-    fontSize: 14,
-    lineHeight: 20,
-  },
-  breathingContainer: {
+  content: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
   },
-  breathingCircle: {
-    width: 200,
-    height: 200,
-    justifyContent: 'center',
-    alignItems: 'center',
+  fullScreenImage: {
+    width,
+    height,
+    position: 'absolute',
   },
-  countText: {
-    fontSize: 64,
+  backButtonArea: {
+    position: 'absolute',
+    top: 60,
+    left: 20,
+    width: 50,
+    height: 50,
+    zIndex: 10,
   },
-  phaseText: {
-    fontSize: 24,
-    marginTop: 24,
+  patternCardArea: {
+    position: 'absolute',
+    left: width * 0.05,
+    right: width * 0.05,
+    height: 90,
   },
-  controls: {
-    paddingBottom: 24,
+  breathingCircleArea: {
+    position: 'absolute',
+    top: height * 0.40,
+    left: width * 0.25,
+    width: width * 0.50,
+    height: width * 0.50,
   },
-  startButton: {
-    paddingVertical: 16,
-    alignItems: 'center',
-  },
-  startButtonText: {
-    fontSize: 18,
-  },
-  stopButton: {
-    paddingVertical: 16,
-    alignItems: 'center',
-    borderWidth: 2,
-  },
-  stopButtonText: {
-    fontSize: 18,
+  controlButtonArea: {
+    position: 'absolute',
+    bottom: 40,
+    left: width * 0.10,
+    right: width * 0.10,
+    height: 60,
   },
 });
