@@ -4,10 +4,10 @@ import {
   Text,
   StyleSheet,
   TouchableOpacity,
-  Animated,
+  Animated as RNAnimated,
   SafeAreaView,
 } from 'react-native';
-import Animated as ReAnimated, { FadeInUp, FadeIn } from 'react-native-reanimated';
+import Animated, { FadeInUp, FadeIn } from 'react-native-reanimated';
 import { useTheme } from '../../theme/useTheme';
 
 type BreathPhase = 'inhale' | 'hold' | 'exhale' | 'pause';
@@ -45,7 +45,7 @@ export const BreathworkScreen = ({ navigation }: any) => {
   const [phase, setPhase] = useState<BreathPhase>('inhale');
   const [count, setCount] = useState(4);
   const [selectedPattern, setSelectedPattern] = useState<keyof typeof breathPatterns>('4-7-8');
-  const scaleAnim = useState(new Animated.Value(1))[0];
+  const scaleAnim = useState(new RNAnimated.Value(1))[0];
 
   const pattern = breathPatterns[selectedPattern];
 
@@ -82,7 +82,7 @@ export const BreathworkScreen = ({ navigation }: any) => {
     if (!isActive) return;
 
     const scale = phase === 'inhale' ? 1.5 : phase === 'exhale' ? 0.7 : 1.2;
-    Animated.timing(scaleAnim, {
+    RNAnimated.timing(scaleAnim, {
       toValue: scale,
       duration: 1000,
       useNativeDriver: true,
@@ -118,7 +118,7 @@ export const BreathworkScreen = ({ navigation }: any) => {
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background.primary }]}>
       {/* Header */}
-      <ReAnimated.View entering={FadeInUp.delay(100).springify()} style={styles.header}>
+      <Animated.View entering={FadeInUp.delay(100).springify()} style={styles.header}>
         <TouchableOpacity
           onPress={() => navigation.goBack()}
           style={[styles.backButton, {
@@ -145,13 +145,13 @@ export const BreathworkScreen = ({ navigation }: any) => {
         }]}>
           Find your calm through breathing
         </Text>
-      </ReAnimated.View>
+      </Animated.View>
 
       {/* Pattern Selector */}
       {!isActive && (
         <View style={styles.patternSelector}>
           {(Object.keys(breathPatterns) as Array<keyof typeof breathPatterns>).map((key, index) => (
-            <ReAnimated.View
+            <Animated.View
               key={key}
               entering={FadeInUp.delay(200 + index * 50).springify()}
             >
@@ -182,7 +182,7 @@ export const BreathworkScreen = ({ navigation }: any) => {
                   {breathPatterns[key].description}
                 </Text>
               </TouchableOpacity>
-            </ReAnimated.View>
+            </Animated.View>
           ))}
         </View>
       )}
