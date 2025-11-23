@@ -8,12 +8,13 @@ import {
   ScrollView,
   NativeScrollEvent,
   NativeSyntheticEvent,
+  Image,
 } from 'react-native';
 import Animated, { FadeInUp, FadeIn } from 'react-native-reanimated';
 import { useTheme } from '../../theme/useTheme';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 
-const { width } = Dimensions.get('window');
+const { width, height } = Dimensions.get('window');
 
 type Props = NativeStackScreenProps<any, 'Onboarding'>;
 
@@ -21,31 +22,27 @@ interface OnboardingSlide {
   id: number;
   title: string;
   description: string;
-  icon: string;
-  gradient: string[];
+  image: any; // Figma PNG image
 }
 
 const slides: OnboardingSlide[] = [
   {
     id: 1,
-    title: 'Welcome to Rediscover Talk',
-    description: 'Your personal mental wellness companion for better mental health',
-    icon: '🌱',
-    gradient: ['#9eb567', '#87a055'],
+    title: 'Your Personalized Mental\nWellness Companion',
+    description: 'Discover personalized mental health plans tailored just for you by our AI. Track your mood and explore a world of wellness resources.',
+    image: require('../../figma-extracted/assets/screens/light-theme/2-light-walkthrough-1.png'),
   },
   {
     id: 2,
-    title: 'Track Your Progress',
-    description: 'Monitor your mood, complete daily tasks, and build healthy habits',
-    icon: '📊',
-    gradient: ['#87a055', '#9eb567'],
+    title: 'Dive and Explore Your\nPath to Wellness',
+    description: 'Explore meditation exercises, breathing techniques, articles, courses, journals, and mindfulness resources to find your center.',
+    image: require('../../figma-extracted/assets/screens/light-theme/3-light-walkthrough-2.png'),
   },
   {
     id: 3,
-    title: 'Guided Wellness',
-    description: 'Access meditation, journaling, and breathing exercises for your mental health',
-    icon: '🧘',
-    gradient: ['#9eb567', '#b5c889'],
+    title: 'Gain Insights and Track\nProgress Overtime',
+    description: 'Gain valuable insights into your well-being with mood tracking, growth area reports, and life balance graphs overtime.',
+    image: require('../../figma-extracted/assets/screens/light-theme/4-light-walkthrough-3.png'),
   },
 ];
 
@@ -94,24 +91,34 @@ export const OnboardingScreen: React.FC<Props> = ({ navigation }) => {
               entering={FadeInUp.delay(index * 100).springify()}
               style={styles.content}
             >
-              <Animated.Text
+              {/* iPhone Mockup Image from Figma */}
+              <Animated.View
                 entering={FadeIn.delay(index * 100 + 200).duration(500)}
-                style={styles.icon}
+                style={styles.imageContainer}
               >
-                {slide.icon}
-              </Animated.Text>
-              <Text style={[styles.title, {
-                color: colors.text.primary,
-                fontFamily: typography.fontFamily.secondary
-              }]}>
-                {slide.title}
-              </Text>
-              <Text style={[styles.description, {
-                color: colors.text.secondary,
-                fontFamily: typography.fontFamily.primary
-              }]}>
-                {slide.description}
-              </Text>
+                <Image
+                  source={slide.image}
+                  style={styles.mockupImage}
+                  resizeMode="contain"
+                />
+              </Animated.View>
+
+              {/* Title and Description */}
+              <View style={styles.textContainer}>
+                <Text style={[styles.title, {
+                  color: colors.text.primary,
+                  fontFamily: typography.fontFamily.secondary,
+                  fontWeight: typography.fontWeight.bold
+                }]}>
+                  {slide.title}
+                </Text>
+                <Text style={[styles.description, {
+                  color: colors.text.secondary,
+                  fontFamily: typography.fontFamily.primary
+                }]}>
+                  {slide.description}
+                </Text>
+              </View>
             </Animated.View>
           </View>
         ))}
@@ -143,22 +150,27 @@ export const OnboardingScreen: React.FC<Props> = ({ navigation }) => {
         style={styles.footer}
       >
         <TouchableOpacity onPress={handleSkip} style={styles.skipButton}>
-          <Text style={[styles.skipText, { color: colors.text.tertiary }]}>Skip</Text>
+          <Text style={[styles.skipText, {
+            color: colors.text.tertiary,
+            fontFamily: typography.fontFamily.primary
+          }]}>
+            Skip
+          </Text>
         </TouchableOpacity>
 
         <TouchableOpacity
           onPress={handleNext}
-          style={[styles.nextButton, {
+          style={[styles.continueButton, {
             backgroundColor: colors.primary.main,
             borderRadius: borderRadius.xl
           }]}
         >
-          <Text style={[styles.nextText, {
+          <Text style={[styles.continueText, {
             color: colors.text.inverse,
             fontFamily: typography.fontFamily.primary,
             fontWeight: typography.fontWeight.bold
           }]}>
-            {currentIndex === slides.length - 1 ? 'Get Started' : 'Next'}
+            {currentIndex === slides.length - 1 ? "Let's Get Started" : 'Continue'}
           </Text>
         </TouchableOpacity>
       </Animated.View>
@@ -173,33 +185,48 @@ const styles = StyleSheet.create({
   slide: {
     width,
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 20,
+    justifyContent: 'space-between',
+    paddingTop: 60,
+    paddingBottom: 20,
   },
   content: {
+    flex: 1,
     alignItems: 'center',
-    maxWidth: 350,
+    paddingHorizontal: 20,
   },
-  icon: {
-    fontSize: 120,
-    marginBottom: 32,
+  imageContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: '100%',
+    maxHeight: height * 0.5,
+  },
+  mockupImage: {
+    width: width * 0.7,
+    height: height * 0.5,
+  },
+  textContainer: {
+    width: '100%',
+    paddingHorizontal: 16,
+    marginTop: 20,
   },
   title: {
-    fontSize: 28,
+    fontSize: 24,
     textAlign: 'center',
     marginBottom: 12,
+    lineHeight: 32,
   },
   description: {
-    fontSize: 18,
+    fontSize: 15,
     textAlign: 'center',
-    lineHeight: 28,
+    lineHeight: 22,
+    paddingHorizontal: 8,
   },
   pagination: {
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    paddingVertical: 20,
+    paddingVertical: 16,
   },
   dot: {
     width: 8,
@@ -211,20 +238,20 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 20,
+    paddingHorizontal: 24,
     paddingBottom: 24,
   },
   skipButton: {
     padding: 12,
   },
   skipText: {
-    fontSize: 18,
+    fontSize: 16,
   },
-  nextButton: {
-    paddingHorizontal: 20,
-    paddingVertical: 12,
+  continueButton: {
+    paddingHorizontal: 32,
+    paddingVertical: 14,
   },
-  nextText: {
-    fontSize: 18,
+  continueText: {
+    fontSize: 16,
   },
 });
