@@ -1,9 +1,7 @@
 import React from 'react';
-import { View, Text, ScrollView, StyleSheet } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
-import { colors } from '../../constants/colors';
-import { typography } from '../../constants/typography';
-import { spacing } from '../../constants/spacing';
+import { View, Text, ScrollView, StyleSheet, SafeAreaView } from 'react-native';
+import Animated, { FadeInUp, FadeIn } from 'react-native-reanimated';
+import { useTheme } from '../../theme/useTheme';
 
 interface MoodEntry {
   id: string;
@@ -25,47 +23,98 @@ const MOCK_MOOD_HISTORY: MoodEntry[] = [
 ];
 
 export const MoodHistoryScreen = () => {
+  const { colors, typography, spacing, borderRadius, shadows } = useTheme();
+
   return (
-    <LinearGradient
-      colors={[colors.primary.darkBlue, colors.primary.cobaltBlue]}
-      style={styles.container}
-    >
-      <ScrollView style={styles.scrollView}>
-        <View style={styles.header}>
-          <Text style={styles.title}>Mood History</Text>
-          <Text style={styles.subtitle}>Track your emotional journey</Text>
-        </View>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background.primary }]}>
+      <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
+        {/* Header */}
+        <Animated.View entering={FadeInUp.delay(100).springify()} style={styles.header}>
+          <Text style={[styles.title, {
+            color: colors.text.primary,
+            fontFamily: typography.fontFamily.secondary
+          }]}>
+            Mood History
+          </Text>
+          <Text style={[styles.subtitle, {
+            color: colors.text.secondary,
+            fontFamily: typography.fontFamily.primary
+          }]}>
+            Track your emotional journey
+          </Text>
+        </Animated.View>
 
-        <View style={styles.streakCard}>
-          <LinearGradient
-            colors={[colors.accent.lime, colors.accent.brightLime]}
-            style={styles.streakGradient}
-          >
-            <Text style={styles.streakNumber}>7</Text>
-            <Text style={styles.streakLabel}>Day Streak</Text>
-          </LinearGradient>
-        </View>
+        {/* Streak Card */}
+        <Animated.View
+          entering={FadeInUp.delay(200).springify()}
+          style={[styles.streakCard, {
+            backgroundColor: colors.primary.main,
+            borderRadius: borderRadius.xl,
+            ...shadows.lg
+          }]}
+        >
+          <Text style={[styles.streakNumber, {
+            color: colors.text.inverse,
+            fontFamily: typography.fontFamily.secondary,
+            fontWeight: typography.fontWeight.bold
+          }]}>
+            7
+          </Text>
+          <Text style={[styles.streakLabel, {
+            color: colors.text.inverse,
+            fontFamily: typography.fontFamily.primary,
+            fontWeight: typography.fontWeight.semibold
+          }]}>
+            Day Streak
+          </Text>
+        </Animated.View>
 
+        {/* Mood Entries */}
         <View style={styles.entriesSection}>
-          {MOCK_MOOD_HISTORY.map((entry) => (
-            <View key={entry.id} style={styles.entryCard}>
+          {MOCK_MOOD_HISTORY.map((entry, index) => (
+            <Animated.View
+              key={entry.id}
+              entering={FadeInUp.delay(300 + index * 50).springify()}
+              style={[styles.entryCard, {
+                backgroundColor: colors.background.card,
+                borderColor: colors.border.light,
+                borderRadius: borderRadius.lg,
+                ...shadows.sm
+              }]}
+            >
               <View style={styles.entryHeader}>
                 <View style={styles.entryMood}>
                   <Text style={styles.entryEmoji}>{entry.emoji}</Text>
                   <View>
-                    <Text style={styles.entryLabel}>{entry.label}</Text>
-                    <Text style={styles.entryTime}>{entry.date} at {entry.time}</Text>
+                    <Text style={[styles.entryLabel, {
+                      color: colors.text.primary,
+                      fontFamily: typography.fontFamily.primary,
+                      fontWeight: typography.fontWeight.semibold
+                    }]}>
+                      {entry.label}
+                    </Text>
+                    <Text style={[styles.entryTime, {
+                      color: colors.text.tertiary,
+                      fontFamily: typography.fontFamily.primary
+                    }]}>
+                      {entry.date} at {entry.time}
+                    </Text>
                   </View>
                 </View>
               </View>
               {entry.note && (
-                <Text style={styles.entryNote}>{entry.note}</Text>
+                <Text style={[styles.entryNote, {
+                  color: colors.text.secondary,
+                  fontFamily: typography.fontFamily.primary
+                }]}>
+                  {entry.note}
+                </Text>
               )}
-            </View>
+            </Animated.View>
           ))}
         </View>
       </ScrollView>
-    </LinearGradient>
+    </SafeAreaView>
   );
 };
 
@@ -77,52 +126,41 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   header: {
-    padding: spacing.xl,
-    paddingTop: spacing['4xl'],
+    padding: 20,
+    paddingTop: 48,
   },
   title: {
-    ...typography.h1,
-    color: colors.text.primary,
-    marginBottom: spacing.sm,
+    fontSize: 28,
+    marginBottom: 8,
   },
   subtitle: {
-    ...typography.body,
-    color: colors.text.secondary,
+    fontSize: 16,
+    lineHeight: 24,
   },
   streakCard: {
-    marginHorizontal: spacing.xl,
-    marginBottom: spacing.xl,
-    borderRadius: spacing.borderRadius.lg,
-    overflow: 'hidden',
-  },
-  streakGradient: {
-    padding: spacing.xl,
+    marginHorizontal: 20,
+    marginBottom: 20,
+    padding: 24,
     alignItems: 'center',
   },
   streakNumber: {
     fontSize: 48,
-    fontWeight: typography.fontWeight.bold,
-    color: colors.primary.cobaltBlue,
-    marginBottom: spacing.xs,
+    marginBottom: 8,
   },
   streakLabel: {
-    ...typography.h2,
-    color: colors.primary.cobaltBlue,
+    fontSize: 20,
   },
   entriesSection: {
-    padding: spacing.xl,
+    padding: 20,
     paddingTop: 0,
   },
   entryCard: {
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderRadius: spacing.borderRadius.md,
-    padding: spacing.md,
-    marginBottom: spacing.md,
+    padding: 16,
+    marginBottom: 12,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
   },
   entryHeader: {
-    marginBottom: spacing.sm,
+    marginBottom: 8,
   },
   entryMood: {
     flexDirection: 'row',
@@ -130,19 +168,18 @@ const styles = StyleSheet.create({
   },
   entryEmoji: {
     fontSize: 32,
-    marginRight: spacing.md,
+    marginRight: 12,
   },
   entryLabel: {
-    ...typography.bodyBold,
-    color: colors.text.primary,
+    fontSize: 16,
   },
   entryTime: {
-    ...typography.caption,
-    color: colors.text.tertiary,
+    fontSize: 12,
+    marginTop: 2,
   },
   entryNote: {
-    ...typography.body,
-    color: colors.text.secondary,
+    fontSize: 14,
     fontStyle: 'italic',
+    lineHeight: 20,
   },
 });
