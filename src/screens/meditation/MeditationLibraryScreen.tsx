@@ -1,7 +1,17 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, ScrollView, StyleSheet, SafeAreaView } from 'react-native';
-import Animated, { FadeInUp, FadeIn } from 'react-native-reanimated';
-import { useTheme } from '../../theme/useTheme';
+import {
+  View,
+  StyleSheet,
+  TouchableOpacity,
+  SafeAreaView,
+  Image,
+  Dimensions,
+} from 'react-native';
+import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+
+const { width, height } = Dimensions.get('window');
+
+type Props = NativeStackScreenProps<any, 'MeditationLibrary'>;
 
 interface Meditation {
   id: string;
@@ -20,70 +30,66 @@ const MEDITATIONS: Meditation[] = [
   { id: '6', title: 'Focus & Clarity', duration: '15 min', category: 'Focus', emoji: '🎯' },
 ];
 
-export const MeditationLibraryScreen = ({ navigation }: any) => {
-  const { colors, typography, spacing, borderRadius, shadows } = useTheme();
+export const MeditationLibraryScreen: React.FC<Props> = ({ navigation }) => {
+  const handleMeditationPress = (meditation: Meditation, index: number) => {
+    navigation.navigate('MeditationPlayer', { meditation });
+  };
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: colors.background.primary }]}>
-      <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
-        {/* Header */}
-        <Animated.View entering={FadeInUp.delay(100).springify()} style={styles.header}>
-          <Text style={[styles.title, {
-            color: colors.text.primary,
-            fontFamily: typography.fontFamily.secondary
-          }]}>
-            Meditation Library
-          </Text>
-          <Text style={[styles.subtitle, {
-            color: colors.text.secondary,
-            fontFamily: typography.fontFamily.primary
-          }]}>
-            Find peace and clarity
-          </Text>
-        </Animated.View>
+    <SafeAreaView style={styles.container}>
+      <View style={styles.content}>
+        {/* Full-screen Figma design - Explore Meditations */}
+        <Image
+          source={require('../../figma-extracted/assets/screens/light-theme/54-light-explore-meditations.png')}
+          style={styles.fullScreenImage}
+          resizeMode="cover"
+        />
 
-        {/* Meditation Cards */}
-        <View style={styles.mediationList}>
-          {MEDITATIONS.map((meditation, index) => (
-            <Animated.View
-              key={meditation.id}
-              entering={FadeInUp.delay(200 + index * 50).springify()}
-            >
-              <TouchableOpacity
-                style={[styles.meditationCard, {
-                  backgroundColor: colors.primary.main,
-                  borderRadius: borderRadius.lg,
-                  ...shadows.md
-                }]}
-                onPress={() => navigation.navigate('MeditationPlayer', { meditation })}
-                activeOpacity={0.8}
-              >
-                <Text style={styles.meditationEmoji}>{meditation.emoji}</Text>
-                <Text style={[styles.meditationTitle, {
-                  color: colors.text.inverse,
-                  fontFamily: typography.fontFamily.primary,
-                  fontWeight: typography.fontWeight.bold
-                }]}>
-                  {meditation.title}
-                </Text>
-                <Text style={[styles.meditationCategory, {
-                  color: colors.text.inverse,
-                  fontFamily: typography.fontFamily.primary
-                }]}>
-                  {meditation.category}
-                </Text>
-                <Text style={[styles.meditationDuration, {
-                  color: colors.text.inverse,
-                  fontFamily: typography.fontFamily.primary,
-                  fontWeight: typography.fontWeight.semibold
-                }]}>
-                  {meditation.duration}
-                </Text>
-              </TouchableOpacity>
-            </Animated.View>
-          ))}
-        </View>
-      </ScrollView>
+        {/* Invisible touchable areas for meditation cards */}
+        {/* 6 meditation cards in vertical list */}
+
+        {/* Meditation 1 - Morning Calm */}
+        <TouchableOpacity
+          style={[styles.meditationCard, { top: height * 0.20 }]}
+          onPress={() => handleMeditationPress(MEDITATIONS[0], 0)}
+          activeOpacity={1}
+        />
+
+        {/* Meditation 2 - Stress Relief */}
+        <TouchableOpacity
+          style={[styles.meditationCard, { top: height * 0.31 }]}
+          onPress={() => handleMeditationPress(MEDITATIONS[1], 1)}
+          activeOpacity={1}
+        />
+
+        {/* Meditation 3 - Deep Sleep */}
+        <TouchableOpacity
+          style={[styles.meditationCard, { top: height * 0.42 }]}
+          onPress={() => handleMeditationPress(MEDITATIONS[2], 2)}
+          activeOpacity={1}
+        />
+
+        {/* Meditation 4 - Body Scan */}
+        <TouchableOpacity
+          style={[styles.meditationCard, { top: height * 0.53 }]}
+          onPress={() => handleMeditationPress(MEDITATIONS[3], 3)}
+          activeOpacity={1}
+        />
+
+        {/* Meditation 5 - Gratitude Practice */}
+        <TouchableOpacity
+          style={[styles.meditationCard, { top: height * 0.64 }]}
+          onPress={() => handleMeditationPress(MEDITATIONS[4], 4)}
+          activeOpacity={1}
+        />
+
+        {/* Meditation 6 - Focus & Clarity */}
+        <TouchableOpacity
+          style={[styles.meditationCard, { top: height * 0.75 }]}
+          onPress={() => handleMeditationPress(MEDITATIONS[5], 5)}
+          activeOpacity={1}
+        />
+      </View>
     </SafeAreaView>
   );
 };
@@ -91,44 +97,20 @@ export const MeditationLibraryScreen = ({ navigation }: any) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#FFFFFF',
   },
-  scrollView: {
+  content: {
     flex: 1,
   },
-  header: {
-    padding: 20,
-    paddingTop: 48,
-  },
-  title: {
-    fontSize: 28,
-    marginBottom: 8,
-  },
-  subtitle: {
-    fontSize: 16,
-    lineHeight: 24,
-  },
-  mediationList: {
-    padding: 20,
-    paddingTop: 0,
+  fullScreenImage: {
+    width,
+    height,
+    position: 'absolute',
   },
   meditationCard: {
-    padding: 20,
-    marginBottom: 12,
-  },
-  meditationEmoji: {
-    fontSize: 36,
-    marginBottom: 12,
-  },
-  meditationTitle: {
-    fontSize: 20,
-    marginBottom: 4,
-  },
-  meditationCategory: {
-    fontSize: 12,
-    marginBottom: 4,
-    opacity: 0.8,
-  },
-  meditationDuration: {
-    fontSize: 16,
+    position: 'absolute',
+    left: width * 0.05,
+    right: width * 0.05,
+    height: 90,
   },
 });

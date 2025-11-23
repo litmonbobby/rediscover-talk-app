@@ -1,66 +1,67 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView } from 'react-native';
-import Animated, { FadeInUp, FadeIn } from 'react-native-reanimated';
-import { useTheme } from '../../theme/useTheme';
+import {
+  View,
+  StyleSheet,
+  TouchableOpacity,
+  SafeAreaView,
+  Image,
+  Dimensions,
+} from 'react-native';
+import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 
-export const MeditationPlayerScreen = ({ route, navigation }: any) => {
-  const { colors, typography, spacing, borderRadius, shadows } = useTheme();
+const { width, height } = Dimensions.get('window');
+
+type Props = NativeStackScreenProps<any, 'MeditationPlayer'>;
+
+export const MeditationPlayerScreen: React.FC<Props> = ({ route, navigation }) => {
   const { meditation } = route.params;
   const [isPlaying, setIsPlaying] = useState(false);
 
+  const handlePlayPause = () => {
+    setIsPlaying(!isPlaying);
+    // TODO: Implement actual audio playback
+    console.log(isPlaying ? 'Pausing' : 'Playing', meditation.title);
+  };
+
+  const handleBack = () => {
+    navigation.goBack();
+  };
+
+  const handleOptions = () => {
+    // TODO: Show options menu
+    console.log('Options pressed');
+  };
+
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: colors.background.primary }]}>
+    <SafeAreaView style={styles.container}>
       <View style={styles.content}>
-        <Animated.Text entering={FadeInUp.delay(100).springify()} style={styles.emoji}>
-          {meditation.emoji}
-        </Animated.Text>
+        {/* Full-screen Figma design - Meditation Player */}
+        <Image
+          source={require('../../figma-extracted/assets/screens/light-theme/57-light-start-or-play-meditation.png')}
+          style={styles.fullScreenImage}
+          resizeMode="cover"
+        />
 
-        <Animated.Text entering={FadeInUp.delay(200).springify()} style={[styles.title, {
-          color: colors.text.primary,
-          fontFamily: typography.fontFamily.secondary
-        }]}>
-          {meditation.title}
-        </Animated.Text>
+        {/* Back button area (top left) */}
+        <TouchableOpacity
+          style={styles.backButtonArea}
+          onPress={handleBack}
+          activeOpacity={1}
+        />
 
-        <Animated.Text entering={FadeInUp.delay(250).springify()} style={[styles.category, {
-          color: colors.text.secondary,
-          fontFamily: typography.fontFamily.primary
-        }]}>
-          {meditation.category}
-        </Animated.Text>
+        {/* Options button area (top right) */}
+        <TouchableOpacity
+          style={styles.optionsButtonArea}
+          onPress={handleOptions}
+          activeOpacity={1}
+        />
 
-        <Animated.Text entering={FadeInUp.delay(300).springify()} style={[styles.duration, {
-          color: colors.primary.main,
-          fontFamily: typography.fontFamily.primary,
-          fontWeight: typography.fontWeight.semibold
-        }]}>
-          {meditation.duration}
-        </Animated.Text>
-
-        <Animated.View entering={FadeInUp.delay(400).springify()}>
-          <TouchableOpacity
-            style={[styles.playButton, {
-              backgroundColor: colors.primary.main,
-              borderRadius: borderRadius.full,
-              ...shadows.lg
-            }]}
-            onPress={() => setIsPlaying(!isPlaying)}
-            activeOpacity={0.8}
-          >
-            <Text style={[styles.playButtonText, {
-              color: colors.text.inverse
-            }]}>
-              {isPlaying ? '⏸' : '▶'}
-            </Text>
-          </TouchableOpacity>
-        </Animated.View>
-
-        <Animated.Text entering={FadeInUp.delay(500).springify()} style={[styles.instruction, {
-          color: colors.text.secondary,
-          fontFamily: typography.fontFamily.primary
-        }]}>
-          {isPlaying ? 'Breathe deeply and relax...' : 'Press play to begin'}
-        </Animated.Text>
+        {/* Play/Pause button area (center) */}
+        <TouchableOpacity
+          style={styles.playPauseArea}
+          onPress={handlePlayPause}
+          activeOpacity={1}
+        />
       </View>
     </SafeAreaView>
   );
@@ -69,42 +70,35 @@ export const MeditationPlayerScreen = ({ route, navigation }: any) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#FFFFFF',
   },
   content: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 32,
   },
-  emoji: {
-    fontSize: 80,
-    marginBottom: 24,
+  fullScreenImage: {
+    width,
+    height,
+    position: 'absolute',
   },
-  title: {
-    fontSize: 32,
-    marginBottom: 12,
-    textAlign: 'center',
+  backButtonArea: {
+    position: 'absolute',
+    top: 60,
+    left: 20,
+    width: 50,
+    height: 50,
   },
-  category: {
-    fontSize: 16,
-    marginBottom: 8,
+  optionsButtonArea: {
+    position: 'absolute',
+    top: 60,
+    right: 20,
+    width: 50,
+    height: 50,
   },
-  duration: {
-    fontSize: 18,
-    marginBottom: 64,
-  },
-  playButton: {
-    width: 100,
-    height: 100,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 32,
-  },
-  playButtonText: {
-    fontSize: 40,
-  },
-  instruction: {
-    fontSize: 16,
-    textAlign: 'center',
+  playPauseArea: {
+    position: 'absolute',
+    top: height * 0.45,
+    left: width * 0.35,
+    width: width * 0.30,
+    height: width * 0.30,
   },
 });
