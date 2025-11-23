@@ -9,11 +9,10 @@ import {
   Platform,
   ScrollView,
   Alert,
+  SafeAreaView,
 } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
-import { colors } from '../../constants/colors';
-import { typography } from '../../constants/typography';
-import { spacing } from '../../constants/spacing';
+import Animated, { FadeInUp, FadeIn } from 'react-native-reanimated';
+import { useTheme } from '../../theme/useTheme';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 
 type Props = NativeStackScreenProps<any, 'Login'>;
@@ -22,6 +21,7 @@ export const LoginScreen: React.FC<Props> = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const { colors, typography, spacing, borderRadius, shadows } = useTheme();
 
   const handleLogin = async () => {
     if (!email || !password) {
@@ -43,75 +43,129 @@ export const LoginScreen: React.FC<Props> = ({ navigation }) => {
   };
 
   return (
-    <LinearGradient
-      colors={[colors.primary.darkBlue, colors.primary.cobaltBlue]}
-      style={styles.container}
-    >
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background.primary }]}>
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={styles.keyboardView}
       >
         <ScrollView contentContainerStyle={styles.scrollContent}>
-          <View style={styles.header}>
-            <Text style={styles.headerTitle}>Welcome Back</Text>
-            <Text style={styles.headerSubtitle}>Log in to continue your journey</Text>
-          </View>
-
-        <View style={styles.formContainer}>
-          <View style={styles.inputGroup}>
-            <Text style={styles.label}>Email</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="Enter your email"
-              placeholderTextColor={colors.text.tertiary}
-              value={email}
-              onChangeText={setEmail}
-              keyboardType="email-address"
-              autoCapitalize="none"
-              autoComplete="email"
-            />
-          </View>
-
-          <View style={styles.inputGroup}>
-            <Text style={styles.label}>Password</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="Enter your password"
-              placeholderTextColor={colors.text.tertiary}
-              value={password}
-              onChangeText={setPassword}
-              secureTextEntry
-              autoCapitalize="none"
-            />
-          </View>
-
-          <TouchableOpacity style={styles.forgotPassword}>
-            <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={styles.loginButton}
-            onPress={handleLogin}
-            disabled={loading}
+          <Animated.View
+            entering={FadeInUp.delay(100).springify()}
+            style={styles.header}
           >
-            <Text style={styles.loginButtonText}>
-              {loading ? 'Logging in...' : 'Log In'}
+            <Text style={[styles.headerTitle, {
+              color: colors.text.primary,
+              fontFamily: typography.fontFamily.secondary
+            }]}>
+              Welcome Back
             </Text>
-          </TouchableOpacity>
+            <Text style={[styles.headerSubtitle, {
+              color: colors.text.secondary,
+              fontFamily: typography.fontFamily.primary
+            }]}>
+              Log in to continue your journey
+            </Text>
+          </Animated.View>
 
-          <TouchableOpacity
-            style={styles.signUpLink}
-            onPress={() => navigation.navigate('SignUp')}
+          <Animated.View
+            entering={FadeInUp.delay(200).springify()}
+            style={styles.formContainer}
           >
-            <Text style={styles.signUpLinkText}>
-              Don't have an account?{' '}
-              <Text style={styles.signUpLinkBold}>Sign Up</Text>
-            </Text>
-          </TouchableOpacity>
-        </View>
+            <View style={styles.inputGroup}>
+              <Text style={[styles.label, {
+                color: colors.text.secondary,
+                fontFamily: typography.fontFamily.primary
+              }]}>
+                Email
+              </Text>
+              <TextInput
+                style={[styles.input, {
+                  backgroundColor: colors.background.card,
+                  borderColor: colors.border.light,
+                  color: colors.text.primary,
+                  borderRadius: borderRadius.md
+                }]}
+                placeholder="Enter your email"
+                placeholderTextColor={colors.text.tertiary}
+                value={email}
+                onChangeText={setEmail}
+                keyboardType="email-address"
+                autoCapitalize="none"
+                autoComplete="email"
+              />
+            </View>
+
+            <View style={styles.inputGroup}>
+              <Text style={[styles.label, {
+                color: colors.text.secondary,
+                fontFamily: typography.fontFamily.primary
+              }]}>
+                Password
+              </Text>
+              <TextInput
+                style={[styles.input, {
+                  backgroundColor: colors.background.card,
+                  borderColor: colors.border.light,
+                  color: colors.text.primary,
+                  borderRadius: borderRadius.md
+                }]}
+                placeholder="Enter your password"
+                placeholderTextColor={colors.text.tertiary}
+                value={password}
+                onChangeText={setPassword}
+                secureTextEntry
+                autoCapitalize="none"
+              />
+            </View>
+
+            <TouchableOpacity style={styles.forgotPassword}>
+              <Text style={[styles.forgotPasswordText, {
+                color: colors.primary.main,
+                fontFamily: typography.fontFamily.primary
+              }]}>
+                Forgot Password?
+              </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[styles.loginButton, {
+                backgroundColor: colors.primary.main,
+                borderRadius: borderRadius.xl,
+                ...shadows.lg
+              }]}
+              onPress={handleLogin}
+              disabled={loading}
+            >
+              <Text style={[styles.loginButtonText, {
+                color: colors.text.inverse,
+                fontFamily: typography.fontFamily.primary,
+                fontWeight: typography.fontWeight.bold
+              }]}>
+                {loading ? 'Logging in...' : 'Log In'}
+              </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.signUpLink}
+              onPress={() => navigation.navigate('SignUp')}
+            >
+              <Text style={[styles.signUpLinkText, {
+                color: colors.text.secondary,
+                fontFamily: typography.fontFamily.primary
+              }]}>
+                Don't have an account?{' '}
+                <Text style={[styles.signUpLinkBold, {
+                  color: colors.primary.main,
+                  fontWeight: typography.fontWeight.semibold
+                }]}>
+                  Sign Up
+                </Text>
+              </Text>
+            </TouchableOpacity>
+          </Animated.View>
         </ScrollView>
       </KeyboardAvoidingView>
-    </LinearGradient>
+    </SafeAreaView>
   );
 };
 
@@ -124,74 +178,61 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     flexGrow: 1,
-    paddingBottom: spacing.xl,
+    paddingBottom: 20,
   },
   header: {
-    paddingTop: spacing.xl * 2,
-    paddingBottom: spacing.xl,
-    paddingHorizontal: spacing.lg,
+    paddingTop: 40,
+    paddingBottom: 20,
+    paddingHorizontal: 16,
     alignItems: 'center',
-    marginBottom: spacing.lg,
+    marginBottom: 16,
   },
   headerTitle: {
-    ...typography.h1,
-    color: colors.text.primary,
-    marginBottom: spacing.xs,
+    fontSize: 28,
+    marginBottom: 4,
   },
   headerSubtitle: {
-    ...typography.body,
-    color: colors.text.secondary,
+    fontSize: 16,
   },
   formContainer: {
     flex: 1,
-    paddingHorizontal: spacing.lg,
+    paddingHorizontal: 16,
   },
   inputGroup: {
-    marginBottom: spacing.md,
+    marginBottom: 12,
   },
   label: {
-    ...typography.bodyBold,
-    color: colors.text.primary,
-    marginBottom: spacing.sm,
+    fontSize: 14,
+    fontWeight: '600',
+    marginBottom: 8,
   },
   input: {
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderRadius: spacing.borderRadius.md,
-    padding: spacing.md,
-    ...typography.body,
-    color: colors.text.primary,
+    padding: 12,
+    fontSize: 16,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
   },
   forgotPassword: {
     alignSelf: 'flex-end',
-    marginBottom: spacing.lg,
+    marginBottom: 16,
   },
   forgotPasswordText: {
-    ...typography.body,
-    color: colors.accent.lime,
+    fontSize: 14,
   },
   loginButton: {
-    borderRadius: spacing.borderRadius.lg,
-    overflow: 'hidden',
+    paddingVertical: 16,
+    alignItems: 'center',
   },
   loginButtonText: {
-    ...typography.h2,
-    backgroundColor: colors.accent.lime,
-    paddingVertical: spacing.md,
-    textAlign: 'center',
-    color: colors.primary.cobaltBlue,
+    fontSize: 18,
   },
   signUpLink: {
-    marginTop: spacing.xl,
+    marginTop: 20,
     alignItems: 'center',
   },
   signUpLinkText: {
-    ...typography.body,
-    color: colors.text.secondary,
+    fontSize: 14,
   },
   signUpLinkBold: {
-    color: colors.accent.lime,
-    fontWeight: '700',
+    fontSize: 14,
   },
 });
