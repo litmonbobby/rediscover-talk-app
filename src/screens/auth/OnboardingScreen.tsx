@@ -9,10 +9,8 @@ import {
   NativeScrollEvent,
   NativeSyntheticEvent,
 } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
-import { colors } from '../../constants/colors';
-import { typography } from '../../constants/typography';
-import { spacing } from '../../constants/spacing';
+import Animated, { FadeInUp, FadeIn } from 'react-native-reanimated';
+import { useTheme } from '../../theme/useTheme';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 
 const { width } = Dimensions.get('window');
@@ -30,30 +28,31 @@ interface OnboardingSlide {
 const slides: OnboardingSlide[] = [
   {
     id: 1,
-    title: 'Track Your Mood',
-    description: 'Monitor your emotional well-being with daily mood check-ins and insights',
-    icon: '😊',
-    gradient: [colors.primary.cobaltBlue, colors.primary.darkBlue],
+    title: 'Welcome to Rediscover Talk',
+    description: 'Your personal mental wellness companion for better mental health',
+    icon: '🌱',
+    gradient: ['#9eb567', '#87a055'],
   },
   {
     id: 2,
-    title: 'Guided Meditation',
-    description: 'Access a library of meditation sessions designed to reduce stress and anxiety',
-    icon: '🧘',
-    gradient: [colors.primary.darkBlue, colors.accent.lime],
+    title: 'Track Your Progress',
+    description: 'Monitor your mood, complete daily tasks, and build healthy habits',
+    icon: '📊',
+    gradient: ['#87a055', '#9eb567'],
   },
   {
     id: 3,
-    title: 'Journal Your Journey',
-    description: 'Reflect on your thoughts and track your progress with therapeutic journaling',
-    icon: '📝',
-    gradient: [colors.accent.lime, colors.primary.cobaltBlue],
+    title: 'Guided Wellness',
+    description: 'Access meditation, journaling, and breathing exercises for your mental health',
+    icon: '🧘',
+    gradient: ['#9eb567', '#b5c889'],
   },
 ];
 
 export const OnboardingScreen: React.FC<Props> = ({ navigation }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const scrollViewRef = useRef<ScrollView>(null);
+  const { colors, typography, spacing, borderRadius } = useTheme();
 
   const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
     const offsetX = event.nativeEvent.contentOffset.x;
@@ -68,16 +67,16 @@ export const OnboardingScreen: React.FC<Props> = ({ navigation }) => {
         animated: true,
       });
     } else {
-      navigation.replace('SignUp');
+      navigation.replace('Welcome');
     }
   };
 
   const handleSkip = () => {
-    navigation.replace('SignUp');
+    navigation.replace('Welcome');
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: colors.background.primary }]}>
       <ScrollView
         ref={scrollViewRef}
         horizontal
@@ -86,46 +85,83 @@ export const OnboardingScreen: React.FC<Props> = ({ navigation }) => {
         onScroll={handleScroll}
         scrollEventThrottle={16}
       >
-        {slides.map((slide) => (
-          <LinearGradient
+        {slides.map((slide, index) => (
+          <View
             key={slide.id}
-            colors={slide.gradient}
-            style={styles.slide}
+            style={[styles.slide, { backgroundColor: colors.background.primary }]}
           >
-            <View style={styles.content}>
-              <Text style={styles.icon}>{slide.icon}</Text>
-              <Text style={styles.title}>{slide.title}</Text>
-              <Text style={styles.description}>{slide.description}</Text>
-            </View>
-          </LinearGradient>
+            <Animated.View
+              entering={FadeInUp.delay(index * 100).springify()}
+              style={styles.content}
+            >
+              <Animated.Text
+                entering={FadeIn.delay(index * 100 + 200).duration(500)}
+                style={styles.icon}
+              >
+                {slide.icon}
+              </Animated.Text>
+              <Text style={[styles.title, {
+                color: colors.text.primary,
+                fontFamily: typography.fontFamily.secondary
+              }]}>
+                {slide.title}
+              </Text>
+              <Text style={[styles.description, {
+                color: colors.text.secondary,
+                fontFamily: typography.fontFamily.primary
+              }]}>
+                {slide.description}
+              </Text>
+            </Animated.View>
+          </View>
         ))}
       </ScrollView>
 
       {/* Pagination Dots */}
-      <View style={styles.pagination}>
+      <Animated.View
+        entering={FadeIn.delay(300).duration(500)}
+        style={styles.pagination}
+      >
         {slides.map((_, index) => (
           <View
             key={index}
             style={[
               styles.dot,
-              index === currentIndex && styles.dotActive,
+              { backgroundColor: colors.border.main },
+              index === currentIndex && {
+                backgroundColor: colors.primary.main,
+                width: 24
+              },
             ]}
           />
         ))}
-      </View>
+      </Animated.View>
 
       {/* Navigation Buttons */}
-      <View style={styles.footer}>
+      <Animated.View
+        entering={FadeInUp.delay(400).springify()}
+        style={styles.footer}
+      >
         <TouchableOpacity onPress={handleSkip} style={styles.skipButton}>
-          <Text style={styles.skipText}>Skip</Text>
+          <Text style={[styles.skipText, { color: colors.text.tertiary }]}>Skip</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={handleNext} style={styles.nextButton}>
-          <Text style={styles.nextText}>
+        <TouchableOpacity
+          onPress={handleNext}
+          style={[styles.nextButton, {
+            backgroundColor: colors.primary.main,
+            borderRadius: borderRadius.xl
+          }]}
+        >
+          <Text style={[styles.nextText, {
+            color: colors.text.inverse,
+            fontFamily: typography.fontFamily.primary,
+            fontWeight: typography.fontWeight.bold
+          }]}>
             {currentIndex === slides.length - 1 ? 'Get Started' : 'Next'}
           </Text>
         </TouchableOpacity>
-      </View>
+      </Animated.View>
     </View>
   );
 };
@@ -133,14 +169,13 @@ export const OnboardingScreen: React.FC<Props> = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.primary.cobaltBlue,
   },
   slide: {
     width,
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    padding: spacing.xl,
+    padding: 20,
   },
   content: {
     alignItems: 'center',
@@ -148,62 +183,48 @@ const styles = StyleSheet.create({
   },
   icon: {
     fontSize: 120,
-    marginBottom: spacing['3xl'],
+    marginBottom: 32,
   },
   title: {
-    fontSize: typography.fontSize['3xl'],
-    fontWeight: typography.fontWeight.bold,
-    color: colors.text.primary,
+    fontSize: 28,
     textAlign: 'center',
-    marginBottom: spacing.md,
+    marginBottom: 12,
   },
   description: {
-    fontSize: typography.fontSize.lg,
-    color: 'rgba(255, 255, 255, 0.9)',
+    fontSize: 18,
     textAlign: 'center',
-    lineHeight: typography.fontSize.lg * typography.lineHeight.relaxed,
+    lineHeight: 28,
   },
   pagination: {
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    paddingVertical: spacing.xl,
+    paddingVertical: 20,
   },
   dot: {
     width: 8,
     height: 8,
     borderRadius: 4,
-    backgroundColor: 'rgba(255, 255, 255, 0.4)',
     marginHorizontal: 4,
-  },
-  dotActive: {
-    backgroundColor: colors.accent.lime,
-    width: 24,
   },
   footer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: spacing.xl,
-    paddingBottom: spacing['2xl'],
+    paddingHorizontal: 20,
+    paddingBottom: 24,
   },
   skipButton: {
-    padding: spacing.md,
+    padding: 12,
   },
   skipText: {
-    fontSize: typography.fontSize.lg,
-    color: 'rgba(255, 255, 255, 0.7)',
-    fontWeight: typography.fontWeight.medium,
+    fontSize: 18,
   },
   nextButton: {
-    backgroundColor: colors.accent.lime,
-    paddingHorizontal: spacing.xl,
-    paddingVertical: spacing.md,
-    borderRadius: spacing.borderRadius.xl,
+    paddingHorizontal: 20,
+    paddingVertical: 12,
   },
   nextText: {
-    fontSize: typography.fontSize.lg,
-    color: colors.primary.cobaltBlue,
-    fontWeight: typography.fontWeight.bold,
+    fontSize: 18,
   },
 });

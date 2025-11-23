@@ -9,11 +9,10 @@ import {
   Platform,
   ScrollView,
   Alert,
+  SafeAreaView,
 } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
-import { colors } from '../../constants/colors';
-import { typography } from '../../constants/typography';
-import { spacing } from '../../constants/spacing';
+import Animated, { FadeInUp, FadeIn } from 'react-native-reanimated';
+import { useTheme } from '../../theme/useTheme';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 
 type Props = NativeStackScreenProps<any, 'SignUp'>;
@@ -24,6 +23,7 @@ export const SignUpScreen: React.FC<Props> = ({ navigation }) => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [name, setName] = useState('');
   const [loading, setLoading] = useState(false);
+  const { colors, typography, spacing, borderRadius, shadows } = useTheme();
 
   const validateForm = (): boolean => {
     if (!name.trim()) {
@@ -79,10 +79,7 @@ export const SignUpScreen: React.FC<Props> = ({ navigation }) => {
   };
 
   return (
-    <LinearGradient
-      colors={[colors.primary.darkBlue, colors.primary.cobaltBlue]}
-      style={styles.container}
-    >
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background.primary }]}>
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={styles.keyboardView}
@@ -91,119 +88,165 @@ export const SignUpScreen: React.FC<Props> = ({ navigation }) => {
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
         >
-          <View style={styles.header}>
-            <Text style={styles.headerTitle}>Create Account</Text>
-            <Text style={styles.headerSubtitle}>
+          <Animated.View
+            entering={FadeInUp.delay(100).springify()}
+            style={styles.header}
+          >
+            <Text style={[styles.headerTitle, {
+              color: colors.text.primary,
+              fontFamily: typography.fontFamily.secondary
+            }]}>
+              Create Account
+            </Text>
+            <Text style={[styles.headerSubtitle, {
+              color: colors.text.secondary,
+              fontFamily: typography.fontFamily.primary
+            }]}>
               Start your mental wellness journey
             </Text>
-          </View>
+          </Animated.View>
 
-        <View style={styles.formContainer}>
-          {/* Name Input */}
-          <View style={styles.inputGroup}>
-            <Text style={styles.label}>Full Name</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="Enter your name"
-              placeholderTextColor={colors.text.tertiary}
-              value={name}
-              onChangeText={setName}
-              autoCapitalize="words"
-            />
-          </View>
-
-          {/* Email Input */}
-          <View style={styles.inputGroup}>
-            <Text style={styles.label}>Email</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="Enter your email"
-              placeholderTextColor={colors.text.tertiary}
-              value={email}
-              onChangeText={setEmail}
-              keyboardType="email-address"
-              autoCapitalize="none"
-              autoComplete="email"
-            />
-          </View>
-
-          {/* Password Input */}
-          <View style={styles.inputGroup}>
-            <Text style={styles.label}>Password</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="Create a password"
-              placeholderTextColor={colors.text.tertiary}
-              value={password}
-              onChangeText={setPassword}
-              secureTextEntry
-              autoCapitalize="none"
-            />
-          </View>
-
-          {/* Confirm Password Input */}
-          <View style={styles.inputGroup}>
-            <Text style={styles.label}>Confirm Password</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="Confirm your password"
-              placeholderTextColor={colors.text.tertiary}
-              value={confirmPassword}
-              onChangeText={setConfirmPassword}
-              secureTextEntry
-              autoCapitalize="none"
-            />
-          </View>
-
-          {/* Sign Up Button */}
-          <TouchableOpacity
-            style={styles.signUpButton}
-            onPress={handleSignUp}
-            disabled={loading}
+          <Animated.View
+            entering={FadeInUp.delay(200).springify()}
+            style={styles.formContainer}
           >
-            <Text style={styles.signUpButtonText}>
-              {loading ? 'Creating Account...' : 'Sign Up'}
-            </Text>
-          </TouchableOpacity>
+            {/* Name Input */}
+            <View style={styles.inputGroup}>
+              <Text style={[styles.label, {
+                color: colors.text.secondary,
+                fontFamily: typography.fontFamily.primary
+              }]}>
+                Full Name
+              </Text>
+              <TextInput
+                style={[styles.input, {
+                  backgroundColor: colors.background.card,
+                  borderColor: colors.border.light,
+                  color: colors.text.primary,
+                  borderRadius: borderRadius.md
+                }]}
+                placeholder="Enter your name"
+                placeholderTextColor={colors.text.tertiary}
+                value={name}
+                onChangeText={setName}
+                autoCapitalize="words"
+              />
+            </View>
 
-          {/* Divider */}
-          <View style={styles.divider}>
-            <View style={styles.dividerLine} />
-            <Text style={styles.dividerText}>or continue with</Text>
-            <View style={styles.dividerLine} />
-          </View>
+            {/* Email Input */}
+            <View style={styles.inputGroup}>
+              <Text style={[styles.label, {
+                color: colors.text.secondary,
+                fontFamily: typography.fontFamily.primary
+              }]}>
+                Email
+              </Text>
+              <TextInput
+                style={[styles.input, {
+                  backgroundColor: colors.background.card,
+                  borderColor: colors.border.light,
+                  color: colors.text.primary,
+                  borderRadius: borderRadius.md
+                }]}
+                placeholder="Enter your email"
+                placeholderTextColor={colors.text.tertiary}
+                value={email}
+                onChangeText={setEmail}
+                keyboardType="email-address"
+                autoCapitalize="none"
+                autoComplete="email"
+              />
+            </View>
 
-          {/* Social Login Buttons */}
-          <View style={styles.socialButtons}>
+            {/* Password Input */}
+            <View style={styles.inputGroup}>
+              <Text style={[styles.label, {
+                color: colors.text.secondary,
+                fontFamily: typography.fontFamily.primary
+              }]}>
+                Password
+              </Text>
+              <TextInput
+                style={[styles.input, {
+                  backgroundColor: colors.background.card,
+                  borderColor: colors.border.light,
+                  color: colors.text.primary,
+                  borderRadius: borderRadius.md
+                }]}
+                placeholder="Create a password"
+                placeholderTextColor={colors.text.tertiary}
+                value={password}
+                onChangeText={setPassword}
+                secureTextEntry
+                autoCapitalize="none"
+              />
+            </View>
+
+            {/* Confirm Password Input */}
+            <View style={styles.inputGroup}>
+              <Text style={[styles.label, {
+                color: colors.text.secondary,
+                fontFamily: typography.fontFamily.primary
+              }]}>
+                Confirm Password
+              </Text>
+              <TextInput
+                style={[styles.input, {
+                  backgroundColor: colors.background.card,
+                  borderColor: colors.border.light,
+                  color: colors.text.primary,
+                  borderRadius: borderRadius.md
+                }]}
+                placeholder="Confirm your password"
+                placeholderTextColor={colors.text.tertiary}
+                value={confirmPassword}
+                onChangeText={setConfirmPassword}
+                secureTextEntry
+                autoCapitalize="none"
+              />
+            </View>
+
+            {/* Sign Up Button */}
             <TouchableOpacity
-              style={styles.socialButton}
-              onPress={() => handleSocialLogin('Google')}
+              style={[styles.signUpButton, {
+                backgroundColor: colors.primary.main,
+                borderRadius: borderRadius.xl,
+                ...shadows.lg
+              }]}
+              onPress={handleSignUp}
+              disabled={loading}
             >
-              <Text style={styles.socialButtonText}>🌐 Google</Text>
+              <Text style={[styles.signUpButtonText, {
+                color: colors.text.inverse,
+                fontFamily: typography.fontFamily.primary,
+                fontWeight: typography.fontWeight.bold
+              }]}>
+                {loading ? 'Creating Account...' : 'Sign Up'}
+              </Text>
             </TouchableOpacity>
 
+            {/* Login Link */}
             <TouchableOpacity
-              style={styles.socialButton}
-              onPress={() => handleSocialLogin('Apple')}
+              style={styles.loginLink}
+              onPress={() => navigation.navigate('Login')}
             >
-              <Text style={styles.socialButtonText}>🍎 Apple</Text>
+              <Text style={[styles.loginLinkText, {
+                color: colors.text.secondary,
+                fontFamily: typography.fontFamily.primary
+              }]}>
+                Already have an account?{' '}
+                <Text style={[styles.loginLinkBold, {
+                  color: colors.primary.main,
+                  fontWeight: typography.fontWeight.semibold
+                }]}>
+                  Log In
+                </Text>
+              </Text>
             </TouchableOpacity>
-          </View>
-
-          {/* Login Link */}
-          <TouchableOpacity
-            style={styles.loginLink}
-            onPress={() => navigation.navigate('Login')}
-          >
-            <Text style={styles.loginLinkText}>
-              Already have an account?{' '}
-              <Text style={styles.loginLinkBold}>Log In</Text>
-            </Text>
-          </TouchableOpacity>
-        </View>
+          </Animated.View>
         </ScrollView>
       </KeyboardAvoidingView>
-    </LinearGradient>
+    </SafeAreaView>
   );
 };
 
@@ -216,27 +259,25 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     flexGrow: 1,
-    paddingBottom: spacing.xl,
+    paddingBottom: 20,
   },
   header: {
-    paddingTop: spacing.xl * 2,
-    paddingBottom: spacing.xl,
-    paddingHorizontal: spacing.lg,
+    paddingTop: 40,
+    paddingBottom: 20,
+    paddingHorizontal: 16,
     alignItems: 'center',
-    marginBottom: spacing.lg,
+    marginBottom: 16,
   },
   headerTitle: {
-    ...typography.h1,
-    color: colors.text.primary,
-    marginBottom: spacing.xs,
+    fontSize: 28,
+    marginBottom: 4,
   },
   headerSubtitle: {
-    ...typography.body,
-    color: colors.text.secondary,
+    fontSize: 16,
   },
   formContainer: {
     flex: 1,
-    paddingHorizontal: spacing.lg,
+    paddingHorizontal: 16,
   },
   inputGroup: {
     marginBottom: spacing.md,

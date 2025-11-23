@@ -1,12 +1,12 @@
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { SplashScreen, OnboardingScreen, SignUpScreen, LoginScreen, GoalSelectionScreen } from '../screens/auth';
+import { SplashScreen, OnboardingScreen, WelcomeScreen, SignUpScreen, LoginScreen, GoalSelectionScreen } from '../screens/auth';
 import { TabNavigator } from './TabNavigator';
 
 /**
  * Root Navigation Structure:
- * - Auth Flow: Splash → Onboarding → SignUp/Login → GoalSelection → Main
+ * - Auth Flow: Splash → Onboarding → Welcome → SignUp/Login → GoalSelection → Main
  * - Main App: Bottom Tab Navigator (5 tabs)
  *   - HomeTab: Home, Mood, Insights, Breathwork
  *   - MeditationTab: Meditation Library, Player, Sleep Sounds
@@ -18,6 +18,7 @@ import { TabNavigator } from './TabNavigator';
 export type RootStackParamList = {
   Splash: undefined;
   Onboarding: undefined;
+  Welcome: undefined;
   SignUp: undefined;
   Login: undefined;
   GoalSelection: undefined;
@@ -39,6 +40,7 @@ export const AppNavigator = () => {
         {/* Authentication Flow */}
         <Stack.Screen name="Splash" component={SplashScreen} />
         <Stack.Screen name="Onboarding" component={OnboardingScreen} />
+        <Stack.Screen name="Welcome" component={WelcomeScreen} />
         <Stack.Screen name="SignUp" component={SignUpScreen} />
         <Stack.Screen name="Login" component={LoginScreen} />
         <Stack.Screen name="GoalSelection" component={GoalSelectionScreen} />
