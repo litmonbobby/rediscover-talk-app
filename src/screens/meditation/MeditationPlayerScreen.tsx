@@ -1,42 +1,68 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
-import { colors } from '../../constants/colors';
-import { typography } from '../../constants/typography';
-import { spacing } from '../../constants/spacing';
+import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView } from 'react-native';
+import Animated, { FadeInUp, FadeIn } from 'react-native-reanimated';
+import { useTheme } from '../../theme/useTheme';
 
 export const MeditationPlayerScreen = ({ route, navigation }: any) => {
+  const { colors, typography, spacing, borderRadius, shadows } = useTheme();
   const { meditation } = route.params;
   const [isPlaying, setIsPlaying] = useState(false);
 
   return (
-    <LinearGradient
-      colors={[colors.primary.darkBlue, colors.primary.cobaltBlue]}
-      style={styles.container}
-    >
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background.primary }]}>
       <View style={styles.content}>
-        <Text style={styles.emoji}>{meditation.emoji}</Text>
-        <Text style={styles.title}>{meditation.title}</Text>
-        <Text style={styles.category}>{meditation.category}</Text>
-        <Text style={styles.duration}>{meditation.duration}</Text>
+        <Animated.Text entering={FadeInUp.delay(100).springify()} style={styles.emoji}>
+          {meditation.emoji}
+        </Animated.Text>
 
-        <TouchableOpacity
-          style={styles.playButton}
-          onPress={() => setIsPlaying(!isPlaying)}
-        >
-          <LinearGradient
-            colors={[colors.accent.lime, colors.accent.brightLime]}
-            style={styles.playButtonGradient}
+        <Animated.Text entering={FadeInUp.delay(200).springify()} style={[styles.title, {
+          color: colors.text.primary,
+          fontFamily: typography.fontFamily.secondary
+        }]}>
+          {meditation.title}
+        </Animated.Text>
+
+        <Animated.Text entering={FadeInUp.delay(250).springify()} style={[styles.category, {
+          color: colors.text.secondary,
+          fontFamily: typography.fontFamily.primary
+        }]}>
+          {meditation.category}
+        </Animated.Text>
+
+        <Animated.Text entering={FadeInUp.delay(300).springify()} style={[styles.duration, {
+          color: colors.primary.main,
+          fontFamily: typography.fontFamily.primary,
+          fontWeight: typography.fontWeight.semibold
+        }]}>
+          {meditation.duration}
+        </Animated.Text>
+
+        <Animated.View entering={FadeInUp.delay(400).springify()}>
+          <TouchableOpacity
+            style={[styles.playButton, {
+              backgroundColor: colors.primary.main,
+              borderRadius: borderRadius.full,
+              ...shadows.lg
+            }]}
+            onPress={() => setIsPlaying(!isPlaying)}
+            activeOpacity={0.8}
           >
-            <Text style={styles.playButtonText}>{isPlaying ? '⏸' : '▶'}</Text>
-          </LinearGradient>
-        </TouchableOpacity>
+            <Text style={[styles.playButtonText, {
+              color: colors.text.inverse
+            }]}>
+              {isPlaying ? '⏸' : '▶'}
+            </Text>
+          </TouchableOpacity>
+        </Animated.View>
 
-        <Text style={styles.instruction}>
+        <Animated.Text entering={FadeInUp.delay(500).springify()} style={[styles.instruction, {
+          color: colors.text.secondary,
+          fontFamily: typography.fontFamily.primary
+        }]}>
           {isPlaying ? 'Breathe deeply and relax...' : 'Press play to begin'}
-        </Text>
+        </Animated.Text>
       </View>
-    </LinearGradient>
+    </SafeAreaView>
   );
 };
 
@@ -48,47 +74,37 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    padding: spacing.xl,
+    padding: 32,
   },
   emoji: {
     fontSize: 80,
-    marginBottom: spacing.lg,
+    marginBottom: 24,
   },
   title: {
-    ...typography.h1,
-    color: colors.text.primary,
-    marginBottom: spacing.sm,
+    fontSize: 32,
+    marginBottom: 12,
     textAlign: 'center',
   },
   category: {
-    ...typography.body,
-    color: colors.text.secondary,
-    marginBottom: spacing.xs,
+    fontSize: 16,
+    marginBottom: 8,
   },
   duration: {
-    ...typography.bodyBold,
-    color: colors.accent.lime,
-    marginBottom: spacing['4xl'],
+    fontSize: 18,
+    marginBottom: 64,
   },
   playButton: {
     width: 100,
     height: 100,
-    borderRadius: 50,
-    overflow: 'hidden',
-    marginBottom: spacing.xl,
-  },
-  playButtonGradient: {
-    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    marginBottom: 32,
   },
   playButtonText: {
     fontSize: 40,
-    color: colors.primary.cobaltBlue,
   },
   instruction: {
-    ...typography.body,
-    color: colors.text.secondary,
+    fontSize: 16,
     textAlign: 'center',
   },
 });
