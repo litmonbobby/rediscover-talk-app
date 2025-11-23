@@ -1,170 +1,131 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   View,
-  Text,
-  TextInput,
-  TouchableOpacity,
   StyleSheet,
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
-  Alert,
+  TouchableOpacity,
   SafeAreaView,
+  Image,
+  Dimensions,
 } from 'react-native';
-import Animated, { FadeInUp, FadeIn } from 'react-native-reanimated';
-import { useTheme } from '../../theme/useTheme';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+
+const { width, height } = Dimensions.get('window');
 
 type Props = NativeStackScreenProps<any, 'Login'>;
 
 export const LoginScreen: React.FC<Props> = ({ navigation }) => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [loading, setLoading] = useState(false);
-  const { colors, typography, spacing, borderRadius, shadows } = useTheme();
+  const handleGoogleSignIn = () => {
+    // TODO: Implement Google Sign In
+    navigation.replace('Main');
+  };
 
-  const handleLogin = async () => {
-    if (!email || !password) {
-      Alert.alert('Error', 'Please enter both email and password');
-      return;
-    }
+  const handleAppleSignIn = () => {
+    // TODO: Implement Apple Sign In
+    navigation.replace('Main');
+  };
 
-    setLoading(true);
-    try {
-      // TODO: Implement Supabase login
-      setTimeout(() => {
-        setLoading(false);
-        navigation.replace('Main');
-      }, 1000);
-    } catch (error) {
-      setLoading(false);
-      Alert.alert('Error', 'Failed to log in');
-    }
+  const handleFacebookSignIn = () => {
+    // TODO: Implement Facebook Sign In
+    navigation.replace('Main');
+  };
+
+  const handleTwitterSignIn = () => {
+    // TODO: Implement Twitter/X Sign In
+    navigation.replace('Main');
+  };
+
+  const handleSignIn = () => {
+    // TODO: Implement email/password sign in
+    navigation.replace('Main');
+  };
+
+  const handleBackButton = () => {
+    navigation.goBack();
+  };
+
+  const handleForgotPassword = () => {
+    // TODO: Implement forgot password
   };
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: colors.background.primary }]}>
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        style={styles.keyboardView}
-      >
-        <ScrollView contentContainerStyle={styles.scrollContent}>
-          <Animated.View
-            entering={FadeInUp.delay(100).springify()}
-            style={styles.header}
-          >
-            <Text style={[styles.headerTitle, {
-              color: colors.text.primary,
-              fontFamily: typography.fontFamily.secondary
-            }]}>
-              Welcome Back
-            </Text>
-            <Text style={[styles.headerSubtitle, {
-              color: colors.text.secondary,
-              fontFamily: typography.fontFamily.primary
-            }]}>
-              Log in to continue your journey
-            </Text>
-          </Animated.View>
+    <SafeAreaView style={styles.container}>
+      <View style={styles.content}>
+        {/* Full-screen Figma design */}
+        <Image
+          source={require('../../figma-extracted/assets/screens/light-theme/20-light-sign-in-blank-form.png')}
+          style={styles.fullScreenImage}
+          resizeMode="cover"
+        />
 
-          <Animated.View
-            entering={FadeInUp.delay(200).springify()}
-            style={styles.formContainer}
-          >
-            <View style={styles.inputGroup}>
-              <Text style={[styles.label, {
-                color: colors.text.secondary,
-                fontFamily: typography.fontFamily.primary
-              }]}>
-                Email
-              </Text>
-              <TextInput
-                style={[styles.input, {
-                  backgroundColor: colors.background.card,
-                  borderColor: colors.border.light,
-                  color: colors.text.primary,
-                  borderRadius: borderRadius.md
-                }]}
-                placeholder="Enter your email"
-                placeholderTextColor={colors.text.tertiary}
-                value={email}
-                onChangeText={setEmail}
-                keyboardType="email-address"
-                autoCapitalize="none"
-                autoComplete="email"
-              />
-            </View>
+        {/* Invisible touchable areas for buttons */}
 
-            <View style={styles.inputGroup}>
-              <Text style={[styles.label, {
-                color: colors.text.secondary,
-                fontFamily: typography.fontFamily.primary
-              }]}>
-                Password
-              </Text>
-              <TextInput
-                style={[styles.input, {
-                  backgroundColor: colors.background.card,
-                  borderColor: colors.border.light,
-                  color: colors.text.primary,
-                  borderRadius: borderRadius.md
-                }]}
-                placeholder="Enter your password"
-                placeholderTextColor={colors.text.tertiary}
-                value={password}
-                onChangeText={setPassword}
-                secureTextEntry
-                autoCapitalize="none"
-              />
-            </View>
+        {/* Back button area */}
+        <TouchableOpacity
+          style={styles.backButtonArea}
+          onPress={handleBackButton}
+          activeOpacity={1}
+        />
 
-            <TouchableOpacity style={styles.forgotPassword}>
-              <Text style={[styles.forgotPasswordText, {
-                color: colors.primary.main,
-                fontFamily: typography.fontFamily.primary
-              }]}>
-                Forgot Password?
-              </Text>
-            </TouchableOpacity>
+        {/* Email input area (tap to focus - will need real implementation later) */}
+        <TouchableOpacity
+          style={[styles.inputArea, { top: height * 0.30 }]}
+          activeOpacity={1}
+        />
 
-            <TouchableOpacity
-              style={[styles.loginButton, {
-                backgroundColor: colors.primary.main,
-                borderRadius: borderRadius.xl,
-                ...shadows.lg
-              }]}
-              onPress={handleLogin}
-              disabled={loading}
-            >
-              <Text style={[styles.loginButtonText, {
-                color: colors.text.inverse,
-                fontFamily: typography.fontFamily.primary,
-                fontWeight: typography.fontWeight.bold
-              }]}>
-                {loading ? 'Logging in...' : 'Log In'}
-              </Text>
-            </TouchableOpacity>
+        {/* Password input area (tap to focus - will need real implementation later) */}
+        <TouchableOpacity
+          style={[styles.inputArea, { top: height * 0.43 }]}
+          activeOpacity={1}
+        />
 
-            <TouchableOpacity
-              style={styles.signUpLink}
-              onPress={() => navigation.navigate('SignUp')}
-            >
-              <Text style={[styles.signUpLinkText, {
-                color: colors.text.secondary,
-                fontFamily: typography.fontFamily.primary
-              }]}>
-                Don't have an account?{' '}
-                <Text style={[styles.signUpLinkBold, {
-                  color: colors.primary.main,
-                  fontWeight: typography.fontWeight.semibold
-                }]}>
-                  Sign Up
-                </Text>
-              </Text>
-            </TouchableOpacity>
-          </Animated.View>
-        </ScrollView>
-      </KeyboardAvoidingView>
+        {/* Remember me checkbox area */}
+        <TouchableOpacity
+          style={styles.rememberMeArea}
+          activeOpacity={1}
+        />
+
+        {/* Forgot password link area */}
+        <TouchableOpacity
+          style={styles.forgotPasswordArea}
+          onPress={handleForgotPassword}
+          activeOpacity={1}
+        />
+
+        {/* Google button area */}
+        <TouchableOpacity
+          style={[styles.socialButtonArea, { top: height * 0.63 }]}
+          onPress={handleGoogleSignIn}
+          activeOpacity={1}
+        />
+
+        {/* Apple button area */}
+        <TouchableOpacity
+          style={[styles.socialButtonArea, { top: height * 0.70 }]}
+          onPress={handleAppleSignIn}
+          activeOpacity={1}
+        />
+
+        {/* Facebook button area */}
+        <TouchableOpacity
+          style={[styles.socialButtonArea, { top: height * 0.77 }]}
+          onPress={handleFacebookSignIn}
+          activeOpacity={1}
+        />
+
+        {/* X/Twitter button area */}
+        <TouchableOpacity
+          style={[styles.socialButtonArea, { top: height * 0.84 }]}
+          onPress={handleTwitterSignIn}
+          activeOpacity={1}
+        />
+
+        {/* Sign in button area */}
+        <TouchableOpacity
+          style={styles.signInButtonArea}
+          onPress={handleSignIn}
+          activeOpacity={1}
+        />
+      </View>
     </SafeAreaView>
   );
 };
@@ -172,67 +133,54 @@ export const LoginScreen: React.FC<Props> = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#FFFFFF',
   },
-  keyboardView: {
+  content: {
     flex: 1,
   },
-  scrollContent: {
-    flexGrow: 1,
-    paddingBottom: 20,
+  fullScreenImage: {
+    width,
+    height,
+    position: 'absolute',
   },
-  header: {
-    paddingTop: 40,
-    paddingBottom: 20,
-    paddingHorizontal: 16,
-    alignItems: 'center',
-    marginBottom: 16,
+  backButtonArea: {
+    position: 'absolute',
+    top: 60,
+    left: 20,
+    width: 50,
+    height: 50,
   },
-  headerTitle: {
-    fontSize: 28,
-    marginBottom: 4,
+  inputArea: {
+    position: 'absolute',
+    left: width * 0.05,
+    right: width * 0.05,
+    height: 60,
   },
-  headerSubtitle: {
-    fontSize: 16,
+  rememberMeArea: {
+    position: 'absolute',
+    top: height * 0.52,
+    left: width * 0.05,
+    width: 150,
+    height: 40,
   },
-  formContainer: {
-    flex: 1,
-    paddingHorizontal: 16,
+  forgotPasswordArea: {
+    position: 'absolute',
+    top: height * 0.52,
+    right: width * 0.05,
+    width: 150,
+    height: 40,
   },
-  inputGroup: {
-    marginBottom: 12,
+  socialButtonArea: {
+    position: 'absolute',
+    left: width * 0.05,
+    right: width * 0.05,
+    height: 60,
   },
-  label: {
-    fontSize: 14,
-    fontWeight: '600',
-    marginBottom: 8,
-  },
-  input: {
-    padding: 12,
-    fontSize: 16,
-    borderWidth: 1,
-  },
-  forgotPassword: {
-    alignSelf: 'flex-end',
-    marginBottom: 16,
-  },
-  forgotPasswordText: {
-    fontSize: 14,
-  },
-  loginButton: {
-    paddingVertical: 16,
-    alignItems: 'center',
-  },
-  loginButtonText: {
-    fontSize: 18,
-  },
-  signUpLink: {
-    marginTop: 20,
-    alignItems: 'center',
-  },
-  signUpLinkText: {
-    fontSize: 14,
-  },
-  signUpLinkBold: {
-    fontSize: 14,
+  signInButtonArea: {
+    position: 'absolute',
+    bottom: height * 0.05,
+    left: width * 0.05,
+    right: width * 0.05,
+    height: 60,
   },
 });
