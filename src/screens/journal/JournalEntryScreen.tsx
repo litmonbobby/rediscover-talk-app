@@ -8,11 +8,10 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
+  SafeAreaView,
 } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
-import { colors } from '../../constants/colors';
-import { typography } from '../../constants/typography';
-import { spacing } from '../../constants/spacing';
+import Animated, { FadeInUp, FadeIn } from 'react-native-reanimated';
+import { useTheme } from '../../theme/useTheme';
 
 type MoodType = 'amazing' | 'good' | 'okay' | 'bad' | 'terrible';
 
@@ -25,6 +24,7 @@ const moodOptions = [
 ];
 
 export const JournalEntryScreen = ({ navigation }: any) => {
+  const { colors, typography, spacing, borderRadius, shadows } = useTheme();
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [selectedMood, setSelectedMood] = useState<MoodType | null>(null);
@@ -47,13 +47,10 @@ export const JournalEntryScreen = ({ navigation }: any) => {
   };
 
   return (
-    <KeyboardAvoidingView
-      style={styles.container}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-    >
-      <LinearGradient
-        colors={[colors.primary.darkBlue, colors.primary.cobaltBlue]}
-        style={styles.gradient}
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background.primary }]}>
+      <KeyboardAvoidingView
+        style={styles.keyboardView}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       >
         <ScrollView
           style={styles.scrollView}
@@ -61,59 +58,122 @@ export const JournalEntryScreen = ({ navigation }: any) => {
           showsVerticalScrollIndicator={false}
         >
           {/* Header */}
-          <View style={styles.header}>
-            <TouchableOpacity onPress={() => navigation.goBack()} style={styles.closeButton}>
-              <Text style={styles.closeIcon}>✕</Text>
+          <Animated.View entering={FadeInUp.delay(100).springify()} style={styles.header}>
+            <TouchableOpacity
+              onPress={() => navigation.goBack()}
+              style={[styles.closeButton, {
+                backgroundColor: colors.background.secondary,
+                borderRadius: borderRadius.lg
+              }]}
+            >
+              <Text style={[styles.closeIcon, {
+                color: colors.text.primary,
+                fontFamily: typography.fontFamily.primary
+              }]}>
+                ✕
+              </Text>
             </TouchableOpacity>
-            <Text style={styles.title}>New Entry</Text>
-            <Text style={styles.subtitle}>Express your thoughts and feelings</Text>
-          </View>
+            <Text style={[styles.title, {
+              color: colors.text.primary,
+              fontFamily: typography.fontFamily.secondary
+            }]}>
+              New Entry
+            </Text>
+            <Text style={[styles.subtitle, {
+              color: colors.text.secondary,
+              fontFamily: typography.fontFamily.primary
+            }]}>
+              Express your thoughts and feelings
+            </Text>
+          </Animated.View>
 
           {/* Title Input */}
-          <View style={styles.inputContainer}>
-            <Text style={styles.inputLabel}>Title</Text>
+          <Animated.View entering={FadeInUp.delay(200).springify()} style={styles.inputContainer}>
+            <Text style={[styles.inputLabel, {
+              color: colors.text.primary,
+              fontFamily: typography.fontFamily.primary,
+              fontWeight: typography.fontWeight.semibold
+            }]}>
+              Title
+            </Text>
             <TextInput
-              style={styles.titleInput}
+              style={[styles.titleInput, {
+                backgroundColor: colors.background.card,
+                borderColor: colors.border.light,
+                color: colors.text.primary,
+                borderRadius: borderRadius.lg,
+                fontFamily: typography.fontFamily.primary
+              }]}
               placeholder="Give your entry a title..."
               placeholderTextColor={colors.text.tertiary}
               value={title}
               onChangeText={setTitle}
             />
-          </View>
+          </Animated.View>
 
           {/* Mood Selector */}
-          <View style={styles.moodContainer}>
-            <Text style={styles.inputLabel}>How are you feeling?</Text>
+          <Animated.View entering={FadeInUp.delay(300).springify()} style={styles.moodContainer}>
+            <Text style={[styles.inputLabel, {
+              color: colors.text.primary,
+              fontFamily: typography.fontFamily.primary,
+              fontWeight: typography.fontWeight.semibold
+            }]}>
+              How are you feeling?
+            </Text>
             <View style={styles.moodGrid}>
-              {moodOptions.map((mood) => (
-                <TouchableOpacity
+              {moodOptions.map((mood, index) => (
+                <Animated.View
                   key={mood.type}
-                  style={[
-                    styles.moodOption,
-                    selectedMood === mood.type && styles.moodOptionSelected,
-                  ]}
-                  onPress={() => setSelectedMood(mood.type)}
-                  activeOpacity={0.7}
+                  entering={FadeInUp.delay(350 + index * 30).springify()}
                 >
-                  <Text style={styles.moodEmoji}>{mood.emoji}</Text>
-                  <Text
+                  <TouchableOpacity
                     style={[
-                      styles.moodLabel,
-                      selectedMood === mood.type && styles.moodLabelSelected,
+                      styles.moodOption,
+                      {
+                        backgroundColor: selectedMood === mood.type ? colors.background.card : colors.background.secondary,
+                        borderColor: selectedMood === mood.type ? colors.primary.main : colors.border.light,
+                        borderRadius: borderRadius.lg
+                      }
                     ]}
+                    onPress={() => setSelectedMood(mood.type)}
+                    activeOpacity={0.7}
                   >
-                    {mood.label}
-                  </Text>
-                </TouchableOpacity>
+                    <Text style={styles.moodEmoji}>{mood.emoji}</Text>
+                    <Text
+                      style={[
+                        styles.moodLabel,
+                        {
+                          color: selectedMood === mood.type ? colors.text.primary : colors.text.tertiary,
+                          fontFamily: typography.fontFamily.primary,
+                          fontWeight: selectedMood === mood.type ? typography.fontWeight.semibold : typography.fontWeight.regular
+                        }
+                      ]}
+                    >
+                      {mood.label}
+                    </Text>
+                  </TouchableOpacity>
+                </Animated.View>
               ))}
             </View>
-          </View>
+          </Animated.View>
 
           {/* Content Input */}
-          <View style={styles.inputContainer}>
-            <Text style={styles.inputLabel}>Your thoughts</Text>
+          <Animated.View entering={FadeInUp.delay(500).springify()} style={styles.inputContainer}>
+            <Text style={[styles.inputLabel, {
+              color: colors.text.primary,
+              fontFamily: typography.fontFamily.primary,
+              fontWeight: typography.fontWeight.semibold
+            }]}>
+              Your thoughts
+            </Text>
             <TextInput
-              style={styles.contentInput}
+              style={[styles.contentInput, {
+                backgroundColor: colors.background.card,
+                borderColor: colors.border.light,
+                color: colors.text.primary,
+                borderRadius: borderRadius.lg,
+                fontFamily: typography.fontFamily.primary
+              }]}
               placeholder="What's on your mind today?"
               placeholderTextColor={colors.text.tertiary}
               value={content}
@@ -122,34 +182,35 @@ export const JournalEntryScreen = ({ navigation }: any) => {
               numberOfLines={10}
               textAlignVertical="top"
             />
-          </View>
+          </Animated.View>
 
           {/* Save Button */}
-          <TouchableOpacity
-            style={[
-              styles.saveButton,
-              (!title.trim() || !content.trim()) && styles.saveButtonDisabled,
-            ]}
-            onPress={handleSave}
-            disabled={!title.trim() || !content.trim()}
-            activeOpacity={0.8}
-          >
-            <LinearGradient
-              colors={
-                title.trim() && content.trim()
-                  ? [colors.accent.lime, colors.accent.brightLime]
-                  : [colors.ui.disabled, colors.ui.disabled]
-              }
-              style={styles.saveButtonGradient}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 0 }}
+          <Animated.View entering={FadeInUp.delay(600).springify()}>
+            <TouchableOpacity
+              style={[
+                styles.saveButton,
+                {
+                  backgroundColor: (title.trim() && content.trim()) ? colors.primary.main : colors.background.secondary,
+                  borderRadius: borderRadius.xl,
+                  ...shadows.lg
+                }
+              ]}
+              onPress={handleSave}
+              disabled={!title.trim() || !content.trim()}
+              activeOpacity={0.8}
             >
-              <Text style={styles.saveButtonText}>Save Entry</Text>
-            </LinearGradient>
-          </TouchableOpacity>
+              <Text style={[styles.saveButtonText, {
+                color: (title.trim() && content.trim()) ? colors.text.inverse : colors.text.tertiary,
+                fontFamily: typography.fontFamily.primary,
+                fontWeight: typography.fontWeight.bold
+              }]}>
+                Save Entry
+              </Text>
+            </TouchableOpacity>
+          </Animated.View>
         </ScrollView>
-      </LinearGradient>
-    </KeyboardAvoidingView>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 };
 
@@ -157,20 +218,20 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  gradient: {
+  keyboardView: {
     flex: 1,
   },
   scrollView: {
     flex: 1,
   },
   scrollContent: {
-    paddingHorizontal: spacing.lg,
-    paddingTop: spacing.xl * 2,
-    paddingBottom: spacing.xl,
+    paddingHorizontal: 20,
+    paddingTop: 48,
+    paddingBottom: 24,
   },
   header: {
     alignItems: 'center',
-    marginBottom: spacing.xl,
+    marginBottom: 24,
   },
   closeButton: {
     position: 'absolute',
@@ -178,102 +239,67 @@ const styles = StyleSheet.create({
     right: 0,
     width: 40,
     height: 40,
-    borderRadius: 20,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
     justifyContent: 'center',
     alignItems: 'center',
   },
   closeIcon: {
-    ...typography.h2,
-    color: colors.text.primary,
+    fontSize: 24,
   },
   title: {
-    ...typography.h1,
-    color: colors.text.primary,
-    marginBottom: spacing.xs,
+    fontSize: 28,
+    marginBottom: 4,
   },
   subtitle: {
-    ...typography.body,
-    color: colors.text.secondary,
+    fontSize: 16,
+    lineHeight: 24,
   },
   inputContainer: {
-    marginBottom: spacing.lg,
+    marginBottom: 20,
   },
   inputLabel: {
-    ...typography.bodyBold,
-    color: colors.text.primary,
-    marginBottom: spacing.sm,
+    fontSize: 16,
+    marginBottom: 8,
   },
   titleInput: {
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderRadius: spacing.borderRadius.md,
-    padding: spacing.md,
-    ...typography.h3,
-    color: colors.text.primary,
+    padding: 16,
+    fontSize: 18,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
   },
   moodContainer: {
-    marginBottom: spacing.lg,
+    marginBottom: 20,
   },
   moodGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: spacing.sm,
+    gap: 12,
   },
   moodOption: {
     width: '18%',
     aspectRatio: 1,
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderRadius: spacing.borderRadius.md,
     borderWidth: 2,
-    borderColor: 'transparent',
     justifyContent: 'center',
     alignItems: 'center',
   },
-  moodOptionSelected: {
-    backgroundColor: 'rgba(255, 255, 255, 0.15)',
-    borderColor: colors.accent.lime,
-  },
   moodEmoji: {
     fontSize: 28,
-    marginBottom: spacing.xs / 2,
+    marginBottom: 4,
   },
   moodLabel: {
-    ...typography.caption,
     fontSize: 11,
-    color: colors.text.tertiary,
-  },
-  moodLabelSelected: {
-    ...typography.caption,
-    fontSize: 11,
-    fontWeight: '700',
-    color: colors.text.primary,
   },
   contentInput: {
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderRadius: spacing.borderRadius.md,
-    padding: spacing.md,
-    ...typography.body,
-    color: colors.text.primary,
+    padding: 16,
+    fontSize: 16,
+    lineHeight: 24,
     minHeight: 200,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
   },
   saveButton: {
-    borderRadius: spacing.borderRadius.md,
-    overflow: 'hidden',
-    marginTop: spacing.lg,
-  },
-  saveButtonDisabled: {
-    opacity: 0.5,
-  },
-  saveButtonGradient: {
-    paddingVertical: spacing.md,
+    marginTop: 20,
+    paddingVertical: 16,
     alignItems: 'center',
   },
   saveButtonText: {
-    ...typography.button,
-    color: colors.primary.cobaltBlue,
+    fontSize: 18,
   },
 });
