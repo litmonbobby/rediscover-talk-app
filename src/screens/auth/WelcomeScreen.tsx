@@ -5,6 +5,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   SafeAreaView,
+  Image,
 } from 'react-native';
 import Animated, { FadeInUp, FadeIn } from 'react-native-reanimated';
 import { useTheme } from '../../theme/useTheme';
@@ -39,38 +40,43 @@ export const WelcomeScreen: React.FC<Props> = ({ navigation }) => {
     navigation.navigate('SignUp');
   };
 
-  const handleLogin = () => {
+  const handleSignIn = () => {
     navigation.navigate('Login');
   };
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background.primary }]}>
       <View style={styles.content}>
+        {/* Logo */}
+        <Animated.View
+          entering={FadeIn.delay(100).duration(500)}
+          style={styles.logoContainer}
+        >
+          <Image
+            source={require('../../../assets/splash-icon.png')}
+            style={styles.logo}
+            resizeMode="contain"
+          />
+        </Animated.View>
+
         {/* Header */}
         <Animated.View
-          entering={FadeInUp.delay(100).springify()}
+          entering={FadeInUp.delay(200).springify()}
           style={styles.header}
         >
           <Text style={[styles.title, {
             color: colors.text.primary,
-            fontFamily: typography.fontFamily.secondary
+            fontFamily: typography.fontFamily.secondary,
+            fontWeight: typography.fontWeight.bold
           }]}>
-            Welcome to{'\n'}Rediscover Talk
+            Let's Get Started!
           </Text>
           <Text style={[styles.subtitle, {
             color: colors.text.secondary,
             fontFamily: typography.fontFamily.primary
           }]}>
-            Your personal mental wellness companion
+            Let's dive in into your account
           </Text>
-        </Animated.View>
-
-        {/* Logo/Icon Placeholder */}
-        <Animated.View
-          entering={FadeIn.delay(200).duration(500)}
-          style={styles.logoContainer}
-        >
-          <Text style={styles.logo}>🌱</Text>
         </Animated.View>
 
         {/* Social Login Buttons */}
@@ -80,74 +86,95 @@ export const WelcomeScreen: React.FC<Props> = ({ navigation }) => {
         >
           <TouchableOpacity
             style={[styles.socialButton, {
-              backgroundColor: colors.social.google,
-              ...shadows.md
+              backgroundColor: colors.background.card,
+              borderColor: colors.border.light,
+              borderRadius: borderRadius.xl,
+              ...shadows.sm
             }]}
             onPress={handleGoogleSignIn}
           >
-            <Text style={styles.socialIcon}>G</Text>
-            <Text style={[styles.socialText, { color: colors.text.inverse }]}>
+            <View style={styles.socialIconContainer}>
+              <Text style={styles.socialIcon}>G</Text>
+            </View>
+            <Text style={[styles.socialText, {
+              color: colors.text.primary,
+              fontFamily: typography.fontFamily.primary,
+              fontWeight: typography.fontWeight.semibold
+            }]}>
               Continue with Google
             </Text>
           </TouchableOpacity>
 
           <TouchableOpacity
             style={[styles.socialButton, {
-              backgroundColor: colors.social.apple,
-              ...shadows.md
+              backgroundColor: colors.background.card,
+              borderColor: colors.border.light,
+              borderRadius: borderRadius.xl,
+              ...shadows.sm
             }]}
             onPress={handleAppleSignIn}
           >
-            <Text style={styles.socialIcon}></Text>
-            <Text style={[styles.socialText, { color: colors.text.inverse }]}>
+            <View style={styles.socialIconContainer}>
+              <Text style={styles.socialIcon}></Text>
+            </View>
+            <Text style={[styles.socialText, {
+              color: colors.text.primary,
+              fontFamily: typography.fontFamily.primary,
+              fontWeight: typography.fontWeight.semibold
+            }]}>
               Continue with Apple
             </Text>
           </TouchableOpacity>
 
           <TouchableOpacity
             style={[styles.socialButton, {
-              backgroundColor: colors.social.facebook,
-              ...shadows.md
+              backgroundColor: colors.background.card,
+              borderColor: colors.border.light,
+              borderRadius: borderRadius.xl,
+              ...shadows.sm
             }]}
             onPress={handleFacebookSignIn}
           >
-            <Text style={styles.socialIcon}>f</Text>
-            <Text style={[styles.socialText, { color: colors.text.inverse }]}>
+            <View style={styles.socialIconContainer}>
+              <Text style={styles.socialIcon}>f</Text>
+            </View>
+            <Text style={[styles.socialText, {
+              color: colors.text.primary,
+              fontFamily: typography.fontFamily.primary,
+              fontWeight: typography.fontWeight.semibold
+            }]}>
               Continue with Facebook
             </Text>
           </TouchableOpacity>
 
           <TouchableOpacity
             style={[styles.socialButton, {
-              backgroundColor: colors.social.twitter,
-              borderWidth: 1,
-              borderColor: colors.border.dark,
-              ...shadows.md
+              backgroundColor: colors.background.card,
+              borderColor: colors.border.light,
+              borderRadius: borderRadius.xl,
+              ...shadows.sm
             }]}
             onPress={handleTwitterSignIn}
           >
-            <Text style={styles.socialIcon}>𝕏</Text>
-            <Text style={[styles.socialText, { color: colors.text.inverse }]}>
+            <View style={styles.socialIconContainer}>
+              <Text style={styles.socialIcon}>𝕏</Text>
+            </View>
+            <Text style={[styles.socialText, {
+              color: colors.text.primary,
+              fontFamily: typography.fontFamily.primary,
+              fontWeight: typography.fontWeight.semibold
+            }]}>
               Continue with X
             </Text>
           </TouchableOpacity>
         </Animated.View>
 
-        {/* Divider */}
-        <Animated.View
-          entering={FadeIn.delay(400).duration(500)}
-          style={styles.dividerContainer}
-        >
-          <View style={[styles.dividerLine, { backgroundColor: colors.border.main }]} />
-          <Text style={[styles.dividerText, { color: colors.text.tertiary }]}>OR</Text>
-          <View style={[styles.dividerLine, { backgroundColor: colors.border.main }]} />
-        </Animated.View>
-
-        {/* Sign Up Button */}
+        {/* Bottom Section */}
         <Animated.View
           entering={FadeInUp.delay(500).springify()}
-          style={styles.buttonContainer}
+          style={styles.bottomSection}
         >
+          {/* Sign Up Button */}
           <TouchableOpacity
             style={[styles.signUpButton, {
               backgroundColor: colors.primary.main,
@@ -161,25 +188,41 @@ export const WelcomeScreen: React.FC<Props> = ({ navigation }) => {
               fontFamily: typography.fontFamily.primary,
               fontWeight: typography.fontWeight.bold
             }]}>
-              Sign Up
+              Sign up
             </Text>
           </TouchableOpacity>
 
-          {/* Login Link */}
-          <TouchableOpacity onPress={handleLogin} style={styles.loginContainer}>
-            <Text style={[styles.loginText, {
-              color: colors.text.secondary,
-              fontFamily: typography.fontFamily.primary
+          {/* Sign In Link */}
+          <TouchableOpacity onPress={handleSignIn} style={styles.signInContainer}>
+            <Text style={[styles.signInText, {
+              color: colors.primary.main,
+              fontFamily: typography.fontFamily.primary,
+              fontWeight: typography.fontWeight.semibold
             }]}>
-              Already have an account?{' '}
-              <Text style={[styles.loginLink, {
-                color: colors.primary.main,
-                fontWeight: typography.fontWeight.semibold
-              }]}>
-                Log In
-              </Text>
+              Sign in
             </Text>
           </TouchableOpacity>
+
+          {/* Privacy Links */}
+          <View style={styles.privacyLinks}>
+            <TouchableOpacity>
+              <Text style={[styles.privacyText, {
+                color: colors.text.tertiary,
+                fontFamily: typography.fontFamily.primary
+              }]}>
+                Privacy Policy
+              </Text>
+            </TouchableOpacity>
+            <Text style={[styles.privacySeparator, { color: colors.text.tertiary }]}>•</Text>
+            <TouchableOpacity>
+              <Text style={[styles.privacyText, {
+                color: colors.text.tertiary,
+                fontFamily: typography.fontFamily.primary
+              }]}>
+                Terms of Service
+              </Text>
+            </TouchableOpacity>
+          </View>
         </Animated.View>
       </View>
     </SafeAreaView>
@@ -193,28 +236,29 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
     paddingHorizontal: 24,
-    paddingTop: 40,
+    paddingTop: 60,
     paddingBottom: 24,
+  },
+  logoContainer: {
+    alignItems: 'center',
+    marginBottom: 32,
+  },
+  logo: {
+    width: 100,
+    height: 100,
   },
   header: {
     alignItems: 'center',
-    marginBottom: 20,
+    marginBottom: 32,
   },
   title: {
-    fontSize: 32,
+    fontSize: 28,
     textAlign: 'center',
-    marginBottom: 12,
+    marginBottom: 8,
   },
   subtitle: {
     fontSize: 16,
     textAlign: 'center',
-  },
-  logoContainer: {
-    alignItems: 'center',
-    marginVertical: 32,
-  },
-  logo: {
-    fontSize: 80,
   },
   socialContainer: {
     marginBottom: 24,
@@ -222,36 +266,24 @@ const styles = StyleSheet.create({
   socialButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
     paddingVertical: 14,
     paddingHorizontal: 20,
-    borderRadius: 12,
     marginBottom: 12,
+    borderWidth: 1,
+  },
+  socialIconContainer: {
+    width: 24,
+    alignItems: 'center',
+    marginRight: 12,
   },
   socialIcon: {
     fontSize: 20,
-    marginRight: 12,
     fontWeight: '700',
   },
   socialText: {
     fontSize: 16,
-    fontWeight: '600',
   },
-  dividerContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginVertical: 24,
-  },
-  dividerLine: {
-    flex: 1,
-    height: 1,
-  },
-  dividerText: {
-    marginHorizontal: 16,
-    fontSize: 14,
-    fontWeight: '500',
-  },
-  buttonContainer: {
+  bottomSection: {
     marginTop: 'auto',
   },
   signUpButton: {
@@ -262,14 +294,25 @@ const styles = StyleSheet.create({
   signUpText: {
     fontSize: 18,
   },
-  loginContainer: {
+  signInContainer: {
     alignItems: 'center',
     paddingVertical: 12,
+    marginBottom: 16,
   },
-  loginText: {
-    fontSize: 14,
+  signInText: {
+    fontSize: 16,
   },
-  loginLink: {
-    fontSize: 14,
+  privacyLinks: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: 8,
+  },
+  privacyText: {
+    fontSize: 13,
+  },
+  privacySeparator: {
+    fontSize: 13,
+    marginHorizontal: 8,
   },
 });
