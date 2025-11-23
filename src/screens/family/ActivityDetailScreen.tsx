@@ -8,16 +8,14 @@ import {
   SafeAreaView,
 } from 'react-native';
 import Animated, { FadeInDown, FadeInUp, ZoomIn } from 'react-native-reanimated';
-import { LinearGradient } from 'expo-linear-gradient';
-import { colors } from '../../constants/colors';
-import { typography } from '../../constants/typography';
-import { spacing } from '../../constants/spacing';
+import { useTheme } from '../../theme/useTheme';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { FamilyStackParamList } from '../../navigation/stacks/FamilyStack';
 
 type Props = NativeStackScreenProps<FamilyStackParamList, 'ActivityDetail'>;
 
 export const ActivityDetailScreen: React.FC<Props> = ({ navigation, route }) => {
+  const { colors, typography, spacing, borderRadius, shadows } = useTheme();
   const { activity } = route.params;
   const [isTimerRunning, setIsTimerRunning] = useState(false);
 
@@ -86,13 +84,15 @@ export const ActivityDetailScreen: React.FC<Props> = ({ navigation, route }) => 
   const instructions = getInstructions();
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background.primary }]}>
+      <View style={[styles.header, { backgroundColor: colors.background.primary }]}>
         <TouchableOpacity
           onPress={() => navigation.goBack()}
-          style={styles.backButton}
+          style={[styles.backButton, { backgroundColor: colors.background.secondary, borderRadius: borderRadius.lg }]}
         >
-          <Text style={styles.backButtonText}>← Back</Text>
+          <Text style={[styles.backButtonText, { color: colors.text.primary, fontFamily: typography.fontFamily.primary }]}>
+            ← Back
+          </Text>
         </TouchableOpacity>
       </View>
 
@@ -101,9 +101,9 @@ export const ActivityDetailScreen: React.FC<Props> = ({ navigation, route }) => 
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        <LinearGradient
-          colors={[colors.primary.cobaltBlue, colors.primary.darkBlue]}
-          style={styles.activityHeader}
+        <Animated.View
+          style={[styles.activityHeader, { backgroundColor: colors.primary.main, borderRadius: borderRadius.xl }]}
+          entering={FadeInUp.delay(100).springify()}
         >
           <Animated.Text
             style={styles.activityEmoji}
@@ -112,46 +112,58 @@ export const ActivityDetailScreen: React.FC<Props> = ({ navigation, route }) => 
             {activity.emoji}
           </Animated.Text>
           <Animated.Text
-            style={styles.activityTitle}
+            style={[styles.activityTitle, { color: colors.text.inverse, fontFamily: typography.fontFamily.secondary, fontWeight: typography.fontWeight.bold }]}
             entering={FadeInUp.delay(200).springify()}
           >
             {activity.title}
           </Animated.Text>
           <Animated.Text
-            style={styles.activityDescription}
+            style={[styles.activityDescription, { color: colors.text.inverse, fontFamily: typography.fontFamily.primary }]}
             entering={FadeInUp.delay(300).springify()}
           >
             {activity.description}
           </Animated.Text>
 
           <View style={styles.metaRow}>
-            <View style={styles.metaItem}>
-              <Text style={styles.metaLabel}>⏱️ {activity.duration}</Text>
+            <View style={[styles.metaItem, { backgroundColor: colors.primary.dark, borderRadius: borderRadius.full }]}>
+              <Text style={[styles.metaLabel, { color: colors.text.inverse, fontFamily: typography.fontFamily.primary, fontWeight: typography.fontWeight.medium }]}>
+                ⏱️ {activity.duration}
+              </Text>
             </View>
-            <View style={styles.metaItem}>
-              <Text style={styles.metaLabel}>👥 {activity.participants}</Text>
+            <View style={[styles.metaItem, { backgroundColor: colors.primary.dark, borderRadius: borderRadius.full }]}>
+              <Text style={[styles.metaLabel, { color: colors.text.inverse, fontFamily: typography.fontFamily.primary, fontWeight: typography.fontWeight.medium }]}>
+                👥 {activity.participants}
+              </Text>
             </View>
-            <View style={styles.metaItem}>
-              <Text style={styles.metaLabel}>📊 {activity.difficulty}</Text>
+            <View style={[styles.metaItem, { backgroundColor: colors.primary.dark, borderRadius: borderRadius.full }]}>
+              <Text style={[styles.metaLabel, { color: colors.text.inverse, fontFamily: typography.fontFamily.primary, fontWeight: typography.fontWeight.medium }]}>
+                📊 {activity.difficulty}
+              </Text>
             </View>
           </View>
-        </LinearGradient>
+        </Animated.View>
 
         <Animated.View
           style={styles.section}
           entering={FadeInUp.delay(400).springify()}
         >
-          <Text style={styles.sectionTitle}>How to Play</Text>
+          <Text style={[styles.sectionTitle, { color: colors.text.primary, fontFamily: typography.fontFamily.primary, fontWeight: typography.fontWeight.bold }]}>
+            How to Play
+          </Text>
           {instructions.map((instruction, index) => (
             <Animated.View
               key={index}
               style={styles.instructionItem}
               entering={FadeInUp.delay(500 + index * 80).springify().damping(15)}
             >
-              <View style={styles.stepNumber}>
-                <Text style={styles.stepNumberText}>{index + 1}</Text>
+              <View style={[styles.stepNumber, { backgroundColor: colors.primary.light, borderRadius: borderRadius.full }]}>
+                <Text style={[styles.stepNumberText, { color: colors.primary.main, fontFamily: typography.fontFamily.primary, fontWeight: typography.fontWeight.bold }]}>
+                  {index + 1}
+                </Text>
               </View>
-              <Text style={styles.instructionText}>{instruction}</Text>
+              <Text style={[styles.instructionText, { color: colors.text.primary, fontFamily: typography.fontFamily.primary }]}>
+                {instruction}
+              </Text>
             </Animated.View>
           ))}
         </Animated.View>
@@ -160,13 +172,15 @@ export const ActivityDetailScreen: React.FC<Props> = ({ navigation, route }) => 
           style={styles.section}
           entering={FadeInDown.delay(900).springify()}
         >
-          <Text style={styles.sectionTitle}>Tips for Success</Text>
+          <Text style={[styles.sectionTitle, { color: colors.text.primary, fontFamily: typography.fontFamily.primary, fontWeight: typography.fontWeight.bold }]}>
+            Tips for Success
+          </Text>
           <Animated.View
             style={styles.tipItem}
             entering={FadeInUp.delay(1000).springify()}
           >
             <Text style={styles.tipIcon}>🎯</Text>
-            <Text style={styles.tipText}>
+            <Text style={[styles.tipText, { color: colors.text.secondary, fontFamily: typography.fontFamily.primary }]}>
               Create a distraction-free environment
             </Text>
           </Animated.View>
@@ -175,7 +189,7 @@ export const ActivityDetailScreen: React.FC<Props> = ({ navigation, route }) => 
             entering={FadeInUp.delay(1100).springify()}
           >
             <Text style={styles.tipIcon}>🤝</Text>
-            <Text style={styles.tipText}>
+            <Text style={[styles.tipText, { color: colors.text.secondary, fontFamily: typography.fontFamily.primary }]}>
               Practice active listening without judgment
             </Text>
           </Animated.View>
@@ -184,7 +198,7 @@ export const ActivityDetailScreen: React.FC<Props> = ({ navigation, route }) => 
             entering={FadeInUp.delay(1200).springify()}
           >
             <Text style={styles.tipIcon}>💬</Text>
-            <Text style={styles.tipText}>
+            <Text style={[styles.tipText, { color: colors.text.secondary, fontFamily: typography.fontFamily.primary }]}>
               Encourage everyone to participate equally
             </Text>
           </Animated.View>
@@ -193,22 +207,26 @@ export const ActivityDetailScreen: React.FC<Props> = ({ navigation, route }) => 
             entering={FadeInUp.delay(1300).springify()}
           >
             <Text style={styles.tipIcon}>⏰</Text>
-            <Text style={styles.tipText}>
+            <Text style={[styles.tipText, { color: colors.text.secondary, fontFamily: typography.fontFamily.primary }]}>
               Respect the suggested time to keep energy high
             </Text>
           </Animated.View>
         </Animated.View>
       </ScrollView>
 
-      <View style={styles.footer}>
+      <View style={[styles.footer, { backgroundColor: colors.background.primary, borderTopColor: colors.border.light }]}>
         <TouchableOpacity
           style={[
             styles.startButton,
-            isTimerRunning && styles.stopButton,
+            {
+              backgroundColor: isTimerRunning ? colors.status.error : colors.primary.main,
+              borderRadius: borderRadius.xl,
+              ...shadows.lg
+            }
           ]}
           onPress={isTimerRunning ? handleStopTimer : handleStartTimer}
         >
-          <Text style={styles.startButtonText}>
+          <Text style={[styles.startButtonText, { color: colors.text.inverse, fontFamily: typography.fontFamily.primary, fontWeight: typography.fontWeight.bold }]}>
             {isTimerRunning ? 'Stop Activity' : 'Start Activity'}
           </Text>
         </TouchableOpacity>
@@ -220,138 +238,111 @@ export const ActivityDetailScreen: React.FC<Props> = ({ navigation, route }) => 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.background.DEFAULT,
   },
   header: {
-    paddingHorizontal: spacing.xl,
-    paddingTop: spacing.md,
-    paddingBottom: spacing.sm,
+    paddingHorizontal: 20,
+    paddingTop: 12,
+    paddingBottom: 8,
   },
   backButton: {
-    paddingVertical: spacing.sm,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    alignSelf: 'flex-start',
   },
   backButtonText: {
-    fontSize: typography.fontSize.base,
-    color: colors.primary.DEFAULT,
-    fontWeight: typography.fontWeight.semibold,
+    fontSize: 16,
   },
   content: {
     flex: 1,
   },
   scrollContent: {
-    paddingBottom: spacing['4xl'],
+    paddingBottom: 32,
   },
   activityHeader: {
-    padding: spacing.xl,
+    padding: 24,
+    marginHorizontal: 20,
+    marginTop: 8,
     alignItems: 'center',
   },
   activityEmoji: {
     fontSize: 72,
-    marginBottom: spacing.md,
+    marginBottom: 12,
   },
   activityTitle: {
-    fontSize: typography.fontSize['3xl'],
-    fontWeight: typography.fontWeight.bold,
-    color: colors.text.inverse,
-    marginBottom: spacing.sm,
+    fontSize: 28,
+    marginBottom: 8,
     textAlign: 'center',
   },
   activityDescription: {
-    fontSize: typography.fontSize.base,
-    color: 'rgba(255, 255, 255, 0.9)',
+    fontSize: 16,
     textAlign: 'center',
-    marginBottom: spacing.lg,
+    marginBottom: 16,
+    opacity: 0.9,
   },
   metaRow: {
     flexDirection: 'row',
-    gap: spacing.lg,
+    gap: 12,
     flexWrap: 'wrap',
     justifyContent: 'center',
   },
   metaItem: {
-    backgroundColor: 'rgba(255, 255, 255, 0.15)',
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-    borderRadius: spacing.borderRadius.full,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
   },
   metaLabel: {
-    fontSize: typography.fontSize.sm,
-    color: colors.text.inverse,
-    fontWeight: typography.fontWeight.medium,
+    fontSize: 14,
   },
   section: {
-    padding: spacing.xl,
+    padding: 20,
   },
   sectionTitle: {
-    fontSize: typography.fontSize['2xl'],
-    fontWeight: typography.fontWeight.bold,
-    color: colors.text.primary,
-    marginBottom: spacing.lg,
+    fontSize: 22,
+    marginBottom: 16,
   },
   instructionItem: {
     flexDirection: 'row',
-    marginBottom: spacing.md,
+    marginBottom: 12,
   },
   stepNumber: {
     width: 28,
     height: 28,
-    borderRadius: 14,
-    backgroundColor: colors.accent.DEFAULT,
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: spacing.md,
+    marginRight: 12,
     marginTop: 2,
   },
   stepNumberText: {
-    fontSize: typography.fontSize.sm,
-    fontWeight: typography.fontWeight.bold,
-    color: colors.primary.DEFAULT,
+    fontSize: 14,
   },
   instructionText: {
     flex: 1,
-    fontSize: typography.fontSize.base,
-    color: colors.text.primary,
-    lineHeight: typography.fontSize.base * 1.6,
+    fontSize: 16,
+    lineHeight: 26,
   },
   tipItem: {
     flexDirection: 'row',
     alignItems: 'flex-start',
-    marginBottom: spacing.md,
+    marginBottom: 12,
   },
   tipIcon: {
     fontSize: 24,
-    marginRight: spacing.md,
+    marginRight: 12,
   },
   tipText: {
     flex: 1,
-    fontSize: typography.fontSize.base,
-    color: colors.text.secondary,
-    lineHeight: typography.fontSize.base * 1.5,
+    fontSize: 16,
+    lineHeight: 24,
   },
   footer: {
-    padding: spacing.xl,
-    paddingBottom: spacing['2xl'],
-    backgroundColor: colors.background.DEFAULT,
+    padding: 20,
+    paddingBottom: 24,
     borderTopWidth: 1,
-    borderTopColor: colors.background.light,
   },
   startButton: {
-    backgroundColor: colors.accent.DEFAULT,
-    borderRadius: spacing.borderRadius.xl,
-    padding: spacing.md,
+    padding: 16,
     alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 4,
-  },
-  stopButton: {
-    backgroundColor: colors.mood.veryBad,
   },
   startButtonText: {
-    fontSize: typography.fontSize.lg,
-    fontWeight: typography.fontWeight.bold,
-    color: colors.primary.DEFAULT,
+    fontSize: 18,
   },
 });
