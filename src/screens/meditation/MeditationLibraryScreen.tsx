@@ -1,9 +1,7 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
-import { colors } from '../../constants/colors';
-import { typography } from '../../constants/typography';
-import { spacing } from '../../constants/spacing';
+import { View, Text, TouchableOpacity, ScrollView, StyleSheet, SafeAreaView } from 'react-native';
+import Animated, { FadeInUp, FadeIn } from 'react-native-reanimated';
+import { useTheme } from '../../theme/useTheme';
 
 interface Meditation {
   id: string;
@@ -23,38 +21,70 @@ const MEDITATIONS: Meditation[] = [
 ];
 
 export const MeditationLibraryScreen = ({ navigation }: any) => {
-  return (
-    <LinearGradient
-      colors={[colors.primary.darkBlue, colors.primary.cobaltBlue]}
-      style={styles.container}
-    >
-      <ScrollView style={styles.scrollView}>
-        <View style={styles.header}>
-          <Text style={styles.title}>Meditation Library</Text>
-          <Text style={styles.subtitle}>Find peace and clarity</Text>
-        </View>
+  const { colors, typography, spacing, borderRadius, shadows } = useTheme();
 
+  return (
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background.primary }]}>
+      <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
+        {/* Header */}
+        <Animated.View entering={FadeInUp.delay(100).springify()} style={styles.header}>
+          <Text style={[styles.title, {
+            color: colors.text.primary,
+            fontFamily: typography.fontFamily.secondary
+          }]}>
+            Meditation Library
+          </Text>
+          <Text style={[styles.subtitle, {
+            color: colors.text.secondary,
+            fontFamily: typography.fontFamily.primary
+          }]}>
+            Find peace and clarity
+          </Text>
+        </Animated.View>
+
+        {/* Meditation Cards */}
         <View style={styles.mediationList}>
-          {MEDITATIONS.map((meditation) => (
-            <TouchableOpacity
+          {MEDITATIONS.map((meditation, index) => (
+            <Animated.View
               key={meditation.id}
-              style={styles.meditationCard}
-              onPress={() => navigation.navigate('MeditationPlayer', { meditation })}
+              entering={FadeInUp.delay(200 + index * 50).springify()}
             >
-              <LinearGradient
-                colors={[colors.primary.lightBlue, colors.primary.cobaltBlue]}
-                style={styles.cardGradient}
+              <TouchableOpacity
+                style={[styles.meditationCard, {
+                  backgroundColor: colors.primary.main,
+                  borderRadius: borderRadius.lg,
+                  ...shadows.md
+                }]}
+                onPress={() => navigation.navigate('MeditationPlayer', { meditation })}
+                activeOpacity={0.8}
               >
                 <Text style={styles.meditationEmoji}>{meditation.emoji}</Text>
-                <Text style={styles.meditationTitle}>{meditation.title}</Text>
-                <Text style={styles.meditationCategory}>{meditation.category}</Text>
-                <Text style={styles.meditationDuration}>{meditation.duration}</Text>
-              </LinearGradient>
-            </TouchableOpacity>
+                <Text style={[styles.meditationTitle, {
+                  color: colors.text.inverse,
+                  fontFamily: typography.fontFamily.primary,
+                  fontWeight: typography.fontWeight.bold
+                }]}>
+                  {meditation.title}
+                </Text>
+                <Text style={[styles.meditationCategory, {
+                  color: colors.text.inverse,
+                  fontFamily: typography.fontFamily.primary
+                }]}>
+                  {meditation.category}
+                </Text>
+                <Text style={[styles.meditationDuration, {
+                  color: colors.text.inverse,
+                  fontFamily: typography.fontFamily.primary,
+                  fontWeight: typography.fontWeight.semibold
+                }]}>
+                  {meditation.duration}
+                </Text>
+              </TouchableOpacity>
+            </Animated.View>
           ))}
         </View>
       </ScrollView>
-    </LinearGradient>
+    </SafeAreaView>
   );
 };
 
@@ -66,46 +96,39 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   header: {
-    padding: spacing.xl,
-    paddingTop: spacing['4xl'],
+    padding: 20,
+    paddingTop: 48,
   },
   title: {
-    ...typography.h1,
-    color: colors.text.primary,
-    marginBottom: spacing.sm,
+    fontSize: 28,
+    marginBottom: 8,
   },
   subtitle: {
-    ...typography.body,
-    color: colors.text.secondary,
+    fontSize: 16,
+    lineHeight: 24,
   },
   mediationList: {
-    padding: spacing.xl,
+    padding: 20,
     paddingTop: 0,
   },
   meditationCard: {
-    marginBottom: spacing.md,
-    borderRadius: spacing.borderRadius.lg,
-    overflow: 'hidden',
-  },
-  cardGradient: {
-    padding: spacing.lg,
+    padding: 20,
+    marginBottom: 12,
   },
   meditationEmoji: {
     fontSize: 36,
-    marginBottom: spacing.sm,
+    marginBottom: 12,
   },
   meditationTitle: {
-    ...typography.h2,
-    color: colors.text.primary,
-    marginBottom: spacing.xs,
+    fontSize: 20,
+    marginBottom: 4,
   },
   meditationCategory: {
-    ...typography.caption,
-    color: colors.text.secondary,
-    marginBottom: spacing.xs,
+    fontSize: 12,
+    marginBottom: 4,
+    opacity: 0.8,
   },
   meditationDuration: {
-    ...typography.bodyBold,
-    color: colors.accent.lime,
+    fontSize: 16,
   },
 });
