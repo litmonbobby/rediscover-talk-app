@@ -5,11 +5,10 @@ import {
   StyleSheet,
   TouchableOpacity,
   Animated,
+  SafeAreaView,
 } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
-import { colors } from '../../constants/colors';
-import { typography } from '../../constants/typography';
-import { spacing } from '../../constants/spacing';
+import Animated as ReAnimated, { FadeInUp, FadeIn } from 'react-native-reanimated';
+import { useTheme } from '../../theme/useTheme';
 
 type BreathPhase = 'inhale' | 'hold' | 'exhale' | 'pause';
 
@@ -41,6 +40,7 @@ const breathPatterns = {
 };
 
 export const BreathworkScreen = ({ navigation }: any) => {
+  const { colors, typography, spacing, borderRadius, shadows } = useTheme();
   const [isActive, setIsActive] = useState(false);
   const [phase, setPhase] = useState<BreathPhase>('inhale');
   const [count, setCount] = useState(4);
@@ -116,37 +116,73 @@ export const BreathworkScreen = ({ navigation }: any) => {
   };
 
   return (
-    <LinearGradient
-      colors={[colors.primary.darkBlue, colors.primary.cobaltBlue]}
-      style={styles.container}
-    >
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background.primary }]}>
       {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-          <Text style={styles.backIcon}>←</Text>
+      <ReAnimated.View entering={FadeInUp.delay(100).springify()} style={styles.header}>
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          style={[styles.backButton, {
+            backgroundColor: colors.background.secondary,
+            borderRadius: borderRadius.lg
+          }]}
+        >
+          <Text style={[styles.backIcon, {
+            color: colors.text.primary,
+            fontFamily: typography.fontFamily.primary
+          }]}>
+            ←
+          </Text>
         </TouchableOpacity>
-        <Text style={styles.title}>Breathwork</Text>
-        <Text style={styles.subtitle}>Find your calm through breathing</Text>
-      </View>
+        <Text style={[styles.title, {
+          color: colors.text.primary,
+          fontFamily: typography.fontFamily.secondary
+        }]}>
+          Breathwork
+        </Text>
+        <Text style={[styles.subtitle, {
+          color: colors.text.secondary,
+          fontFamily: typography.fontFamily.primary
+        }]}>
+          Find your calm through breathing
+        </Text>
+      </ReAnimated.View>
 
       {/* Pattern Selector */}
       {!isActive && (
         <View style={styles.patternSelector}>
-          {(Object.keys(breathPatterns) as Array<keyof typeof breathPatterns>).map((key) => (
-            <TouchableOpacity
+          {(Object.keys(breathPatterns) as Array<keyof typeof breathPatterns>).map((key, index) => (
+            <ReAnimated.View
               key={key}
-              style={[
-                styles.patternCard,
-                selectedPattern === key && styles.patternCardSelected,
-              ]}
-              onPress={() => setSelectedPattern(key)}
-              activeOpacity={0.7}
+              entering={FadeInUp.delay(200 + index * 50).springify()}
             >
-              <Text style={styles.patternName}>{breathPatterns[key].name}</Text>
-              <Text style={styles.patternDescription}>
-                {breathPatterns[key].description}
-              </Text>
-            </TouchableOpacity>
+              <TouchableOpacity
+                style={[
+                  styles.patternCard,
+                  {
+                    backgroundColor: selectedPattern === key ? colors.background.card : colors.background.secondary,
+                    borderColor: selectedPattern === key ? colors.primary.main : colors.border.light,
+                    borderRadius: borderRadius.lg,
+                    ...shadows.sm
+                  }
+                ]}
+                onPress={() => setSelectedPattern(key)}
+                activeOpacity={0.7}
+              >
+                <Text style={[styles.patternName, {
+                  color: colors.text.primary,
+                  fontFamily: typography.fontFamily.primary,
+                  fontWeight: typography.fontWeight.semibold
+                }]}>
+                  {breathPatterns[key].name}
+                </Text>
+                <Text style={[styles.patternDescription, {
+                  color: colors.text.secondary,
+                  fontFamily: typography.fontFamily.primary
+                }]}>
+                  {breathPatterns[key].description}
+                </Text>
+              </TouchableOpacity>
+            </ReAnimated.View>
           ))}
         </View>
       )}
@@ -157,52 +193,84 @@ export const BreathworkScreen = ({ navigation }: any) => {
           style={[
             styles.breathingCircle,
             {
+              backgroundColor: colors.primary.main,
+              borderRadius: borderRadius.full,
               transform: [{ scale: scaleAnim }],
             },
           ]}
         >
-          <LinearGradient
-            colors={[colors.accent.lime, colors.accent.brightLime]}
-            style={styles.circleGradient}
-          >
-            <Text style={styles.countText}>{count}</Text>
-          </LinearGradient>
+          <Text style={[styles.countText, {
+            color: colors.text.inverse,
+            fontFamily: typography.fontFamily.secondary,
+            fontWeight: typography.fontWeight.bold
+          }]}>
+            {count}
+          </Text>
         </Animated.View>
         {isActive && (
-          <Text style={styles.phaseText}>{getPhaseText()}</Text>
+          <Text style={[styles.phaseText, {
+            color: colors.text.primary,
+            fontFamily: typography.fontFamily.primary,
+            fontWeight: typography.fontWeight.semibold
+          }]}>
+            {getPhaseText()}
+          </Text>
         )}
       </View>
 
       {/* Control Buttons */}
       <View style={styles.controls}>
         {!isActive ? (
-          <TouchableOpacity style={styles.startButton} onPress={handleStart} activeOpacity={0.8}>
-            <LinearGradient
-              colors={[colors.accent.lime, colors.accent.brightLime]}
-              style={styles.startButtonGradient}
-            >
-              <Text style={styles.startButtonText}>Start</Text>
-            </LinearGradient>
+          <TouchableOpacity
+            style={[styles.startButton, {
+              backgroundColor: colors.primary.main,
+              borderRadius: borderRadius.xl,
+              ...shadows.lg
+            }]}
+            onPress={handleStart}
+            activeOpacity={0.8}
+          >
+            <Text style={[styles.startButtonText, {
+              color: colors.text.inverse,
+              fontFamily: typography.fontFamily.primary,
+              fontWeight: typography.fontWeight.bold
+            }]}>
+              Start
+            </Text>
           </TouchableOpacity>
         ) : (
-          <TouchableOpacity style={styles.stopButton} onPress={handleStop} activeOpacity={0.8}>
-            <Text style={styles.stopButtonText}>Stop</Text>
+          <TouchableOpacity
+            style={[styles.stopButton, {
+              backgroundColor: colors.background.secondary,
+              borderColor: colors.primary.main,
+              borderRadius: borderRadius.xl
+            }]}
+            onPress={handleStop}
+            activeOpacity={0.8}
+          >
+            <Text style={[styles.stopButtonText, {
+              color: colors.text.primary,
+              fontFamily: typography.fontFamily.primary,
+              fontWeight: typography.fontWeight.semibold
+            }]}>
+              Stop
+            </Text>
           </TouchableOpacity>
         )}
       </View>
-    </LinearGradient>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingHorizontal: spacing.lg,
-    paddingTop: spacing.xl * 2,
+    paddingHorizontal: 20,
+    paddingTop: 48,
   },
   header: {
     alignItems: 'center',
-    marginBottom: spacing.xl,
+    marginBottom: 24,
   },
   backButton: {
     position: 'absolute',
@@ -210,47 +278,35 @@ const styles = StyleSheet.create({
     left: 0,
     width: 40,
     height: 40,
-    borderRadius: 20,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
     justifyContent: 'center',
     alignItems: 'center',
   },
   backIcon: {
-    ...typography.h2,
-    color: colors.text.primary,
+    fontSize: 24,
   },
   title: {
-    ...typography.h1,
-    color: colors.text.primary,
-    marginBottom: spacing.xs,
+    fontSize: 28,
+    marginBottom: 4,
   },
   subtitle: {
-    ...typography.body,
-    color: colors.text.secondary,
+    fontSize: 16,
+    lineHeight: 24,
   },
   patternSelector: {
-    gap: spacing.sm,
-    marginBottom: spacing.xl,
+    gap: 12,
+    marginBottom: 24,
   },
   patternCard: {
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderRadius: spacing.borderRadius.md,
-    padding: spacing.md,
+    padding: 16,
     borderWidth: 2,
-    borderColor: 'transparent',
-  },
-  patternCardSelected: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    borderColor: colors.accent.lime,
   },
   patternName: {
-    ...typography.h3,
-    color: colors.text.primary,
-    marginBottom: spacing.xs / 2,
+    fontSize: 18,
+    marginBottom: 4,
   },
   patternDescription: {
-    ...typography.body,
-    color: colors.text.secondary,
+    fontSize: 14,
+    lineHeight: 20,
   },
   breathingContainer: {
     flex: 1,
@@ -260,53 +316,32 @@ const styles = StyleSheet.create({
   breathingCircle: {
     width: 200,
     height: 200,
-    borderRadius: 100,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  circleGradient: {
-    width: '100%',
-    height: '100%',
-    borderRadius: 100,
     justifyContent: 'center',
     alignItems: 'center',
   },
   countText: {
-    ...typography.h1,
     fontSize: 64,
-    fontWeight: '700',
-    color: colors.primary.cobaltBlue,
   },
   phaseText: {
-    ...typography.h2,
-    color: colors.text.primary,
-    marginTop: spacing.xl,
+    fontSize: 24,
+    marginTop: 24,
   },
   controls: {
-    paddingBottom: spacing.xl,
+    paddingBottom: 24,
   },
   startButton: {
-    borderRadius: spacing.borderRadius.lg,
-    overflow: 'hidden',
-  },
-  startButtonGradient: {
-    paddingVertical: spacing.md,
+    paddingVertical: 16,
     alignItems: 'center',
   },
   startButtonText: {
-    ...typography.h2,
-    color: colors.primary.cobaltBlue,
+    fontSize: 18,
   },
   stopButton: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    borderRadius: spacing.borderRadius.lg,
-    paddingVertical: spacing.md,
+    paddingVertical: 16,
     alignItems: 'center',
     borderWidth: 2,
-    borderColor: colors.text.primary,
   },
   stopButtonText: {
-    ...typography.h2,
-    color: colors.text.primary,
+    fontSize: 18,
   },
 });
