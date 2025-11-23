@@ -80,14 +80,14 @@ export const OnboardingScreen: React.FC<Props> = ({ navigation }) => {
               resizeMode="cover"
             />
 
-            {/* Skip button - all slides */}
+            {/* Skip button - all slides (invisible overlay over Figma button) */}
             <TouchableOpacity
               style={styles.skipButtonArea}
               onPress={handleSkip}
               activeOpacity={1}
             />
 
-            {/* Continue button - all slides */}
+            {/* Continue button - all slides (invisible overlay over Figma button) */}
             <TouchableOpacity
               style={styles.continueButtonArea}
               onPress={handleNext}
@@ -122,6 +122,7 @@ const styles = StyleSheet.create({
     left: 40,
     width: 100,
     height: 60,
+    zIndex: 10,
   },
   continueButtonArea: {
     position: 'absolute',
@@ -129,5 +130,6 @@ const styles = StyleSheet.create({
     right: 30,
     width: width * 0.55,
     height: 70,
+    zIndex: 10,
   },
 });
