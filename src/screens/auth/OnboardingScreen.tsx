@@ -80,32 +80,19 @@ export const OnboardingScreen: React.FC<Props> = ({ navigation }) => {
               resizeMode="cover"
             />
 
-            {/* Skip button - only on slides 1 and 2 */}
-            {index < 2 && (
-              <TouchableOpacity
-                style={styles.skipButtonArea}
-                onPress={handleSkip}
-                activeOpacity={1}
-              />
-            )}
+            {/* Skip button - all slides */}
+            <TouchableOpacity
+              style={styles.skipButtonArea}
+              onPress={handleSkip}
+              activeOpacity={1}
+            />
 
-            {/* Continue button - slides 1 and 2 */}
-            {index < 2 && (
-              <TouchableOpacity
-                style={styles.continueButtonArea}
-                onPress={handleNext}
-                activeOpacity={1}
-              />
-            )}
-
-            {/* Let's Get Started button - only on slide 3 */}
-            {index === 2 && (
-              <TouchableOpacity
-                style={styles.getStartedButtonArea}
-                onPress={handleNext}
-                activeOpacity={1}
-              />
-            )}
+            {/* Continue button - all slides */}
+            <TouchableOpacity
+              style={styles.continueButtonArea}
+              onPress={handleNext}
+              activeOpacity={1}
+            />
           </View>
         ))}
       </ScrollView>
@@ -141,13 +128,6 @@ const styles = StyleSheet.create({
     bottom: 50,
     right: 30,
     width: width * 0.55,
-    height: 70,
-  },
-  getStartedButtonArea: {
-    position: 'absolute',
-    bottom: 50,
-    left: width * 0.08,
-    right: width * 0.08,
     height: 70,
   },
 });
