@@ -8,10 +8,7 @@ import {
   SafeAreaView,
 } from 'react-native';
 import Animated, { FadeInUp, FadeIn } from 'react-native-reanimated';
-import { LinearGradient } from 'expo-linear-gradient';
-import { colors } from '../../constants/colors';
-import { typography } from '../../constants/typography';
-import { spacing } from '../../constants/spacing';
+import { useTheme } from '../../theme/useTheme';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { FamilyStackParamList } from '../../navigation/stacks/FamilyStack';
 
@@ -76,21 +73,32 @@ const ACTIVITIES: Activity[] = [
 ];
 
 export const FamilyActivitiesScreen: React.FC<Props> = ({ navigation }) => {
+  const { colors, typography, spacing, borderRadius, shadows } = useTheme();
+
   const handleActivityPress = (activity: Activity) => {
     navigation.navigate('ActivityDetail', { activity });
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <LinearGradient
-        colors={[colors.primary.cobaltBlue, colors.primary.darkBlue]}
-        style={styles.header}
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background.primary }]}>
+      <Animated.View
+        entering={FadeInUp.delay(100).springify()}
+        style={[styles.header, { backgroundColor: colors.primary.main, borderRadius: borderRadius.xl }]}
       >
-        <Text style={styles.headerTitle}>Family Activities</Text>
-        <Text style={styles.headerSubtitle}>
+        <Text style={[styles.headerTitle, {
+          color: colors.text.inverse,
+          fontFamily: typography.fontFamily.secondary,
+          fontWeight: typography.fontWeight.bold
+        }]}>
+          Family Activities
+        </Text>
+        <Text style={[styles.headerSubtitle, {
+          color: colors.text.inverse,
+          fontFamily: typography.fontFamily.primary
+        }]}>
           Strengthen bonds through meaningful conversations
         </Text>
-      </LinearGradient>
+      </Animated.View>
 
       <ScrollView
         style={styles.content}
@@ -100,18 +108,31 @@ export const FamilyActivitiesScreen: React.FC<Props> = ({ navigation }) => {
         {ACTIVITIES.map((activity, index) => (
           <Animated.View
             key={activity.id}
-            entering={FadeInUp.delay(index * 100).springify().damping(15)}
+            entering={FadeInUp.delay(200 + index * 80).springify().damping(15)}
           >
             <TouchableOpacity
-              style={styles.activityCard}
+              style={[styles.activityCard, {
+                backgroundColor: colors.background.card,
+                borderRadius: borderRadius.xl,
+                ...shadows.md
+              }]}
               onPress={() => handleActivityPress(activity)}
               activeOpacity={0.7}
             >
             <View style={styles.activityHeader}>
               <Text style={styles.activityEmoji}>{activity.emoji}</Text>
               <View style={styles.activityInfo}>
-                <Text style={styles.activityTitle}>{activity.title}</Text>
-                <Text style={styles.activityDescription}>
+                <Text style={[styles.activityTitle, {
+                  color: colors.text.primary,
+                  fontFamily: typography.fontFamily.primary,
+                  fontWeight: typography.fontWeight.bold
+                }]}>
+                  {activity.title}
+                </Text>
+                <Text style={[styles.activityDescription, {
+                  color: colors.text.secondary,
+                  fontFamily: typography.fontFamily.primary
+                }]}>
                   {activity.description}
                 </Text>
               </View>
@@ -119,20 +140,39 @@ export const FamilyActivitiesScreen: React.FC<Props> = ({ navigation }) => {
 
             <View style={styles.activityMeta}>
               <View style={styles.metaItem}>
-                <Text style={styles.metaLabel}>⏱️ {activity.duration}</Text>
+                <Text style={[styles.metaLabel, {
+                  color: colors.text.tertiary,
+                  fontFamily: typography.fontFamily.primary
+                }]}>
+                  ⏱️ {activity.duration}
+                </Text>
               </View>
               <View style={styles.metaItem}>
-                <Text style={styles.metaLabel}>👥 {activity.participants}</Text>
+                <Text style={[styles.metaLabel, {
+                  color: colors.text.tertiary,
+                  fontFamily: typography.fontFamily.primary
+                }]}>
+                  👥 {activity.participants}
+                </Text>
               </View>
               <View
                 style={[
                   styles.difficultyBadge,
-                  activity.difficulty === 'Easy' && styles.difficultyEasy,
-                  activity.difficulty === 'Medium' && styles.difficultyMedium,
-                  activity.difficulty === 'Advanced' && styles.difficultyAdvanced,
+                  {
+                    backgroundColor: activity.difficulty === 'Easy' ? 'rgba(16, 185, 129, 0.15)' :
+                                    activity.difficulty === 'Medium' ? 'rgba(245, 158, 11, 0.15)' :
+                                    'rgba(239, 68, 68, 0.15)',
+                    borderRadius: borderRadius.md
+                  }
                 ]}
               >
-                <Text style={styles.difficultyText}>{activity.difficulty}</Text>
+                <Text style={[styles.difficultyText, {
+                  color: colors.text.primary,
+                  fontFamily: typography.fontFamily.primary,
+                  fontWeight: typography.fontWeight.semibold
+                }]}>
+                  {activity.difficulty}
+                </Text>
               </View>
             </View>
             </TouchableOpacity>
@@ -140,12 +180,25 @@ export const FamilyActivitiesScreen: React.FC<Props> = ({ navigation }) => {
         ))}
 
         <Animated.View
-          style={styles.tipCard}
           entering={FadeIn.delay(600).springify()}
+          style={[styles.tipCard, {
+            backgroundColor: colors.primary.main + '15',
+            borderColor: colors.primary.main + '30',
+            borderRadius: borderRadius.xl
+          }]}
         >
           <Text style={styles.tipEmoji}>💡</Text>
-          <Text style={styles.tipTitle}>Tip</Text>
-          <Text style={styles.tipText}>
+          <Text style={[styles.tipTitle, {
+            color: colors.text.primary,
+            fontFamily: typography.fontFamily.primary,
+            fontWeight: typography.fontWeight.bold
+          }]}>
+            Tip
+          </Text>
+          <Text style={[styles.tipText, {
+            color: colors.text.secondary,
+            fontFamily: typography.fontFamily.primary
+          }]}>
             Set aside dedicated time for family activities. Turn off distractions
             and create a comfortable, judgment-free environment where everyone
             feels safe to share.
@@ -159,68 +212,57 @@ export const FamilyActivitiesScreen: React.FC<Props> = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.background.DEFAULT,
   },
   header: {
-    paddingTop: spacing.xl,
-    paddingBottom: spacing.xl,
-    paddingHorizontal: spacing.xl,
+    paddingTop: 24,
+    paddingBottom: 24,
+    paddingHorizontal: 24,
+    marginHorizontal: 20,
+    marginTop: 16,
   },
   headerTitle: {
-    fontSize: typography.fontSize['3xl'],
-    fontWeight: typography.fontWeight.bold,
-    color: colors.text.inverse,
-    marginBottom: spacing.xs,
+    fontSize: 28,
+    marginBottom: 4,
   },
   headerSubtitle: {
-    fontSize: typography.fontSize.base,
-    color: 'rgba(255, 255, 255, 0.9)',
+    fontSize: 16,
+    opacity: 0.9,
   },
   content: {
     flex: 1,
   },
   scrollContent: {
-    padding: spacing.xl,
-    paddingBottom: spacing['3xl'],
+    padding: 20,
+    paddingBottom: 40,
   },
   activityCard: {
-    backgroundColor: colors.background.paper,
-    borderRadius: spacing.borderRadius.lg,
-    padding: spacing.lg,
-    marginBottom: spacing.md,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    padding: 20,
+    marginBottom: 12,
   },
   activityHeader: {
     flexDirection: 'row',
     alignItems: 'flex-start',
-    marginBottom: spacing.md,
+    marginBottom: 16,
   },
   activityEmoji: {
     fontSize: 48,
-    marginRight: spacing.md,
+    marginRight: 16,
   },
   activityInfo: {
     flex: 1,
   },
   activityTitle: {
-    fontSize: typography.fontSize.xl,
-    fontWeight: typography.fontWeight.bold,
-    color: colors.text.primary,
-    marginBottom: spacing.xs,
+    fontSize: 20,
+    marginBottom: 4,
   },
   activityDescription: {
-    fontSize: typography.fontSize.base,
-    color: colors.text.secondary,
-    lineHeight: typography.fontSize.base * 1.5,
+    fontSize: 16,
+    lineHeight: 24,
   },
   activityMeta: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: spacing.sm,
+    gap: 12,
     flexWrap: 'wrap',
   },
   metaItem: {
@@ -228,50 +270,31 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   metaLabel: {
-    fontSize: typography.fontSize.sm,
-    color: colors.text.tertiary,
+    fontSize: 14,
   },
   difficultyBadge: {
-    paddingHorizontal: spacing.sm,
-    paddingVertical: spacing.xs,
-    borderRadius: spacing.borderRadius.md,
+    paddingHorizontal: 12,
+    paddingVertical: 4,
     marginLeft: 'auto',
   },
-  difficultyEasy: {
-    backgroundColor: 'rgba(16, 185, 129, 0.15)',
-  },
-  difficultyMedium: {
-    backgroundColor: 'rgba(245, 158, 11, 0.15)',
-  },
-  difficultyAdvanced: {
-    backgroundColor: 'rgba(239, 68, 68, 0.15)',
-  },
   difficultyText: {
-    fontSize: typography.fontSize.xs,
-    fontWeight: typography.fontWeight.semibold,
-    color: colors.text.primary,
+    fontSize: 12,
   },
   tipCard: {
-    backgroundColor: 'rgba(199, 246, 0, 0.1)',
-    borderRadius: spacing.borderRadius.lg,
-    padding: spacing.lg,
-    marginTop: spacing.md,
+    padding: 20,
+    marginTop: 16,
     borderWidth: 1,
-    borderColor: 'rgba(199, 246, 0, 0.2)',
   },
   tipEmoji: {
     fontSize: 32,
-    marginBottom: spacing.sm,
+    marginBottom: 8,
   },
   tipTitle: {
-    fontSize: typography.fontSize.lg,
-    fontWeight: typography.fontWeight.bold,
-    color: colors.text.primary,
-    marginBottom: spacing.sm,
+    fontSize: 18,
+    marginBottom: 8,
   },
   tipText: {
-    fontSize: typography.fontSize.base,
-    color: colors.text.secondary,
-    lineHeight: typography.fontSize.base * 1.5,
+    fontSize: 16,
+    lineHeight: 24,
   },
 });
