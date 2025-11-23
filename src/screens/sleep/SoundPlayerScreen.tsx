@@ -1,46 +1,87 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
-import { colors } from '../../constants/colors';
-import { typography } from '../../constants/typography';
-import { spacing } from '../../constants/spacing';
+import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView } from 'react-native';
+import Animated, { FadeInUp } from 'react-native-reanimated';
+import { useTheme } from '../../theme/useTheme';
 
 export const SoundPlayerScreen = ({ route }: any) => {
+  const { colors, typography, spacing, borderRadius, shadows } = useTheme();
   const { sound } = route.params;
   const [isPlaying, setIsPlaying] = useState(false);
   const [volume, setVolume] = useState(50);
 
   return (
-    <LinearGradient
-      colors={[colors.primary.darkBlue, colors.primary.cobaltBlue]}
-      style={styles.container}
-    >
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background.primary }]}>
       <View style={styles.content}>
-        <Text style={styles.emoji}>{sound.emoji}</Text>
-        <Text style={styles.title}>{sound.title}</Text>
-        <Text style={styles.category}>{sound.category}</Text>
-
-        <TouchableOpacity
-          style={styles.playButton}
-          onPress={() => setIsPlaying(!isPlaying)}
+        <Animated.Text
+          entering={FadeInUp.delay(100).springify()}
+          style={styles.emoji}
         >
-          <LinearGradient
-            colors={[colors.accent.lime, colors.accent.brightLime]}
-            style={styles.playButtonGradient}
+          {sound.emoji}
+        </Animated.Text>
+
+        <Animated.Text
+          entering={FadeInUp.delay(200).springify()}
+          style={[styles.title, {
+            color: colors.text.primary,
+            fontFamily: typography.fontFamily.secondary,
+            fontWeight: typography.fontWeight.bold
+          }]}
+        >
+          {sound.title}
+        </Animated.Text>
+
+        <Animated.Text
+          entering={FadeInUp.delay(250).springify()}
+          style={[styles.category, {
+            color: colors.text.secondary,
+            fontFamily: typography.fontFamily.primary
+          }]}
+        >
+          {sound.category}
+        </Animated.Text>
+
+        <Animated.View entering={FadeInUp.delay(300).springify()}>
+          <TouchableOpacity
+            style={[styles.playButton, {
+              backgroundColor: colors.primary.main,
+              borderRadius: borderRadius.full,
+              ...shadows.lg
+            }]}
+            onPress={() => setIsPlaying(!isPlaying)}
+            activeOpacity={0.8}
           >
-            <Text style={styles.playButtonText}>{isPlaying ? '⏸' : '▶'}</Text>
-          </LinearGradient>
-        </TouchableOpacity>
+            <Text style={[styles.playButtonText, {
+              color: colors.text.inverse
+            }]}>
+              {isPlaying ? '⏸' : '▶'}
+            </Text>
+          </TouchableOpacity>
+        </Animated.View>
 
-        <View style={styles.volumeSection}>
-          <Text style={styles.volumeLabel}>Volume: {volume}%</Text>
-        </View>
+        <Animated.View
+          entering={FadeInUp.delay(400).springify()}
+          style={styles.volumeSection}
+        >
+          <Text style={[styles.volumeLabel, {
+            color: colors.text.primary,
+            fontFamily: typography.fontFamily.primary,
+            fontWeight: typography.fontWeight.semibold
+          }]}>
+            Volume: {volume}%
+          </Text>
+        </Animated.View>
 
-        <Text style={styles.instruction}>
+        <Animated.Text
+          entering={FadeInUp.delay(500).springify()}
+          style={[styles.instruction, {
+            color: colors.text.secondary,
+            fontFamily: typography.fontFamily.primary
+          }]}
+        >
           {isPlaying ? 'Playing...' : 'Tap to play'}
-        </Text>
+        </Animated.Text>
       </View>
-    </LinearGradient>
+    </SafeAreaView>
   );
 };
 
@@ -52,47 +93,39 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    padding: spacing.xl,
+    padding: 32,
   },
   emoji: {
     fontSize: 100,
-    marginBottom: spacing.lg,
+    marginBottom: 24,
   },
   title: {
-    ...typography.h1,
-    color: colors.text.primary,
-    marginBottom: spacing.sm,
+    fontSize: 32,
+    marginBottom: 8,
+    textAlign: 'center',
   },
   category: {
-    ...typography.body,
-    color: colors.text.secondary,
-    marginBottom: spacing['4xl'],
+    fontSize: 16,
+    marginBottom: 64,
   },
   playButton: {
     width: 100,
     height: 100,
-    borderRadius: 50,
-    overflow: 'hidden',
-    marginBottom: spacing.xl,
-  },
-  playButtonGradient: {
-    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    marginBottom: 32,
   },
   playButtonText: {
     fontSize: 40,
-    color: colors.primary.cobaltBlue,
   },
   volumeSection: {
-    marginBottom: spacing.xl,
+    marginBottom: 32,
   },
   volumeLabel: {
-    ...typography.bodyBold,
-    color: colors.text.primary,
+    fontSize: 18,
   },
   instruction: {
-    ...typography.body,
-    color: colors.text.secondary,
+    fontSize: 16,
+    textAlign: 'center',
   },
 });
