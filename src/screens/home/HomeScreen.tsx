@@ -1,161 +1,213 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView, SafeAreaView } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
-import { theme } from '../../constants/theme';
-import { Card } from '../../components/ui/Card';
+import Animated, { FadeInUp, FadeIn } from 'react-native-reanimated';
+import { useTheme } from '../../theme/useTheme';
 
 export const HomeScreen = ({ navigation }: any) => {
+  const { colors, typography, spacing, borderRadius, shadows } = useTheme();
+
   const moods = [
-    { emoji: '😄', label: 'Amazing', color: theme.colors.mood.amazing },
-    { emoji: '😊', label: 'Good', color: theme.colors.mood.good },
-    { emoji: '😐', label: 'Okay', color: theme.colors.mood.okay },
-    { emoji: '😔', label: 'Bad', color: theme.colors.mood.bad },
-    { emoji: '😢', label: 'Terrible', color: theme.colors.mood.terrible },
+    { emoji: '😄', label: 'Amazing', color: colors.mood?.amazing || '#4CAF50' },
+    { emoji: '😊', label: 'Good', color: colors.mood?.good || '#8BC34A' },
+    { emoji: '😐', label: 'Okay', color: colors.mood?.okay || '#FFC107' },
+    { emoji: '😔', label: 'Bad', color: colors.mood?.bad || '#FF9800' },
+    { emoji: '😢', label: 'Terrible', color: colors.mood?.terrible || '#F44336' },
   ];
 
   const quickActions = [
-    { icon: '💬', label: 'AI Coach', screen: 'Chat', gradient: [theme.colors.primary[400], theme.colors.primary[600]] },
-    { icon: '🧘', label: 'Meditate', screen: 'MeditationLibrary', gradient: [theme.colors.primary[500], theme.colors.primary[700]] },
-    { icon: '📝', label: 'Journal', screen: 'JournalList', gradient: [theme.colors.accent[400], theme.colors.accent[600]] },
-    { icon: '🫁', label: 'Breathe', screen: 'Breathwork', gradient: [theme.colors.primary[600], theme.colors.primary[800]] },
-    { icon: '📊', label: 'Insights', screen: 'Insights', gradient: [theme.colors.info, theme.colors.primary[600]] },
-    { icon: '✨', label: 'Affirmations', screen: 'Affirmations', gradient: [theme.colors.accent[300], theme.colors.accent[500]] },
+    { icon: '💬', label: 'AI Coach', screen: 'Chat' },
+    { icon: '🧘', label: 'Meditate', screen: 'MeditationLibrary' },
+    { icon: '📝', label: 'Journal', screen: 'JournalList' },
+    { icon: '🫁', label: 'Breathe', screen: 'Breathwork' },
+    { icon: '📊', label: 'Insights', screen: 'Insights' },
+    { icon: '✨', label: 'Affirmations', screen: 'Affirmations' },
   ];
 
   return (
-    <LinearGradient
-      colors={theme.colors.background.gradient}
-      style={styles.gradient}
-    >
-      <SafeAreaView style={styles.safeArea}>
-        <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
-          {/* Header */}
-          <View style={styles.header}>
-            <Text style={styles.greeting}>Good Morning</Text>
-            <Text style={styles.date}>Sunday, November 17</Text>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background.primary }]}>
+      <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
+        {/* Header */}
+        <Animated.View entering={FadeInUp.delay(100).springify()} style={styles.header}>
+          <Text style={[styles.greeting, { color: colors.text.primary, fontFamily: typography.fontFamily.secondary }]}>
+            Good Morning
+          </Text>
+          <Text style={[styles.date, { color: colors.text.secondary, fontFamily: typography.fontFamily.primary }]}>
+            Sunday, November 17
+          </Text>
+        </Animated.View>
+
+        {/* Mood Check-in Card */}
+        <Animated.View
+          entering={FadeInUp.delay(200).springify()}
+          style={[styles.moodCard, {
+            backgroundColor: colors.background.card,
+            borderRadius: borderRadius.xl,
+            ...shadows.md
+          }]}
+        >
+          <View style={styles.cardHeader}>
+            <Text style={[styles.cardTitle, {
+              color: colors.text.primary,
+              fontFamily: typography.fontFamily.primary,
+              fontWeight: typography.fontWeight.semibold
+            }]}>
+              How are you feeling?
+            </Text>
+            <Text style={[styles.cardSubtitle, {
+              color: colors.text.secondary,
+              fontFamily: typography.fontFamily.primary
+            }]}>
+              Track your mood daily
+            </Text>
           </View>
 
-          {/* Mood Check-in Card */}
-          <Card style={styles.moodCard} variant="glass">
-            <View style={styles.cardHeader}>
-              <Text style={styles.cardTitle}>How are you feeling?</Text>
-              <Text style={styles.cardSubtitle}>Track your mood daily</Text>
-            </View>
+          <View style={styles.moodSelector}>
+            {moods.map((mood, index) => (
+              <TouchableOpacity
+                key={index}
+                style={styles.moodButton}
+                onPress={() => navigation.navigate('MoodCheckIn')}
+                activeOpacity={0.7}
+              >
+                <View style={[styles.moodCircle, {
+                  backgroundColor: mood.color + '20',
+                  borderWidth: 2,
+                  borderColor: mood.color + '40',
+                }]}>
+                  <Text style={styles.moodEmoji}>{mood.emoji}</Text>
+                </View>
+                <Text style={[styles.moodLabel, {
+                  color: colors.text.secondary,
+                  fontFamily: typography.fontFamily.primary
+                }]}>
+                  {mood.label}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
 
-            <View style={styles.moodSelector}>
-              {moods.map((mood, index) => (
+          <TouchableOpacity
+            style={styles.viewHistoryButton}
+            onPress={() => navigation.navigate('MoodHistory')}
+          >
+            <Text style={[styles.viewHistoryText, {
+              color: colors.primary.main,
+              fontFamily: typography.fontFamily.primary,
+              fontWeight: typography.fontWeight.semibold
+            }]}>
+              View History →
+            </Text>
+          </TouchableOpacity>
+        </Animated.View>
+
+        {/* Quick Actions */}
+        <Animated.View entering={FadeInUp.delay(300).springify()} style={styles.section}>
+          <Text style={[styles.sectionTitle, {
+            color: colors.text.primary,
+            fontFamily: typography.fontFamily.primary,
+            fontWeight: typography.fontWeight.semibold
+          }]}>
+            Quick Actions
+          </Text>
+          <View style={styles.actionsGrid}>
+            {quickActions.map((action, index) => (
+              <Animated.View
+                key={index}
+                entering={FadeInUp.delay(400 + index * 50).springify()}
+                style={styles.actionCardWrapper}
+              >
                 <TouchableOpacity
-                  key={index}
-                  style={styles.moodButton}
-                  onPress={() => navigation.navigate('MoodCheckIn')}
-                  activeOpacity={0.7}
-                >
-                  <View style={[styles.moodCircle, {
-                    backgroundColor: mood.color + '20',
-                    borderWidth: 2,
-                    borderColor: mood.color + '40',
-                  }]}>
-                    <Text style={styles.moodEmoji}>{mood.emoji}</Text>
-                  </View>
-                  <Text style={styles.moodLabel}>{mood.label}</Text>
-                </TouchableOpacity>
-              ))}
-            </View>
-
-            <TouchableOpacity
-              style={styles.viewHistoryButton}
-              onPress={() => navigation.navigate('MoodHistory')}
-            >
-              <Text style={styles.viewHistoryText}>View History →</Text>
-            </TouchableOpacity>
-          </Card>
-
-          {/* Quick Actions */}
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Quick Actions</Text>
-            <View style={styles.actionsGrid}>
-              {quickActions.map((action, index) => (
-                <TouchableOpacity
-                  key={index}
                   onPress={() => navigation.navigate(action.screen)}
                   activeOpacity={0.8}
-                  style={styles.actionCardWrapper}
+                  style={[styles.actionCard, {
+                    backgroundColor: colors.primary.main,
+                    borderRadius: borderRadius.lg,
+                    ...shadows.md
+                  }]}
                 >
-                  <LinearGradient
-                    colors={action.gradient}
-                    style={styles.actionCard}
-                  >
-                    <Text style={styles.actionIcon}>{action.icon}</Text>
-                    <Text style={styles.actionLabel}>{action.label}</Text>
-                  </LinearGradient>
+                  <Text style={styles.actionIcon}>{action.icon}</Text>
+                  <Text style={[styles.actionLabel, {
+                    color: colors.text.inverse,
+                    fontFamily: typography.fontFamily.primary,
+                    fontWeight: typography.fontWeight.semibold
+                  }]}>
+                    {action.label}
+                  </Text>
                 </TouchableOpacity>
-              ))}
-            </View>
+              </Animated.View>
+            ))}
           </View>
+        </Animated.View>
 
-          {/* Daily Quote */}
-          <Card style={styles.quoteCard} variant="glass">
-            <Text style={styles.quoteText}>
-              "The present moment is filled with joy and happiness. If you are attentive, you will see it."
-            </Text>
-            <Text style={styles.quoteAuthor}>— Thích Nhất Hạnh</Text>
-          </Card>
+        {/* Daily Quote */}
+        <Animated.View
+          entering={FadeInUp.delay(700).springify()}
+          style={[styles.quoteCard, {
+            backgroundColor: colors.background.card,
+            borderRadius: borderRadius.xl,
+            ...shadows.md
+          }]}
+        >
+          <Text style={[styles.quoteText, {
+            color: colors.text.secondary,
+            fontFamily: typography.fontFamily.primary
+          }]}>
+            "The present moment is filled with joy and happiness. If you are attentive, you will see it."
+          </Text>
+          <Text style={[styles.quoteAuthor, {
+            color: colors.text.tertiary,
+            fontFamily: typography.fontFamily.primary
+          }]}>
+            — Thích Nhất Hạnh
+          </Text>
+        </Animated.View>
 
-          {/* Bottom spacing */}
-          <View style={{ height: theme.spacing[8] }} />
-        </ScrollView>
-      </SafeAreaView>
-    </LinearGradient>
+        {/* Bottom spacing */}
+        <View style={{ height: 32 }} />
+      </ScrollView>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
-  gradient: {
-    flex: 1,
-  },
-  safeArea: {
+  container: {
     flex: 1,
   },
   scrollView: {
     flex: 1,
   },
   header: {
-    padding: theme.spacing[5],
-    paddingTop: theme.spacing[4],
+    padding: 20,
+    paddingTop: 16,
   },
   greeting: {
-    fontSize: theme.typography.fontSize['3xl'],
-    fontWeight: theme.typography.fontWeight.bold,
-    color: theme.colors.text.primary,
-    marginBottom: theme.spacing[1],
+    fontSize: 28,
+    marginBottom: 4,
   },
   date: {
-    fontSize: theme.typography.fontSize.base,
-    color: theme.colors.text.secondary,
+    fontSize: 16,
   },
 
   // Mood Card
   moodCard: {
-    marginHorizontal: theme.spacing[5],
-    marginBottom: theme.spacing[5],
+    marginHorizontal: 20,
+    marginBottom: 20,
+    padding: 20,
   },
   cardHeader: {
-    marginBottom: theme.spacing[4],
+    marginBottom: 16,
   },
   cardTitle: {
-    fontSize: theme.typography.fontSize.xl,
-    fontWeight: theme.typography.fontWeight.semibold,
-    color: theme.colors.text.primary,
-    marginBottom: theme.spacing[1],
+    fontSize: 20,
+    marginBottom: 4,
   },
   cardSubtitle: {
-    fontSize: theme.typography.fontSize.sm,
-    color: theme.colors.text.secondary,
+    fontSize: 14,
   },
   moodSelector: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: theme.spacing[4],
+    marginBottom: 16,
   },
   moodButton: {
     alignItems: 'center',
@@ -167,79 +219,68 @@ const styles = StyleSheet.create({
     borderRadius: 28,
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: theme.spacing[2],
+    marginBottom: 8,
   },
   moodEmoji: {
     fontSize: 28,
   },
   moodLabel: {
-    fontSize: theme.typography.fontSize.xs,
-    color: theme.colors.text.secondary,
+    fontSize: 12,
     textAlign: 'center',
   },
   viewHistoryButton: {
     alignSelf: 'flex-end',
   },
   viewHistoryText: {
-    fontSize: theme.typography.fontSize.sm,
-    fontWeight: theme.typography.fontWeight.semibold,
-    color: theme.colors.accent[400],
+    fontSize: 14,
   },
 
   // Quick Actions
   section: {
-    paddingHorizontal: theme.spacing[5],
-    marginBottom: theme.spacing[5],
+    paddingHorizontal: 20,
+    marginBottom: 20,
   },
   sectionTitle: {
-    fontSize: theme.typography.fontSize.xl,
-    fontWeight: theme.typography.fontWeight.semibold,
-    color: theme.colors.text.primary,
-    marginBottom: theme.spacing[4],
+    fontSize: 20,
+    marginBottom: 16,
   },
   actionsGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: theme.spacing[3],
+    gap: 12,
   },
   actionCardWrapper: {
-    width: (360 - theme.spacing[5] * 2 - theme.spacing[3]) / 2,
-    borderRadius: theme.borderRadius.lg,
-    overflow: 'hidden',
-    ...theme.shadows.md,
+    width: '47%',
   },
   actionCard: {
-    padding: theme.spacing[4],
+    padding: 16,
     alignItems: 'center',
     minHeight: 120,
     justifyContent: 'center',
   },
   actionIcon: {
     fontSize: 32,
-    marginBottom: theme.spacing[3],
+    marginBottom: 12,
   },
   actionLabel: {
-    fontSize: theme.typography.fontSize.sm,
-    fontWeight: theme.typography.fontWeight.semibold,
-    color: theme.colors.text.primary,
+    fontSize: 14,
     textAlign: 'center',
   },
 
   // Quote Card
   quoteCard: {
-    marginHorizontal: theme.spacing[5],
-    marginBottom: theme.spacing[5],
+    marginHorizontal: 20,
+    marginBottom: 20,
+    padding: 20,
   },
   quoteText: {
-    fontSize: theme.typography.fontSize.base,
+    fontSize: 16,
     fontStyle: 'italic',
-    color: theme.colors.text.secondary,
-    marginBottom: theme.spacing[3],
-    lineHeight: theme.typography.fontSize.base * theme.typography.lineHeight.relaxed,
+    marginBottom: 12,
+    lineHeight: 24,
   },
   quoteAuthor: {
-    fontSize: theme.typography.fontSize.sm,
-    color: theme.colors.text.tertiary,
+    fontSize: 14,
     textAlign: 'right',
   },
 });

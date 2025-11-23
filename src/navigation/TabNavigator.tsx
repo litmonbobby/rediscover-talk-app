@@ -1,7 +1,7 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { View, StyleSheet } from 'react-native';
-import { colors } from '../constants';
+import { View, StyleSheet, useColorScheme } from 'react-native';
+import { lightColors, darkColors } from '../theme';
 
 // Stack navigators for each tab
 import { HomeStackNavigator } from './stacks/HomeStack';
@@ -42,16 +42,19 @@ const ProfileIcon = ({ color, size }: { color: string; size: number }) => (
 );
 
 export const TabNavigator = () => {
+  const colorScheme = useColorScheme();
+  const colors = colorScheme === 'dark' ? darkColors : lightColors;
+
   return (
     <Tab.Navigator
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: colors.primary.DEFAULT,
-        tabBarInactiveTintColor: colors.ui.disabled,
+        tabBarActiveTintColor: colors.primary.main,
+        tabBarInactiveTintColor: colors.text.tertiary,
         tabBarStyle: {
-          backgroundColor: '#FFFFFF',
+          backgroundColor: colors.background.card,
           borderTopWidth: 1,
-          borderTopColor: 'rgba(0, 0, 0, 0.1)',
+          borderTopColor: colors.border.light,
           paddingBottom: 8,
           paddingTop: 8,
           height: 64,
