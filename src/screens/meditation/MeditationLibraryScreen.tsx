@@ -6,8 +6,11 @@ import {
   SafeAreaView,
   Image,
   Dimensions,
+  Text,
+  FlatList,
 } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { colors } from '../../constants';
 
 const { width, height } = Dimensions.get('window');
 
@@ -31,65 +34,60 @@ const MEDITATIONS: Meditation[] = [
 ];
 
 export const MeditationLibraryScreen: React.FC<Props> = ({ navigation }) => {
-  const handleMeditationPress = (meditation: Meditation, index: number) => {
+  const handleMeditationPress = (meditation: Meditation) => {
     navigation.navigate('MeditationPlayer', { meditation });
   };
 
+  const handleBack = () => {
+    navigation.goBack();
+  };
+
+  const renderMeditationCard = ({ item }: { item: Meditation }) => (
+    <TouchableOpacity
+      style={styles.meditationCard}
+      onPress={() => handleMeditationPress(item)}
+      activeOpacity={0.7}
+    >
+      <Text style={styles.meditationEmoji}>{item.emoji}</Text>
+      <View style={styles.meditationInfo}>
+        <Text style={styles.meditationTitle}>{item.title}</Text>
+        <View style={styles.meditationMeta}>
+          <Text style={styles.meditationCategory}>{item.category}</Text>
+          <Text style={styles.meditationDuration}>{item.duration}</Text>
+        </View>
+      </View>
+    </TouchableOpacity>
+  );
+
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.content}>
-        {/* Full-screen Figma design - Explore Meditations */}
-        <Image
-          source={require('../../figma-extracted/assets/screens/light-theme/54-light-explore-meditations.png')}
-          style={styles.fullScreenImage}
-          resizeMode="cover"
-        />
+      <Image
+        source={require('../../figma-extracted/assets/screens/light-theme/54-light-explore-meditations.png')}
+        style={styles.backgroundImage}
+        resizeMode="cover"
+      />
 
-        {/* Invisible touchable areas for meditation cards */}
-        {/* 6 meditation cards in vertical list */}
-
-        {/* Meditation 1 - Morning Calm */}
+      {/* Header */}
+      <View style={styles.header}>
         <TouchableOpacity
-          style={[styles.meditationCard, { top: height * 0.20 }]}
-          onPress={() => handleMeditationPress(MEDITATIONS[0], 0)}
-          activeOpacity={1}
-        />
-
-        {/* Meditation 2 - Stress Relief */}
-        <TouchableOpacity
-          style={[styles.meditationCard, { top: height * 0.31 }]}
-          onPress={() => handleMeditationPress(MEDITATIONS[1], 1)}
-          activeOpacity={1}
-        />
-
-        {/* Meditation 3 - Deep Sleep */}
-        <TouchableOpacity
-          style={[styles.meditationCard, { top: height * 0.42 }]}
-          onPress={() => handleMeditationPress(MEDITATIONS[2], 2)}
-          activeOpacity={1}
-        />
-
-        {/* Meditation 4 - Body Scan */}
-        <TouchableOpacity
-          style={[styles.meditationCard, { top: height * 0.53 }]}
-          onPress={() => handleMeditationPress(MEDITATIONS[3], 3)}
-          activeOpacity={1}
-        />
-
-        {/* Meditation 5 - Gratitude Practice */}
-        <TouchableOpacity
-          style={[styles.meditationCard, { top: height * 0.64 }]}
-          onPress={() => handleMeditationPress(MEDITATIONS[4], 4)}
-          activeOpacity={1}
-        />
-
-        {/* Meditation 6 - Focus & Clarity */}
-        <TouchableOpacity
-          style={[styles.meditationCard, { top: height * 0.75 }]}
-          onPress={() => handleMeditationPress(MEDITATIONS[5], 5)}
-          activeOpacity={1}
-        />
+          style={styles.backButton}
+          onPress={handleBack}
+          activeOpacity={0.7}
+        >
+          <Text style={styles.backButtonText}>←</Text>
+        </TouchableOpacity>
+        <Text style={styles.headerTitle}>Meditation Library</Text>
+        <View style={styles.headerSpacer} />
       </View>
+
+      {/* Meditation List */}
+      <FlatList
+        data={MEDITATIONS}
+        renderItem={renderMeditationCard}
+        keyExtractor={(item) => item.id}
+        contentContainerStyle={styles.listContent}
+        showsVerticalScrollIndicator={false}
+      />
     </SafeAreaView>
   );
 };
@@ -99,18 +97,87 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#FFFFFF',
   },
-  content: {
-    flex: 1,
-  },
-  fullScreenImage: {
+  backgroundImage: {
     width,
     height,
     position: 'absolute',
+    opacity: 0.15,
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingTop: 60,
+    paddingBottom: 16,
+    paddingHorizontal: 20,
+    backgroundColor: 'rgba(255, 255, 255, 0.98)',
+    borderBottomWidth: 1,
+    borderBottomColor: '#E0E0E0',
+    zIndex: 10,
+  },
+  backButton: {
+    width: 40,
+    height: 40,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 20,
+    backgroundColor: '#F5F5F5',
+  },
+  backButtonText: {
+    fontSize: 24,
+    color: colors.primary.DEFAULT,
+  },
+  headerTitle: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: '#1A1A1A',
+    flex: 1,
+    textAlign: 'center',
+  },
+  headerSpacer: {
+    width: 40,
+  },
+  listContent: {
+    padding: 20,
+    paddingBottom: 100,
   },
   meditationCard: {
-    position: 'absolute',
-    left: width * 0.05,
-    right: width * 0.05,
-    height: 90,
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(255, 255, 255, 0.98)',
+    borderRadius: 16,
+    padding: 16,
+    marginBottom: 12,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  meditationEmoji: {
+    fontSize: 40,
+    marginRight: 16,
+  },
+  meditationInfo: {
+    flex: 1,
+  },
+  meditationTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#1A1A1A',
+    marginBottom: 4,
+  },
+  meditationMeta: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  meditationCategory: {
+    fontSize: 14,
+    color: colors.primary.DEFAULT,
+    fontWeight: '600',
+  },
+  meditationDuration: {
+    fontSize: 14,
+    color: '#666',
   },
 });
