@@ -10,29 +10,55 @@ import {
   SafeAreaView,
   Image,
   Dimensions,
+  ScrollView,
 } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { Button } from '../../components/core/Button';
+import { colors } from '../../constants';
 
 const { width, height } = Dimensions.get('window');
 
 type Props = NativeStackScreenProps<any, 'JournalEntry'>;
 
-export const JournalEntryScreen: React.FC<Props> = ({ navigation }) => {
-  const [content, setContent] = useState('');
+interface Mood {
+  emoji: string;
+  label: string;
+  value: string;
+  color: string;
+}
 
-  const handleSave = () => {
-    if (!content.trim()) {
+export const JournalEntryScreen: React.FC<Props> = ({ navigation }) => {
+  const [title, setTitle] = useState('');
+  const [content, setContent] = useState('');
+  const [selectedMood, setSelectedMood] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  const moods: Mood[] = [
+    { emoji: '😁', label: 'Amazing', value: 'amazing', color: '#4CAF50' },
+    { emoji: '😊', label: 'Good', value: 'good', color: '#8BC34A' },
+    { emoji: '😐', label: 'Okay', value: 'okay', color: '#FFC107' },
+    { emoji: '😞', label: 'Bad', value: 'bad', color: '#FF9800' },
+    { emoji: '😢', label: 'Terrible', value: 'terrible', color: '#F44336' },
+  ];
+
+  const handleSave = async () => {
+    if (!content.trim() || !selectedMood) {
       return;
     }
 
-    // TODO: Save to Supabase
-    console.log('Saving journal entry:', {
-      content,
-      timestamp: new Date(),
-    });
+    setLoading(true);
 
-    // Navigate back
-    navigation.goBack();
+    // Simulate API call to save journal entry
+    setTimeout(() => {
+      console.log('Saving journal entry:', {
+        title: title || 'Untitled Entry',
+        content,
+        mood: selectedMood,
+        timestamp: new Date(),
+      });
+      setLoading(false);
+      navigation.goBack();
+    }, 1500);
   };
 
   const handleClose = () => {
@@ -41,50 +67,96 @@ export const JournalEntryScreen: React.FC<Props> = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.container}>
+      <Image
+        source={require('../../figma-extracted/assets/screens/light-theme/78-light-answering-smart-journal-question-blank.png')}
+        style={styles.backgroundImage}
+        resizeMode="cover"
+      />
+
+      {/* Header */}
+      <View style={styles.header}>
+        <TouchableOpacity
+          style={styles.closeButton}
+          onPress={handleClose}
+          activeOpacity={0.7}
+        >
+          <Text style={styles.closeButtonText}>✕</Text>
+        </TouchableOpacity>
+        <Text style={styles.headerTitle}>New Journal Entry</Text>
+        <View style={styles.headerSpacer} />
+      </View>
+
       <KeyboardAvoidingView
         style={styles.keyboardView}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         keyboardVerticalOffset={0}
       >
-        <View style={styles.content}>
-          {/* Full-screen Figma design - Smart Journal Entry (blank) */}
-          <Image
-            source={require('../../figma-extracted/assets/screens/light-theme/78-light-answering-smart-journal-question-blank.png')}
-            style={styles.fullScreenImage}
-            resizeMode="cover"
-          />
+        <ScrollView
+          style={styles.scrollView}
+          contentContainerStyle={styles.scrollContent}
+          keyboardShouldPersistTaps="handled"
+        >
+          <View style={styles.formContainer}>
+            {/* Mood Selector */}
+            <Text style={styles.label}>How are you feeling?</Text>
+            <View style={styles.moodContainer}>
+              {moods.map((mood) => (
+                <TouchableOpacity
+                  key={mood.value}
+                  style={[
+                    styles.moodButton,
+                    selectedMood === mood.value && {
+                      backgroundColor: mood.color + '20',
+                      borderColor: mood.color,
+                      borderWidth: 2,
+                    },
+                  ]}
+                  onPress={() => setSelectedMood(mood.value)}
+                  activeOpacity={0.7}
+                >
+                  <Text style={styles.moodEmoji}>{mood.emoji}</Text>
+                  <Text style={styles.moodLabel}>{mood.label}</Text>
+                </TouchableOpacity>
+              ))}
+            </View>
 
-          {/* Close button area (top left) */}
-          <TouchableOpacity
-            style={styles.closeButtonArea}
-            onPress={handleClose}
-            activeOpacity={1}
-          />
-
-          {/* Interactive TextInput overlay - positioned over Figma design */}
-          <View style={styles.inputOverlay}>
+            {/* Title Input */}
+            <Text style={styles.label}>Title (optional)</Text>
             <TextInput
-              style={styles.textInput}
+              style={styles.titleInput}
+              placeholder="Give your entry a title..."
+              placeholderTextColor="#999"
+              value={title}
+              onChangeText={setTitle}
+              maxLength={100}
+            />
+
+            {/* Content Input */}
+            <Text style={styles.label}>What's on your mind?</Text>
+            <TextInput
+              style={styles.contentInput}
               placeholder="Start writing your thoughts..."
-              placeholderTextColor="rgba(0, 0, 0, 0.3)"
+              placeholderTextColor="#999"
               value={content}
               onChangeText={setContent}
               multiline
               textAlignVertical="top"
               autoFocus
             />
-          </View>
 
-          {/* Save button area (bottom right) */}
-          <TouchableOpacity
-            style={[styles.saveButtonArea, !content.trim() && styles.saveButtonDisabled]}
-            onPress={handleSave}
-            disabled={!content.trim()}
-            activeOpacity={0.7}
-          >
-            <Text style={styles.saveButtonText}>Save</Text>
-          </TouchableOpacity>
-        </View>
+            {/* Save Button */}
+            <Button
+              title="Save Entry"
+              onPress={handleSave}
+              variant="primary"
+              size="large"
+              fullWidth
+              loading={loading}
+              disabled={!content.trim() || !selectedMood}
+              style={styles.saveButton}
+            />
+          </View>
+        </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
@@ -95,58 +167,114 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#FFFFFF',
   },
-  keyboardView: {
-    flex: 1,
-  },
-  content: {
-    flex: 1,
-  },
-  fullScreenImage: {
+  backgroundImage: {
     width,
     height,
     position: 'absolute',
+    opacity: 0.15,
   },
-  closeButtonArea: {
-    position: 'absolute',
-    top: 60,
-    left: 20,
-    width: 50,
-    height: 50,
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingTop: 60,
+    paddingBottom: 16,
+    paddingHorizontal: 20,
+    backgroundColor: 'rgba(255, 255, 255, 0.98)',
+    borderBottomWidth: 1,
+    borderBottomColor: '#E0E0E0',
     zIndex: 10,
   },
-  inputOverlay: {
-    position: 'absolute',
-    top: height * 0.25,
-    left: width * 0.08,
-    right: width * 0.08,
-    height: height * 0.50,
-    backgroundColor: 'rgba(255, 255, 255, 0.8)',
+  closeButton: {
+    width: 40,
+    height: 40,
+    justifyContent: 'center',
+    alignItems: 'center',
     borderRadius: 20,
-    padding: 20,
-    zIndex: 5,
+    backgroundColor: '#F5F5F5',
   },
-  textInput: {
+  closeButtonText: {
+    fontSize: 20,
+    color: colors.primary.DEFAULT,
+  },
+  headerTitle: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: '#1A1A1A',
     flex: 1,
-    fontSize: 16,
-    color: '#000000',
-    lineHeight: 24,
+    textAlign: 'center',
   },
-  saveButtonArea: {
-    position: 'absolute',
-    bottom: 40,
-    right: 30,
-    backgroundColor: '#C7F600',
-    paddingHorizontal: 30,
-    paddingVertical: 15,
-    borderRadius: 25,
-    zIndex: 10,
+  headerSpacer: {
+    width: 40,
   },
-  saveButtonDisabled: {
-    opacity: 0.5,
+  keyboardView: {
+    flex: 1,
   },
-  saveButtonText: {
-    color: '#004BA7',
+  scrollView: {
+    flex: 1,
+  },
+  scrollContent: {
+    flexGrow: 1,
+    padding: 24,
+  },
+  formContainer: {
+    backgroundColor: 'rgba(255, 255, 255, 0.98)',
+    borderRadius: 24,
+    padding: 24,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  label: {
     fontSize: 16,
     fontWeight: '600',
+    color: '#333',
+    marginBottom: 12,
+    marginTop: 16,
+  },
+  moodContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 8,
+  },
+  moodButton: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 12,
+    borderRadius: 12,
+    backgroundColor: '#F5F5F5',
+    flex: 1,
+    marginHorizontal: 4,
+  },
+  moodEmoji: {
+    fontSize: 28,
+    marginBottom: 4,
+  },
+  moodLabel: {
+    fontSize: 11,
+    color: '#666',
+    fontWeight: '500',
+  },
+  titleInput: {
+    backgroundColor: '#F5F5F5',
+    borderRadius: 12,
+    padding: 16,
+    fontSize: 16,
+    color: '#333',
+    marginBottom: 8,
+  },
+  contentInput: {
+    backgroundColor: '#F5F5F5',
+    borderRadius: 12,
+    padding: 16,
+    fontSize: 16,
+    color: '#333',
+    minHeight: 200,
+    marginBottom: 24,
+  },
+  saveButton: {
+    marginTop: 8,
   },
 });
