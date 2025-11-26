@@ -6,14 +6,61 @@ import {
   TouchableOpacity,
   Image,
   SafeAreaView,
+  Text,
+  FlatList,
+  ScrollView,
 } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { colors } from '../../constants';
 
 const { width, height } = Dimensions.get('window');
 
 type Props = NativeStackScreenProps<any, 'SleepCategories'>;
 
 type SleepCategory = 'nature' | 'traffic' | 'sleep' | 'animals' | 'meditation' | 'asmr' | 'other' | 'music' | 'stories';
+
+interface Category {
+  id: SleepCategory;
+  name: string;
+  emoji: string;
+}
+
+interface Sound {
+  id: string;
+  title: string;
+  duration: string;
+  category: SleepCategory;
+}
+
+const CATEGORIES: Category[] = [
+  { id: 'nature', name: 'Nature', emoji: '🌿' },
+  { id: 'traffic', name: 'Traffic', emoji: '🚗' },
+  { id: 'sleep', name: 'Sleep', emoji: '😴' },
+  { id: 'animals', name: 'Animals', emoji: '🐾' },
+  { id: 'meditation', name: 'Meditation', emoji: '🧘' },
+  { id: 'asmr', name: 'ASMR', emoji: '🎧' },
+  { id: 'other', name: 'Other', emoji: '✨' },
+  { id: 'music', name: 'Music', emoji: '🎵' },
+  { id: 'stories', name: 'Stories', emoji: '📖' },
+];
+
+const SOUNDS: Sound[] = [
+  // Nature sounds
+  { id: '1', title: 'Rain on Leaves', duration: '60 min', category: 'nature' },
+  { id: '2', title: 'Ocean Waves', duration: '45 min', category: 'nature' },
+  { id: '3', title: 'Forest Birds', duration: '30 min', category: 'nature' },
+  { id: '4', title: 'Thunder Storm', duration: '40 min', category: 'nature' },
+  // Traffic sounds
+  { id: '5', title: 'City Traffic', duration: '60 min', category: 'traffic' },
+  { id: '6', title: 'Train Sounds', duration: '45 min', category: 'traffic' },
+  // Sleep sounds
+  { id: '7', title: 'White Noise', duration: '120 min', category: 'sleep' },
+  { id: '8', title: 'Pink Noise', duration: '120 min', category: 'sleep' },
+  { id: '9', title: 'Brown Noise', duration: '120 min', category: 'sleep' },
+  // Animals
+  { id: '10', title: 'Cat Purring', duration: '30 min', category: 'animals' },
+  { id: '11', title: 'Whale Songs', duration: '45 min', category: 'animals' },
+];
 
 export const SleepCategoriesScreen: React.FC<Props> = ({ navigation }) => {
   const [selectedCategory, setSelectedCategory] = useState<SleepCategory>('nature');
@@ -26,9 +73,11 @@ export const SleepCategoriesScreen: React.FC<Props> = ({ navigation }) => {
     setSelectedCategory(category);
   };
 
-  const handlePlay = () => {
-    navigation.navigate('SleepPlayer', { category: selectedCategory });
+  const handleSoundPress = (sound: Sound) => {
+    navigation.navigate('SleepPlayer', { sound, category: selectedCategory });
   };
+
+  const filteredSounds = SOUNDS.filter((s) => s.category === selectedCategory);
 
   const getScreenImage = () => {
     switch (selectedCategory) {
@@ -53,66 +102,78 @@ export const SleepCategoriesScreen: React.FC<Props> = ({ navigation }) => {
     }
   };
 
+  const renderSoundItem = ({ item }: { item: Sound }) => (
+    <TouchableOpacity
+      style={styles.soundCard}
+      onPress={() => handleSoundPress(item)}
+      activeOpacity={0.7}
+    >
+      <Text style={styles.soundTitle}>{item.title}</Text>
+      <Text style={styles.soundDuration}>{item.duration}</Text>
+    </TouchableOpacity>
+  );
+
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.content}>
-        <Image
-          source={getScreenImage()}
-          style={styles.fullScreenImage}
-          resizeMode="cover"
-        />
+      <Image
+        source={getScreenImage()}
+        style={styles.backgroundImage}
+        resizeMode="cover"
+      />
 
-        {/* Back button - top left */}
+      {/* Header */}
+      <View style={styles.header}>
         <TouchableOpacity
           style={styles.backButton}
           onPress={handleBack}
-          activeOpacity={1}
-        />
-
-        {/* Category grid - middle area */}
-        <View style={styles.categoryGrid}>
-          {/* Row 1 */}
-          <TouchableOpacity
-            style={styles.categoryButton}
-            onPress={() => handleCategorySelect('nature')}
-            activeOpacity={1}
-          />
-          <TouchableOpacity
-            style={styles.categoryButton}
-            onPress={() => handleCategorySelect('traffic')}
-            activeOpacity={1}
-          />
-          {/* Row 2 */}
-          <TouchableOpacity
-            style={styles.categoryButton}
-            onPress={() => handleCategorySelect('sleep')}
-            activeOpacity={1}
-          />
-          <TouchableOpacity
-            style={styles.categoryButton}
-            onPress={() => handleCategorySelect('animals')}
-            activeOpacity={1}
-          />
-          {/* Row 3 */}
-          <TouchableOpacity
-            style={styles.categoryButton}
-            onPress={() => handleCategorySelect('meditation')}
-            activeOpacity={1}
-          />
-          <TouchableOpacity
-            style={styles.categoryButton}
-            onPress={() => handleCategorySelect('asmr')}
-            activeOpacity={1}
-          />
-        </View>
-
-        {/* Sound items - clickable to play */}
-        <TouchableOpacity
-          style={styles.soundsArea}
-          onPress={handlePlay}
-          activeOpacity={1}
-        />
+          activeOpacity={0.7}
+        >
+          <Text style={styles.backButtonText}>←</Text>
+        </TouchableOpacity>
+        <Text style={styles.headerTitle}>Sleep Sounds</Text>
+        <View style={styles.headerSpacer} />
       </View>
+
+      {/* Category Tabs */}
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        style={styles.categoryScrollView}
+        contentContainerStyle={styles.categoryScrollContent}
+      >
+        {CATEGORIES.map((category) => (
+          <TouchableOpacity
+            key={category.id}
+            style={[
+              styles.categoryTab,
+              selectedCategory === category.id && styles.categoryTabActive,
+            ]}
+            onPress={() => handleCategorySelect(category.id)}
+            activeOpacity={0.7}
+          >
+            <Text style={styles.categoryEmoji}>{category.emoji}</Text>
+            <Text
+              style={[
+                styles.categoryName,
+                selectedCategory === category.id && styles.categoryNameActive,
+              ]}
+            >
+              {category.name}
+            </Text>
+          </TouchableOpacity>
+        ))}
+      </ScrollView>
+
+      {/* Sounds List */}
+      <FlatList
+        data={filteredSounds}
+        renderItem={renderSoundItem}
+        keyExtractor={(item) => item.id}
+        contentContainerStyle={styles.soundsList}
+        ListEmptyComponent={
+          <Text style={styles.emptyText}>No sounds in this category yet</Text>
+        }
+      />
     </SafeAreaView>
   );
 };
@@ -122,45 +183,117 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#FFFFFF',
   },
-  content: {
-    flex: 1,
+  backgroundImage: {
     width,
     height,
+    position: 'absolute',
+    opacity: 0.15,
   },
-  fullScreenImage: {
-    width,
-    height,
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingTop: 60,
+    paddingBottom: 16,
+    paddingHorizontal: 20,
+    backgroundColor: 'rgba(255, 255, 255, 0.98)',
+    borderBottomWidth: 1,
+    borderBottomColor: '#E0E0E0',
+    zIndex: 10,
   },
   backButton: {
-    position: 'absolute',
-    top: 50,
-    left: 20,
-    width: 50,
-    height: 50,
-    zIndex: 10,
+    width: 40,
+    height: 40,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 20,
+    backgroundColor: '#F5F5F5',
   },
-  categoryGrid: {
-    position: 'absolute',
-    top: 120,
-    left: 20,
-    right: 20,
-    height: 180,
+  backButtonText: {
+    fontSize: 24,
+    color: colors.primary.DEFAULT,
+  },
+  headerTitle: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: '#1A1A1A',
+    flex: 1,
+    textAlign: 'center',
+  },
+  headerSpacer: {
+    width: 40,
+  },
+  categoryScrollView: {
+    maxHeight: 100,
+    backgroundColor: 'rgba(255, 255, 255, 0.98)',
+    borderBottomWidth: 1,
+    borderBottomColor: '#E0E0E0',
+  },
+  categoryScrollContent: {
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+  },
+  categoryTab: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    marginHorizontal: 4,
+    borderRadius: 20,
+    backgroundColor: '#F5F5F5',
+    minWidth: 80,
+  },
+  categoryTabActive: {
+    backgroundColor: colors.primary.DEFAULT + '20',
+    borderWidth: 2,
+    borderColor: colors.primary.DEFAULT,
+  },
+  categoryEmoji: {
+    fontSize: 24,
+    marginBottom: 4,
+  },
+  categoryName: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: '#666',
+  },
+  categoryNameActive: {
+    color: colors.primary.DEFAULT,
+    fontWeight: '700',
+  },
+  soundsList: {
+    padding: 20,
+    paddingBottom: 100,
+  },
+  soundCard: {
     flexDirection: 'row',
-    flexWrap: 'wrap',
-    zIndex: 10,
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: 'rgba(255, 255, 255, 0.98)',
+    borderRadius: 16,
+    padding: 16,
+    marginBottom: 12,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
   },
-  categoryButton: {
-    width: (width - 60) / 2,
-    height: 80,
-    marginHorizontal: 5,
-    marginVertical: 5,
+  soundTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#1A1A1A',
+    flex: 1,
   },
-  soundsArea: {
-    position: 'absolute',
-    top: 320,
-    left: 20,
-    right: 20,
-    bottom: 100,
-    zIndex: 10,
+  soundDuration: {
+    fontSize: 14,
+    color: '#666',
+    marginLeft: 12,
+  },
+  emptyText: {
+    fontSize: 16,
+    color: '#999',
+    textAlign: 'center',
+    marginTop: 40,
   },
 });
