@@ -2,3 +2,8 @@ export { ProfileScreen } from './ProfileScreen';
 export { SettingsScreen } from './SettingsScreen';
 export { HelpScreen } from './HelpScreen';
 export { AboutScreen } from './AboutScreen';
+export { AccountScreen } from './AccountScreen';
+export { MyBadgesScreen } from './MyBadgesScreen';
+export { ShareBadgeScreen } from './ShareBadgeScreen';
+export { DailyReminderScreen } from './DailyReminderScreen';
+export { PreferencesScreen } from './PreferencesScreen';
