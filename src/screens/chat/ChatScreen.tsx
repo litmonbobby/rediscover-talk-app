@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
   View,
   Text,
@@ -10,8 +10,10 @@ import {
   Dimensions,
   KeyboardAvoidingView,
   Platform,
+  FlatList,
 } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { colors } from '../../constants';
 
 const { width, height } = Dimensions.get('window');
 
@@ -29,11 +31,19 @@ export const ChatScreen: React.FC<Props> = ({ navigation }) => {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
-      text: "Hello! I'm your AI mental health companion. How are you feeling today?",
+      text: "Hello! I'm Mindy, your AI mental health companion. How are you feeling today?",
       sender: 'bot',
       timestamp: new Date(),
     },
   ]);
+  const flatListRef = useRef<FlatList>(null);
+
+  useEffect(() => {
+    // Scroll to bottom when new message arrives
+    if (messages.length > 0 && flatListRef.current) {
+      flatListRef.current.scrollToEnd({ animated: true });
+    }
+  }, [messages]);
 
   const sendMessage = () => {
     if (!inputText.trim()) return;
@@ -64,55 +74,89 @@ export const ChatScreen: React.FC<Props> = ({ navigation }) => {
     navigation.goBack();
   };
 
+  const renderMessage = ({ item }: { item: Message }) => {
+    const isUser = item.sender === 'user';
+    return (
+      <View
+        style={[
+          styles.messageBubble,
+          isUser ? styles.userBubble : styles.botBubble,
+        ]}
+      >
+        <Text style={[styles.messageText, isUser ? styles.userText : styles.botText]}>
+          {item.text}
+        </Text>
+        <Text style={styles.timestamp}>
+          {item.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+        </Text>
+      </View>
+    );
+  };
+
   return (
     <SafeAreaView style={styles.container}>
+      <Image
+        source={require('../../figma-extracted/assets/screens/light-theme/33-light-chat-with-mindy.png')}
+        style={styles.backgroundImage}
+        resizeMode="cover"
+      />
+
+      {/* Header */}
+      <View style={styles.header}>
+        <TouchableOpacity
+          style={styles.backButton}
+          onPress={handleBack}
+          activeOpacity={0.7}
+        >
+          <Text style={styles.backButtonText}>←</Text>
+        </TouchableOpacity>
+        <View style={styles.headerTitleContainer}>
+          <Text style={styles.headerTitle}>Chat with Mindy</Text>
+          <Text style={styles.headerSubtitle}>AI Mental Health Companion</Text>
+        </View>
+        <TouchableOpacity
+          style={styles.optionsButton}
+          onPress={() => console.log('Options pressed')}
+          activeOpacity={0.7}
+        >
+          <Text style={styles.optionsButtonText}>⋮</Text>
+        </TouchableOpacity>
+      </View>
+
       <KeyboardAvoidingView
         style={styles.keyboardView}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         keyboardVerticalOffset={0}
       >
-        <View style={styles.content}>
-          {/* Full-screen Figma design - Chat with Mindy */}
-          <Image
-            source={require('../../figma-extracted/assets/screens/light-theme/33-light-chat-with-mindy.png')}
-            style={styles.fullScreenImage}
-            resizeMode="cover"
-          />
+        {/* Messages List */}
+        <FlatList
+          ref={flatListRef}
+          data={messages}
+          renderItem={renderMessage}
+          keyExtractor={(item) => item.id}
+          contentContainerStyle={styles.messagesList}
+          showsVerticalScrollIndicator={false}
+        />
 
-          {/* Back button area */}
+        {/* Input Container */}
+        <View style={styles.inputContainer}>
+          <TextInput
+            style={styles.textInput}
+            placeholder="Type your message..."
+            placeholderTextColor="#999"
+            value={inputText}
+            onChangeText={setInputText}
+            multiline
+            maxLength={500}
+          />
           <TouchableOpacity
-            style={styles.backButtonArea}
-            onPress={handleBack}
-            activeOpacity={1}
-          />
-
-          {/* Interactive TextInput overlay - positioned over Figma design input field */}
-          <View style={styles.inputOverlay}>
-            <TextInput
-              style={styles.textInput}
-              placeholder="Type your message..."
-              placeholderTextColor="rgba(255, 255, 255, 0.5)"
-              value={inputText}
-              onChangeText={setInputText}
-              multiline
-              maxLength={500}
-            />
-            <TouchableOpacity
-              style={[styles.sendButton, !inputText.trim() && styles.sendButtonDisabled]}
-              onPress={sendMessage}
-              disabled={!inputText.trim()}
-              activeOpacity={0.7}
-            >
-              <Text style={styles.sendButtonText}>Send</Text>
-            </TouchableOpacity>
-          </View>
-
-          {/* Options button area (top right) */}
-          <TouchableOpacity
-            style={styles.optionsButtonArea}
-            onPress={() => console.log('Options pressed')}
-            activeOpacity={1}
-          />
+            style={[styles.sendButton, !inputText.trim() && styles.sendButtonDisabled]}
+            onPress={sendMessage}
+            disabled={!inputText.trim()}
+            activeOpacity={0.7}
+          >
+            <Text style={styles.sendButtonText}>➤</Text>
+          </TouchableOpacity>
         </View>
       </KeyboardAvoidingView>
     </SafeAreaView>
@@ -124,67 +168,132 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#FFFFFF',
   },
-  keyboardView: {
-    flex: 1,
-  },
-  content: {
-    flex: 1,
-  },
-  fullScreenImage: {
+  backgroundImage: {
     width,
     height,
     position: 'absolute',
+    opacity: 0.1,
   },
-  backButtonArea: {
-    position: 'absolute',
-    top: 60,
-    left: 20,
-    width: 50,
-    height: 50,
-    zIndex: 10,
-  },
-  optionsButtonArea: {
-    position: 'absolute',
-    top: 60,
-    right: 20,
-    width: 50,
-    height: 50,
-    zIndex: 10,
-  },
-  inputOverlay: {
-    position: 'absolute',
-    bottom: 20,
-    left: width * 0.05,
-    right: width * 0.05,
+  header: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(255, 255, 255, 0.15)',
-    borderRadius: 25,
-    paddingHorizontal: 15,
-    paddingVertical: 10,
+    justifyContent: 'space-between',
+    paddingTop: 60,
+    paddingBottom: 16,
+    paddingHorizontal: 20,
+    backgroundColor: 'rgba(255, 255, 255, 0.98)',
+    borderBottomWidth: 1,
+    borderBottomColor: '#E0E0E0',
     zIndex: 10,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.3)',
+  },
+  backButton: {
+    width: 40,
+    height: 40,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 20,
+    backgroundColor: '#F5F5F5',
+  },
+  backButtonText: {
+    fontSize: 24,
+    color: colors.primary.DEFAULT,
+  },
+  headerTitleContainer: {
+    flex: 1,
+    alignItems: 'center',
+    marginHorizontal: 12,
+  },
+  headerTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#1A1A1A',
+  },
+  headerSubtitle: {
+    fontSize: 12,
+    color: '#666',
+    marginTop: 2,
+  },
+  optionsButton: {
+    width: 40,
+    height: 40,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 20,
+    backgroundColor: '#F5F5F5',
+  },
+  optionsButtonText: {
+    fontSize: 24,
+    color: colors.primary.DEFAULT,
+  },
+  keyboardView: {
+    flex: 1,
+  },
+  messagesList: {
+    padding: 16,
+    paddingBottom: 80,
+  },
+  messageBubble: {
+    maxWidth: '75%',
+    marginVertical: 4,
+    padding: 12,
+    borderRadius: 16,
+  },
+  userBubble: {
+    alignSelf: 'flex-end',
+    backgroundColor: colors.primary.DEFAULT,
+  },
+  botBubble: {
+    alignSelf: 'flex-start',
+    backgroundColor: '#F5F5F5',
+  },
+  messageText: {
+    fontSize: 16,
+    marginBottom: 4,
+  },
+  userText: {
+    color: '#FFFFFF',
+  },
+  botText: {
+    color: '#333',
+  },
+  timestamp: {
+    fontSize: 10,
+    color: '#999',
+    alignSelf: 'flex-end',
+  },
+  inputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 16,
+    backgroundColor: 'rgba(255, 255, 255, 0.98)',
+    borderTopWidth: 1,
+    borderTopColor: '#E0E0E0',
   },
   textInput: {
     flex: 1,
-    color: '#FFFFFF',
+    backgroundColor: '#F5F5F5',
+    borderRadius: 20,
+    paddingHorizontal: 16,
+    paddingVertical: 10,
     fontSize: 16,
-    maxHeight: 80,
-    paddingRight: 10,
+    color: '#333',
+    maxHeight: 100,
+    marginRight: 8,
   },
   sendButton: {
-    backgroundColor: '#C7F600',
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    borderRadius: 20,
+    width: 44,
+    height: 44,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 22,
+    backgroundColor: colors.primary.DEFAULT,
   },
   sendButtonDisabled: {
     opacity: 0.5,
   },
   sendButtonText: {
-    color: '#004BA7',
-    fontSize: 16,
+    color: '#FFFFFF',
+    fontSize: 20,
     fontWeight: '600',
   },
 });

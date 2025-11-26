@@ -6,8 +6,11 @@ import {
   SafeAreaView,
   Image,
   Dimensions,
+  Text,
+  FlatList,
 } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { colors } from '../../constants';
 
 const { width, height } = Dimensions.get('window');
 
@@ -52,7 +55,7 @@ export const JournalListScreen: React.FC<Props> = ({ navigation }) => {
   };
 
   const handleEntryPress = (entry: JournalEntry) => {
-    // TODO: Navigate to entry detail/edit screen
+    // TODO: Navigate to entry detail/edit screen with entry data
     console.log('Entry pressed:', entry.title);
   };
 
@@ -60,52 +63,61 @@ export const JournalListScreen: React.FC<Props> = ({ navigation }) => {
     navigation.goBack();
   };
 
+  const renderJournalEntry = ({ item }: { item: JournalEntry }) => (
+    <TouchableOpacity
+      style={styles.journalCard}
+      onPress={() => handleEntryPress(item)}
+      activeOpacity={0.7}
+    >
+      <View style={styles.cardHeader}>
+        <Text style={styles.moodEmoji}>{item.mood}</Text>
+        <Text style={styles.dateText}>{new Date(item.date).toLocaleDateString()}</Text>
+      </View>
+      <Text style={styles.titleText}>{item.title}</Text>
+      <Text style={styles.previewText} numberOfLines={2}>
+        {item.preview}
+      </Text>
+    </TouchableOpacity>
+  );
+
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.content}>
-        {/* Full-screen Figma design - Smart Journal List */}
-        <Image
-          source={require('../../figma-extracted/assets/screens/light-theme/77-light-explore-smart-journal.png')}
-          style={styles.fullScreenImage}
-          resizeMode="cover"
-        />
+      <Image
+        source={require('../../figma-extracted/assets/screens/light-theme/77-light-explore-smart-journal.png')}
+        style={styles.backgroundImage}
+        resizeMode="cover"
+      />
 
-        {/* Back button area */}
+      {/* Header */}
+      <View style={styles.header}>
         <TouchableOpacity
-          style={styles.backButtonArea}
+          style={styles.backButton}
           onPress={handleBack}
-          activeOpacity={1}
-        />
-
-        {/* New entry button (floating action button) */}
-        <TouchableOpacity
-          style={styles.newEntryButtonArea}
-          onPress={handleNewEntry}
-          activeOpacity={1}
-        />
-
-        {/* Journal entry cards - clickable areas */}
-        {/* Entry 1 */}
-        <TouchableOpacity
-          style={[styles.journalEntryArea, { top: height * 0.22 }]}
-          onPress={() => handleEntryPress(mockEntries[0])}
-          activeOpacity={1}
-        />
-
-        {/* Entry 2 */}
-        <TouchableOpacity
-          style={[styles.journalEntryArea, { top: height * 0.35 }]}
-          onPress={() => handleEntryPress(mockEntries[1])}
-          activeOpacity={1}
-        />
-
-        {/* Entry 3 */}
-        <TouchableOpacity
-          style={[styles.journalEntryArea, { top: height * 0.48 }]}
-          onPress={() => handleEntryPress(mockEntries[2])}
-          activeOpacity={1}
-        />
+          activeOpacity={0.7}
+        >
+          <Text style={styles.backButtonText}>←</Text>
+        </TouchableOpacity>
+        <Text style={styles.headerTitle}>Smart Journal</Text>
+        <View style={styles.headerSpacer} />
       </View>
+
+      {/* Journal Entries List */}
+      <FlatList
+        data={mockEntries}
+        renderItem={renderJournalEntry}
+        keyExtractor={(item) => item.id}
+        contentContainerStyle={styles.listContent}
+        showsVerticalScrollIndicator={false}
+      />
+
+      {/* Floating New Entry Button */}
+      <TouchableOpacity
+        style={styles.newEntryButton}
+        onPress={handleNewEntry}
+        activeOpacity={0.7}
+      >
+        <Text style={styles.newEntryButtonText}>+</Text>
+      </TouchableOpacity>
     </SafeAreaView>
   );
 };
@@ -115,34 +127,105 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#FFFFFF',
   },
-  content: {
-    flex: 1,
-  },
-  fullScreenImage: {
+  backgroundImage: {
     width,
     height,
     position: 'absolute',
+    opacity: 0.15,
   },
-  backButtonArea: {
-    position: 'absolute',
-    top: 60,
-    left: 20,
-    width: 50,
-    height: 50,
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingTop: 60,
+    paddingBottom: 16,
+    paddingHorizontal: 20,
+    backgroundColor: 'rgba(255, 255, 255, 0.98)',
+    borderBottomWidth: 1,
+    borderBottomColor: '#E0E0E0',
     zIndex: 10,
   },
-  newEntryButtonArea: {
+  backButton: {
+    width: 40,
+    height: 40,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 20,
+    backgroundColor: '#F5F5F5',
+  },
+  backButtonText: {
+    fontSize: 24,
+    color: colors.primary.DEFAULT,
+  },
+  headerTitle: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: '#1A1A1A',
+    flex: 1,
+    textAlign: 'center',
+  },
+  headerSpacer: {
+    width: 40,
+  },
+  listContent: {
+    padding: 20,
+    paddingBottom: 100,
+  },
+  journalCard: {
+    backgroundColor: 'rgba(255, 255, 255, 0.98)',
+    borderRadius: 16,
+    padding: 16,
+    marginBottom: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  cardHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  moodEmoji: {
+    fontSize: 32,
+  },
+  dateText: {
+    fontSize: 14,
+    color: '#666',
+    fontWeight: '500',
+  },
+  titleText: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#1A1A1A',
+    marginBottom: 8,
+  },
+  previewText: {
+    fontSize: 14,
+    color: '#666',
+    lineHeight: 20,
+  },
+  newEntryButton: {
     position: 'absolute',
     bottom: 30,
     right: 20,
     width: 60,
     height: 60,
-    zIndex: 10,
+    borderRadius: 30,
+    backgroundColor: colors.primary.DEFAULT,
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 6,
   },
-  journalEntryArea: {
-    position: 'absolute',
-    left: width * 0.05,
-    right: width * 0.05,
-    height: 110,
+  newEntryButtonText: {
+    fontSize: 32,
+    color: '#FFFFFF',
+    fontWeight: '300',
   },
 });
