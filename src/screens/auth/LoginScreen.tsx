@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   View,
   StyleSheet,
@@ -6,36 +6,90 @@ import {
   SafeAreaView,
   Image,
   Dimensions,
+  ScrollView,
+  KeyboardAvoidingView,
+  Platform,
+  Text,
 } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { Input } from '../../components/core/Input';
+import { Button } from '../../components/core/Button';
+import { Checkbox } from '../../components/core/Checkbox';
+import { colors } from '../../constants';
 
 const { width, height } = Dimensions.get('window');
 
 type Props = NativeStackScreenProps<any, 'Login'>;
 
+interface FormData {
+  email: string;
+  password: string;
+  rememberMe: boolean;
+}
+
+interface FormErrors {
+  email?: string;
+  password?: string;
+}
+
 export const LoginScreen: React.FC<Props> = ({ navigation }) => {
+  const [formData, setFormData] = useState<FormData>({
+    email: '',
+    password: '',
+    rememberMe: false,
+  });
+
+  const [errors, setErrors] = useState<FormErrors>({});
+  const [loading, setLoading] = useState(false);
+
+  const validateForm = (): boolean => {
+    const newErrors: FormErrors = {};
+
+    // Email validation
+    if (!formData.email) {
+      newErrors.email = 'Email is required';
+    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      newErrors.email = 'Please enter a valid email';
+    }
+
+    // Password validation
+    if (!formData.password) {
+      newErrors.password = 'Password is required';
+    } else if (formData.password.length < 6) {
+      newErrors.password = 'Password must be at least 6 characters';
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSignIn = async () => {
+    if (!validateForm()) {
+      return;
+    }
+
+    setLoading(true);
+
+    // Simulate API call
+    setTimeout(() => {
+      setLoading(false);
+      navigation.replace('Main');
+    }, 1500);
+  };
+
   const handleGoogleSignIn = () => {
-    // TODO: Implement Google Sign In
     navigation.replace('Main');
   };
 
   const handleAppleSignIn = () => {
-    // TODO: Implement Apple Sign In
     navigation.replace('Main');
   };
 
   const handleFacebookSignIn = () => {
-    // TODO: Implement Facebook Sign In
     navigation.replace('Main');
   };
 
   const handleTwitterSignIn = () => {
-    // TODO: Implement Twitter/X Sign In
-    navigation.replace('Main');
-  };
-
-  const handleSignIn = () => {
-    // TODO: Implement email/password sign in
     navigation.replace('Main');
   };
 
@@ -44,88 +98,105 @@ export const LoginScreen: React.FC<Props> = ({ navigation }) => {
   };
 
   const handleForgotPassword = () => {
-    // TODO: Implement forgot password
+    navigation.navigate('ForgotPassword');
   };
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.content}>
-        {/* Full-screen Figma design */}
-        <Image
-          source={require('../../figma-extracted/assets/screens/light-theme/20-light-sign-in-blank-form.png')}
-          style={styles.fullScreenImage}
-          resizeMode="cover"
-        />
+      <Image
+        source={require('../../figma-extracted/assets/screens/light-theme/20-light-sign-in-blank-form.png')}
+        style={styles.backgroundImage}
+        resizeMode="cover"
+      />
 
-        {/* Invisible touchable areas for buttons */}
+      {/* Back Button */}
+      <TouchableOpacity
+        style={styles.backButton}
+        onPress={handleBackButton}
+        activeOpacity={0.7}
+      >
+        <Text style={styles.backButtonText}>←</Text>
+      </TouchableOpacity>
 
-        {/* Back button area */}
-        <TouchableOpacity
-          style={styles.backButtonArea}
-          onPress={handleBackButton}
-          activeOpacity={1}
-        />
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={styles.keyboardView}
+      >
+        <ScrollView
+          style={styles.scrollView}
+          contentContainerStyle={styles.scrollContent}
+          keyboardShouldPersistTaps="handled"
+        >
+          <View style={styles.formContainer}>
+            {/* Real Input Components */}
+            <Input
+              label="Email"
+              value={formData.email}
+              onChangeText={(text) => setFormData({ ...formData, email: text })}
+              error={errors.email}
+              placeholder="Enter your email"
+              keyboardType="email-address"
+              autoCapitalize="none"
+              containerStyle={styles.input}
+            />
 
-        {/* Email input area (tap to focus - will need real implementation later) */}
-        <TouchableOpacity
-          style={[styles.inputArea, { top: height * 0.30 }]}
-          activeOpacity={1}
-        />
+            <Input
+              label="Password"
+              value={formData.password}
+              onChangeText={(text) => setFormData({ ...formData, password: text })}
+              error={errors.password}
+              placeholder="Enter your password"
+              secureTextEntry
+              containerStyle={styles.input}
+            />
 
-        {/* Password input area (tap to focus - will need real implementation later) */}
-        <TouchableOpacity
-          style={[styles.inputArea, { top: height * 0.43 }]}
-          activeOpacity={1}
-        />
+            {/* Remember Me & Forgot Password Row */}
+            <View style={styles.rememberForgotRow}>
+              <Checkbox
+                checked={formData.rememberMe}
+                onChange={(checked) => setFormData({ ...formData, rememberMe: checked })}
+                label="Remember me"
+              />
 
-        {/* Remember me checkbox area */}
-        <TouchableOpacity
-          style={styles.rememberMeArea}
-          activeOpacity={1}
-        />
+              <TouchableOpacity onPress={handleForgotPassword}>
+                <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
+              </TouchableOpacity>
+            </View>
 
-        {/* Forgot password link area */}
-        <TouchableOpacity
-          style={styles.forgotPasswordArea}
-          onPress={handleForgotPassword}
-          activeOpacity={1}
-        />
+            {/* Real Sign In Button */}
+            <Button
+              title="Sign In"
+              onPress={handleSignIn}
+              variant="primary"
+              size="large"
+              fullWidth
+              loading={loading}
+              style={styles.signInButton}
+            />
 
-        {/* Google button area */}
-        <TouchableOpacity
-          style={[styles.socialButtonArea, { top: height * 0.63 }]}
-          onPress={handleGoogleSignIn}
-          activeOpacity={1}
-        />
+            {/* Social Login Buttons */}
+            <View style={styles.socialContainer}>
+              <Text style={styles.orText}>Or continue with</Text>
 
-        {/* Apple button area */}
-        <TouchableOpacity
-          style={[styles.socialButtonArea, { top: height * 0.70 }]}
-          onPress={handleAppleSignIn}
-          activeOpacity={1}
-        />
+              <TouchableOpacity style={styles.socialButton} onPress={handleGoogleSignIn}>
+                <Text style={styles.socialButtonText}>Continue with Google</Text>
+              </TouchableOpacity>
 
-        {/* Facebook button area */}
-        <TouchableOpacity
-          style={[styles.socialButtonArea, { top: height * 0.77 }]}
-          onPress={handleFacebookSignIn}
-          activeOpacity={1}
-        />
+              <TouchableOpacity style={styles.socialButton} onPress={handleAppleSignIn}>
+                <Text style={styles.socialButtonText}>Continue with Apple</Text>
+              </TouchableOpacity>
 
-        {/* X/Twitter button area */}
-        <TouchableOpacity
-          style={[styles.socialButtonArea, { top: height * 0.84 }]}
-          onPress={handleTwitterSignIn}
-          activeOpacity={1}
-        />
+              <TouchableOpacity style={styles.socialButton} onPress={handleFacebookSignIn}>
+                <Text style={styles.socialButtonText}>Continue with Facebook</Text>
+              </TouchableOpacity>
 
-        {/* Sign in button area */}
-        <TouchableOpacity
-          style={styles.signInButtonArea}
-          onPress={handleSignIn}
-          activeOpacity={1}
-        />
-      </View>
+              <TouchableOpacity style={styles.socialButton} onPress={handleTwitterSignIn}>
+                <Text style={styles.socialButtonText}>Continue with X</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 };
@@ -135,52 +206,91 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#FFFFFF',
   },
-  content: {
-    flex: 1,
-  },
-  fullScreenImage: {
+  backgroundImage: {
     width,
     height,
     position: 'absolute',
+    opacity: 0.15, // Reduce opacity so form is visible
   },
-  backButtonArea: {
+  backButton: {
     position: 'absolute',
     top: 60,
     left: 20,
     width: 50,
     height: 50,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 25,
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+    zIndex: 10,
   },
-  inputArea: {
-    position: 'absolute',
-    left: width * 0.05,
-    right: width * 0.05,
-    height: 60,
+  backButtonText: {
+    fontSize: 24,
+    color: colors.primary.DEFAULT,
   },
-  rememberMeArea: {
-    position: 'absolute',
-    top: height * 0.52,
-    left: width * 0.05,
-    width: 150,
-    height: 40,
+  keyboardView: {
+    flex: 1,
   },
-  forgotPasswordArea: {
-    position: 'absolute',
-    top: height * 0.52,
-    right: width * 0.05,
-    width: 150,
-    height: 40,
+  scrollView: {
+    flex: 1,
   },
-  socialButtonArea: {
-    position: 'absolute',
-    left: width * 0.05,
-    right: width * 0.05,
-    height: 60,
+  scrollContent: {
+    flexGrow: 1,
+    justifyContent: 'center',
+    paddingHorizontal: 24,
+    paddingVertical: 40,
   },
-  signInButtonArea: {
-    position: 'absolute',
-    bottom: height * 0.05,
-    left: width * 0.05,
-    right: width * 0.05,
-    height: 60,
+  formContainer: {
+    backgroundColor: 'rgba(255, 255, 255, 0.98)',
+    borderRadius: 24,
+    padding: 32,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.12,
+    shadowRadius: 16,
+    elevation: 8,
+  },
+  input: {
+    marginBottom: 20,
+  },
+  rememberForgotRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 24,
+  },
+  forgotPasswordText: {
+    fontSize: 14,
+    color: colors.primary.DEFAULT,
+    fontWeight: '600',
+  },
+  signInButton: {
+    marginBottom: 20,
+  },
+  socialContainer: {
+    marginTop: 16,
+    paddingTop: 24,
+    borderTopWidth: 1,
+    borderTopColor: '#E0E0E0',
+  },
+  orText: {
+    fontSize: 14,
+    color: '#666',
+    textAlign: 'center',
+    marginBottom: 16,
+  },
+  socialButton: {
+    backgroundColor: '#F5F5F5',
+    borderRadius: 12,
+    paddingVertical: 14,
+    alignItems: 'center',
+    marginBottom: 12,
+    borderWidth: 1,
+    borderColor: '#E0E0E0',
+  },
+  socialButtonText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#333',
   },
 });
