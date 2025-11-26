@@ -17,7 +17,9 @@
       "bundleIdentifier": "com.rediscovertalk.app",
       "deploymentTarget": "26.0",
       "infoPlist": {
-        "UIBackgroundModes": ["audio"],
+        "UIBackgroundModes": [
+          "audio"
+        ],
         "NSMicrophoneUsageDescription": "This app uses the microphone for meditation session recordings.",
         "NSCameraUsageDescription": "This app uses the camera to take profile photos."
       }
@@ -50,7 +52,8 @@
         {
           "microphonePermission": "Allow Rediscover Talk to access your microphone for meditation recordings."
         }
-      ]
+      ],
+      "expo-asset"
     ],
     "extra": {
       "eas": {
