@@ -9,6 +9,8 @@ import {
   ScrollView,
 } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { useTheme } from '../../theme/useTheme';
+import { getThemedScreenImage } from '../../theme/getThemeImage';
 
 const { width, height } = Dimensions.get('window');
 
@@ -16,6 +18,7 @@ type Props = NativeStackScreenProps<any, 'AppTheme'>;
 type ThemeType = 'light' | 'dark' | 'auto';
 
 export const AppThemeScreen: React.FC<Props> = ({ navigation }) => {
+  const { colors: themeColors, isDarkMode } = useTheme();
   const [selectedTheme, setSelectedTheme] = useState<ThemeType>('light');
 
   const handleBack = () => {
@@ -35,11 +38,11 @@ export const AppThemeScreen: React.FC<Props> = ({ navigation }) => {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container, { backgroundColor: themeColors.background.primary }]}>
       <ScrollView style={styles.scrollView}>
         <View style={styles.content}>
           <Image
-            source={require('../../figma-extracted/assets/screens/light-theme/131-light-settings-app-appearance-theme.png')}
+            source={getThemedScreenImage('AppTheme', isDarkMode)}
             style={styles.fullScreenImage}
             resizeMode="cover"
           />

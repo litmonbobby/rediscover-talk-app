@@ -11,6 +11,8 @@ import {
 } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { colors } from '../../constants';
+import { useTheme } from '../../theme/useTheme';
+import { getThemedScreenImage } from '../../theme/getThemeImage';
 
 const { width, height } = Dimensions.get('window');
 
@@ -50,6 +52,7 @@ const BENEFITS = [
 ];
 
 export const SubscriptionSuccessScreen: React.FC<Props> = ({ navigation, route }) => {
+  const { colors: themeColors, isDarkMode } = useTheme();
   const plan = (route?.params?.plan || 'yearly') as PlanType;
 
   const handleContinue = () => {
@@ -57,9 +60,9 @@ export const SubscriptionSuccessScreen: React.FC<Props> = ({ navigation, route }
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container, { backgroundColor: themeColors.background.primary }]}>
       <Image
-        source={require('../../figma-extracted/assets/screens/light-theme/118-light-upgrade-plan-subscription-successful.png')}
+        source={getThemedScreenImage('SubscriptionSuccess', isDarkMode)}
         style={styles.backgroundImage}
         resizeMode="cover"
       />

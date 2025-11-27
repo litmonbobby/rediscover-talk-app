@@ -12,12 +12,15 @@ import {
 } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { colors } from '../../constants';
+import { useTheme } from '../../theme/useTheme';
+import { getThemedScreenImage } from '../../theme/getThemeImage';
 
 const { width, height } = Dimensions.get('window');
 
 type Props = NativeStackScreenProps<any, 'PersonalInfo'>;
 
 export const PersonalInfoScreen: React.FC<Props> = ({ navigation }) => {
+  const { colors: themeColors, isDarkMode } = useTheme();
   const [fullName, setFullName] = useState('Sarah Johnson');
   const [email, setEmail] = useState('sarah.johnson@example.com');
   const [phoneNumber, setPhoneNumber] = useState('+1 (555) 123-4567');
@@ -37,9 +40,9 @@ export const PersonalInfoScreen: React.FC<Props> = ({ navigation }) => {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container, { backgroundColor: themeColors.background.primary }]}>
       <Image
-        source={require('../../figma-extracted/assets/screens/light-theme/123-light-settings-personal-info.png')}
+        source={getThemedScreenImage('PersonalInfo', isDarkMode)}
         style={styles.backgroundImage}
         resizeMode="cover"
       />

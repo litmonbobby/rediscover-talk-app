@@ -9,12 +9,15 @@ import {
   ScrollView,
 } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { useTheme } from '../../theme/useTheme';
+import { getThemedScreenImage } from '../../theme/getThemeImage';
 
 const { width, height } = Dimensions.get('window');
 
 type Props = NativeStackScreenProps<any, 'AppLanguage'>;
 
 export const AppLanguageScreen: React.FC<Props> = ({ navigation }) => {
+  const { colors: themeColors, isDarkMode } = useTheme();
   const [selectedLanguage, setSelectedLanguage] = useState('english');
 
   const handleBack = () => {
@@ -26,11 +29,11 @@ export const AppLanguageScreen: React.FC<Props> = ({ navigation }) => {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container, { backgroundColor: themeColors.background.primary }]}>
       <ScrollView style={styles.scrollView}>
         <View style={styles.content}>
           <Image
-            source={require('../../figma-extracted/assets/screens/light-theme/132-light-settings-app-appearance-app-language.png')}
+            source={getThemedScreenImage('AppLanguage', isDarkMode)}
             style={styles.fullScreenImage}
             resizeMode="cover"
           />

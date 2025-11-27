@@ -8,12 +8,15 @@ import {
   SafeAreaView,
 } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { useTheme } from '../../theme/useTheme';
+import { getThemedScreenImage } from '../../theme/getThemeImage';
 
 const { width, height } = Dimensions.get('window');
 
 type Props = NativeStackScreenProps<any, 'MeditationPlayerFull'>;
 
 export const MeditationPlayerFullScreen: React.FC<Props> = ({ navigation }) => {
+  const { colors: themeColors, isDarkMode } = useTheme();
   const [isPlaying, setIsPlaying] = useState(true);
   const [showCompleted, setShowCompleted] = useState(false);
 
@@ -44,10 +47,10 @@ export const MeditationPlayerFullScreen: React.FC<Props> = ({ navigation }) => {
 
   if (showCompleted) {
     return (
-      <SafeAreaView style={styles.container}>
+      <SafeAreaView style={[styles.container, { backgroundColor: themeColors.background.primary }]}>
         <View style={styles.content}>
           <Image
-            source={require('../../figma-extracted/assets/screens/light-theme/60-light-meditation-completed.png')}
+            source={getThemedScreenImage('MeditationCompleted', isDarkMode)}
             style={styles.fullScreenImage}
             resizeMode="cover"
           />
@@ -64,10 +67,10 @@ export const MeditationPlayerFullScreen: React.FC<Props> = ({ navigation }) => {
   }
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container, { backgroundColor: themeColors.background.primary }]}>
       <View style={styles.content}>
         <Image
-          source={require('../../figma-extracted/assets/screens/light-theme/57-light-start-or-play-meditation.png')}
+          source={getThemedScreenImage('StartOrPlayMeditation', isDarkMode)}
           style={styles.fullScreenImage}
           resizeMode="cover"
         />

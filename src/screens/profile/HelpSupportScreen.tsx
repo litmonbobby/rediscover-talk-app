@@ -9,12 +9,16 @@ import {
   ScrollView,
 } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { useTheme } from '../../theme/useTheme';
+import { getThemedScreenImage } from '../../theme/getThemeImage';
 
 const { width, height } = Dimensions.get('window');
 
 type Props = NativeStackScreenProps<any, 'HelpSupport'>;
 
 export const HelpSupportScreen: React.FC<Props> = ({ navigation }) => {
+  const { colors: themeColors, isDarkMode } = useTheme();
+
   const handleBack = () => {
     navigation.goBack();
   };
@@ -36,11 +40,11 @@ export const HelpSupportScreen: React.FC<Props> = ({ navigation }) => {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container, { backgroundColor: themeColors.background.primary }]}>
       <ScrollView style={styles.scrollView}>
         <View style={styles.content}>
           <Image
-            source={require('../../figma-extracted/assets/screens/light-theme/133-light-settings-help-support.png')}
+            source={getThemedScreenImage('HelpSupport', isDarkMode)}
             style={styles.fullScreenImage}
             resizeMode="cover"
           />

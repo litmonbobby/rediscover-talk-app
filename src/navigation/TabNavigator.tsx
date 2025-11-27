@@ -7,14 +7,12 @@ import { lightColors, darkColors } from '../theme';
 import { HomeStackNavigator } from './stacks/HomeStack';
 import { MeditationStackNavigator } from './stacks/MeditationStack';
 import { JournalStackNavigator } from './stacks/JournalStack';
-import { FamilyStackNavigator } from './stacks/FamilyStack';
 import { ProfileStackNavigator } from './stacks/ProfileStack';
 
 export type TabParamList = {
   HomeTab: undefined;
   MeditationTab: undefined;
   JournalTab: undefined;
-  FamilyTab: undefined;
   ProfileTab: undefined;
 };
 
@@ -30,10 +28,6 @@ const MeditationIcon = ({ color, size }: { color: string; size: number }) => (
 );
 
 const JournalIcon = ({ color, size }: { color: string; size: number }) => (
-  <View style={[styles.icon, { backgroundColor: color, width: size, height: size }]} />
-);
-
-const FamilyIcon = ({ color, size }: { color: string; size: number }) => (
   <View style={[styles.icon, { backgroundColor: color, width: size, height: size }]} />
 );
 
@@ -87,14 +81,6 @@ export const TabNavigator = () => {
         options={{
           tabBarLabel: 'Journal',
           tabBarIcon: ({ color, size }) => <JournalIcon color={color} size={size} />,
-        }}
-      />
-      <Tab.Screen
-        name="FamilyTab"
-        component={FamilyStackNavigator}
-        options={{
-          tabBarLabel: 'Family',
-          tabBarIcon: ({ color, size }) => <FamilyIcon color={color} size={size} />,
         }}
       />
       <Tab.Screen

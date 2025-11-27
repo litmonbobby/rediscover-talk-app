@@ -11,71 +11,36 @@ import {
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { Button } from '../../components/core/Button';
 import { colors } from '../../constants';
+import { useTheme } from '../../theme/useTheme';
+import { getThemedScreenImage } from '../../theme/getThemeImage';
 
 const { width, height } = Dimensions.get('window');
 
 type Props = NativeStackScreenProps<any, 'SignUpSteps'>;
 
+type SignUpStepKey = 'SignUpStep1' | 'SignUpStep2' | 'SignUpStep3' | 'SignUpStep4' | 'SignUpStep5' | 'SignUpStep6' | 'SignUpStep7' | 'SignUpStep8' | 'SignUpStep9' | 'SignUpStep10';
+
 interface SignUpStep {
   id: number;
-  image: any;
+  screenKey: SignUpStepKey;
   title: string;
 }
 
 const signUpSteps: SignUpStep[] = [
-  {
-    id: 1,
-    image: require('../../figma-extracted/assets/screens/light-theme/9-light-sign-up-step-1-form.png'),
-    title: 'Personal Information',
-  },
-  {
-    id: 2,
-    image: require('../../figma-extracted/assets/screens/light-theme/10-light-sign-up-step-2-form.png'),
-    title: 'Contact Details',
-  },
-  {
-    id: 3,
-    image: require('../../figma-extracted/assets/screens/light-theme/11-light-sign-up-step-3-form.png'),
-    title: 'Wellness Goals',
-  },
-  {
-    id: 4,
-    image: require('../../figma-extracted/assets/screens/light-theme/12-light-sign-up-step-4-form.png'),
-    title: 'Mental Health History',
-  },
-  {
-    id: 5,
-    image: require('../../figma-extracted/assets/screens/light-theme/13-light-sign-up-step-5-form.png'),
-    title: 'Daily Routine',
-  },
-  {
-    id: 6,
-    image: require('../../figma-extracted/assets/screens/light-theme/14-light-sign-up-step-6-form.png'),
-    title: 'Preferences',
-  },
-  {
-    id: 7,
-    image: require('../../figma-extracted/assets/screens/light-theme/15-light-sign-up-step-7-form.png'),
-    title: 'Notification Settings',
-  },
-  {
-    id: 8,
-    image: require('../../figma-extracted/assets/screens/light-theme/16-light-sign-up-step-8-form.png'),
-    title: 'Privacy Settings',
-  },
-  {
-    id: 9,
-    image: require('../../figma-extracted/assets/screens/light-theme/17-light-sign-up-step-9-form.png'),
-    title: 'Review Information',
-  },
-  {
-    id: 10,
-    image: require('../../figma-extracted/assets/screens/light-theme/18-light-sign-up-step-10-form.png'),
-    title: 'Terms & Conditions',
-  },
+  { id: 1, screenKey: 'SignUpStep1', title: 'Personal Information' },
+  { id: 2, screenKey: 'SignUpStep2', title: 'Contact Details' },
+  { id: 3, screenKey: 'SignUpStep3', title: 'Wellness Goals' },
+  { id: 4, screenKey: 'SignUpStep4', title: 'Mental Health History' },
+  { id: 5, screenKey: 'SignUpStep5', title: 'Daily Routine' },
+  { id: 6, screenKey: 'SignUpStep6', title: 'Preferences' },
+  { id: 7, screenKey: 'SignUpStep7', title: 'Notification Settings' },
+  { id: 8, screenKey: 'SignUpStep8', title: 'Privacy Settings' },
+  { id: 9, screenKey: 'SignUpStep9', title: 'Review Information' },
+  { id: 10, screenKey: 'SignUpStep10', title: 'Terms & Conditions' },
 ];
 
 export const SignUpStepsScreen: React.FC<Props> = ({ navigation, route }) => {
+  const { colors: themeColors, isDarkMode } = useTheme();
   const initialStep = route?.params?.initialStep || 0;
   const [currentStep, setCurrentStep] = useState(initialStep);
 
@@ -96,13 +61,12 @@ export const SignUpStepsScreen: React.FC<Props> = ({ navigation, route }) => {
     }
   };
 
-  const currentScreenImage = signUpSteps[currentStep].image;
   const progress = ((currentStep + 1) / signUpSteps.length) * 100;
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container, { backgroundColor: themeColors.background.primary }]}>
       <Image
-        source={currentScreenImage}
+        source={getThemedScreenImage(signUpSteps[currentStep].screenKey, isDarkMode)}
         style={styles.backgroundImage}
         resizeMode="cover"
       />

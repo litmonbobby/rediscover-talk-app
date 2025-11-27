@@ -11,20 +11,24 @@ import {
 } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { colors } from '../../constants';
+import { useTheme } from '../../theme/useTheme';
+import { getThemedScreenImage } from '../../theme/getThemeImage';
 
 const { width, height } = Dimensions.get('window');
 
 type Props = NativeStackScreenProps<any, 'NewPaymentAdded'>;
 
 export const NewPaymentAddedScreen: React.FC<Props> = ({ navigation }) => {
+  const { colors: themeColors, isDarkMode } = useTheme();
+
   const handleContinue = () => {
     navigation.navigate('PaymentMethodsSettings');
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container, { backgroundColor: themeColors.background.primary }]}>
       <Image
-        source={require('../../figma-extracted/assets/screens/light-theme/129-light-settings-new-payment-added.png')}
+        source={getThemedScreenImage('NewPaymentAdded', isDarkMode)}
         style={styles.backgroundImage}
         resizeMode="cover"
       />

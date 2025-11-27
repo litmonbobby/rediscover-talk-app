@@ -11,20 +11,24 @@ import {
 } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { colors } from '../../constants';
+import { useTheme } from '../../theme/useTheme';
+import { getThemedScreenImage } from '../../theme/getThemeImage';
 
 const { width, height } = Dimensions.get('window');
 
 type Props = NativeStackScreenProps<any, 'TermsOfService'>;
 
 export const TermsOfServiceScreen: React.FC<Props> = ({ navigation }) => {
+  const { colors: themeColors, isDarkMode } = useTheme();
+
   const handleBack = () => {
     navigation.goBack();
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container, { backgroundColor: themeColors.background.primary }]}>
       <Image
-        source={require('../../figma-extracted/assets/screens/light-theme/137-light-settings-help-support-terms-of-service.png')}
+        source={getThemedScreenImage('TermsOfService', isDarkMode)}
         style={styles.backgroundImage}
         resizeMode="cover"
       />

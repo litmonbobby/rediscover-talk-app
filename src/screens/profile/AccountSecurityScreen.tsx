@@ -14,12 +14,15 @@ import {
 } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { colors } from '../../constants';
+import { useTheme } from '../../theme/useTheme';
+import { getThemedScreenImage } from '../../theme/getThemeImage';
 
 const { width, height } = Dimensions.get('window');
 
 type Props = NativeStackScreenProps<any, 'AccountSecurity'>;
 
 export const AccountSecurityScreen: React.FC<Props> = ({ navigation }) => {
+  const { colors: themeColors, isDarkMode } = useTheme();
   const [twoFactorEnabled, setTwoFactorEnabled] = useState(false);
   const [biometricEnabled, setBiometricEnabled] = useState(true);
   const [showPasswordForm, setShowPasswordForm] = useState(false);
@@ -79,9 +82,9 @@ export const AccountSecurityScreen: React.FC<Props> = ({ navigation }) => {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container, { backgroundColor: themeColors.background.primary }]}>
       <Image
-        source={require('../../figma-extracted/assets/screens/light-theme/124-light-settings-account-security.png')}
+        source={getThemedScreenImage('AccountSecurity', isDarkMode)}
         style={styles.backgroundImage}
         resizeMode="cover"
       />

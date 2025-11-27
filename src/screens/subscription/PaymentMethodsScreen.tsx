@@ -4,6 +4,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { colors } from '../../constants/colors';
 import { typography } from '../../constants/typography';
 import { spacing } from '../../constants/spacing';
+import { useTheme } from '../../theme/useTheme';
 
 type PaymentMethod = {
   id: string;
@@ -15,6 +16,7 @@ type PaymentMethod = {
 };
 
 export const PaymentMethodsScreen = ({ navigation }: any) => {
+  const { colors: themeColors } = useTheme();
   const paymentMethods: PaymentMethod[] = [
     { id: '1', type: 'card', brand: 'Visa', last4: '4242', isDefault: true },
     { id: '2', type: 'card', brand: 'Mastercard', last4: '8888', isDefault: false },
@@ -33,10 +35,7 @@ export const PaymentMethodsScreen = ({ navigation }: any) => {
   };
 
   return (
-    <LinearGradient
-      colors={[colors.primary.darkBlue, colors.primary.cobaltBlue]}
-      style={styles.container}
-    >
+    <View style={[styles.container, { backgroundColor: themeColors.background.primary }]}>
       <ScrollView style={styles.scrollView}>
         <View style={styles.header}>
           <TouchableOpacity onPress={() => navigation.goBack()}>
@@ -101,7 +100,7 @@ export const PaymentMethodsScreen = ({ navigation }: any) => {
           </Text>
         </View>
       </ScrollView>
-    </LinearGradient>
+    </View>
   );
 };
 

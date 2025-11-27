@@ -12,6 +12,8 @@ import {
 } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { colors } from '../../constants';
+import { useTheme } from '../../theme/useTheme';
+import { getThemedScreenImage } from '../../theme/getThemeImage';
 
 const { width, height } = Dimensions.get('window');
 
@@ -57,18 +59,19 @@ const EXPLORE_ITEMS: ExploreItem[] = [
 ];
 
 export const ExploreScreen: React.FC<Props> = ({ navigation }) => {
+  const { colors: themeColors, isDarkMode } = useTheme();
   const [activeTab, setActiveTab] = useState<ExploreTab>('all');
 
   const getScreenImage = () => {
     switch (activeTab) {
       case 'favorites':
-        return require('../../figma-extracted/assets/screens/light-theme/53-light-explore-favorites.png');
+        return getThemedScreenImage('ExploreFavorites', isDarkMode);
       case 'meditations':
-        return require('../../figma-extracted/assets/screens/light-theme/54-light-explore-meditations.png');
+        return getThemedScreenImage('ExploreMeditations', isDarkMode);
       case 'breathing':
-        return require('../../figma-extracted/assets/screens/light-theme/62-light-explore-breathing.png');
+        return getThemedScreenImage('ExploreBreathing', isDarkMode);
       default:
-        return require('../../figma-extracted/assets/screens/light-theme/52-light-explore.png');
+        return getThemedScreenImage('Explore', isDarkMode);
     }
   };
 
@@ -111,7 +114,7 @@ export const ExploreScreen: React.FC<Props> = ({ navigation }) => {
   );
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container, { backgroundColor: themeColors.background.primary }]}>
       <Image
         source={getScreenImage()}
         style={styles.backgroundImage}

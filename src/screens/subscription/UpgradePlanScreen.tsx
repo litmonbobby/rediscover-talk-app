@@ -11,6 +11,8 @@ import {
 } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { colors } from '../../constants';
+import { useTheme } from '../../theme/useTheme';
+import { getThemedScreenImage } from '../../theme/getThemeImage';
 
 const { width, height } = Dimensions.get('window');
 
@@ -59,6 +61,7 @@ const PLANS: Plan[] = [
 ];
 
 export const UpgradePlanScreen: React.FC<Props> = ({ navigation }) => {
+  const { colors: themeColors, isDarkMode } = useTheme();
   const [selectedPlan, setSelectedPlan] = useState<PlanType>('yearly');
 
   const handleBack = () => {
@@ -74,9 +77,13 @@ export const UpgradePlanScreen: React.FC<Props> = ({ navigation }) => {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container, { backgroundColor: themeColors.background.primary }]}>
       <Image
-        source={require('../../figma-extracted/assets/screens/light-theme/113-light-upgrade-plan-monthly.png')}
+        source={
+          selectedPlan === 'monthly'
+            ? getThemedScreenImage('UpgradePlanMonthly', isDarkMode)
+            : getThemedScreenImage('UpgradePlanYearly', isDarkMode)
+        }
         style={styles.backgroundImage}
         resizeMode="cover"
       />

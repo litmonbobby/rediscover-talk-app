@@ -12,6 +12,8 @@ import {
 } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { colors } from '../../constants';
+import { useTheme } from '../../theme/useTheme';
+import { getThemedScreenImage } from '../../theme/getThemeImage';
 
 const { width, height } = Dimensions.get('window');
 
@@ -63,6 +65,7 @@ const SOUNDS: Sound[] = [
 ];
 
 export const SleepCategoriesScreen: React.FC<Props> = ({ navigation }) => {
+  const { colors: themeColors, isDarkMode } = useTheme();
   const [selectedCategory, setSelectedCategory] = useState<SleepCategory>('nature');
 
   const handleBack = () => {
@@ -79,26 +82,26 @@ export const SleepCategoriesScreen: React.FC<Props> = ({ navigation }) => {
 
   const filteredSounds = SOUNDS.filter((s) => s.category === selectedCategory);
 
-  const getScreenImage = () => {
+  const getScreenImageKey = (): keyof typeof import('../../theme/getThemeImage').ScreenMap => {
     switch (selectedCategory) {
       case 'traffic':
-        return require('../../figma-extracted/assets/screens/light-theme/101-light-sleep-sounds-traffic.png');
+        return 'SleepSoundsTraffic';
       case 'sleep':
-        return require('../../figma-extracted/assets/screens/light-theme/102-light-sleep-sounds-sleep.png');
+        return 'SleepSoundsSleep';
       case 'animals':
-        return require('../../figma-extracted/assets/screens/light-theme/103-light-sleep-sounds-animals.png');
+        return 'SleepSoundsAnimals';
       case 'meditation':
-        return require('../../figma-extracted/assets/screens/light-theme/104-light-sleep-sounds-meditation.png');
+        return 'SleepSoundsMeditation';
       case 'asmr':
-        return require('../../figma-extracted/assets/screens/light-theme/105-light-sleep-sounds-asmr.png');
+        return 'SleepSoundsASMR';
       case 'other':
-        return require('../../figma-extracted/assets/screens/light-theme/106-light-sleep-sounds-other.png');
+        return 'SleepSoundsOther';
       case 'music':
-        return require('../../figma-extracted/assets/screens/light-theme/107-light-sleep-music.png');
+        return 'SleepMusic';
       case 'stories':
-        return require('../../figma-extracted/assets/screens/light-theme/108-light-sleep-stories.png');
+        return 'SleepStories';
       default:
-        return require('../../figma-extracted/assets/screens/light-theme/100-light-sleep-sounds-nature.png');
+        return 'SleepSoundsNature';
     }
   };
 
@@ -114,9 +117,9 @@ export const SleepCategoriesScreen: React.FC<Props> = ({ navigation }) => {
   );
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container, { backgroundColor: themeColors.background.primary }]}>
       <Image
-        source={getScreenImage()}
+        source={getThemedScreenImage(getScreenImageKey(), isDarkMode)}
         style={styles.backgroundImage}
         resizeMode="cover"
       />

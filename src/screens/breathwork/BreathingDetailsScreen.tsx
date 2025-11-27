@@ -12,12 +12,15 @@ import {
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { Button } from '../../components/core/Button';
 import { colors } from '../../constants';
+import { useTheme } from '../../theme/useTheme';
+import { getThemedScreenImage } from '../../theme/getThemeImage';
 
 const { width, height } = Dimensions.get('window');
 
 type Props = NativeStackScreenProps<any, 'BreathingDetails'>;
 
 export const BreathingDetailsScreen: React.FC<Props> = ({ route, navigation }) => {
+  const { colors: themeColors, isDarkMode } = useTheme();
   const { breathing } = route.params || { breathing: {
     id: 'b1',
     title: '4-7-8 Breathing',
@@ -44,9 +47,9 @@ export const BreathingDetailsScreen: React.FC<Props> = ({ route, navigation }) =
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container, { backgroundColor: themeColors.background.primary }]}>
       <Image
-        source={require('../../figma-extracted/assets/screens/light-theme/63-light-breathing-details.png')}
+        source={getThemedScreenImage('BreathingDetails', isDarkMode)}
         style={styles.backgroundImage}
         resizeMode="cover"
       />

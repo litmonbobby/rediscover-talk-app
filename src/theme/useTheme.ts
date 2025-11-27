@@ -1,13 +1,13 @@
-import { useColorScheme } from 'react-native';
 import { lightColors, darkColors, typography, spacing, borderRadius, shadows, animations } from './index';
+import { useThemeContext } from './ThemeContext';
 
 /**
- * Custom hook to get theme colors based on system color scheme
- * Automatically switches between light and dark mode
+ * Custom hook to get theme colors based on theme context
+ * Supports manual theme switching (light/dark/system)
  */
 export const useTheme = () => {
-  const colorScheme = useColorScheme();
-  const isDarkMode = colorScheme === 'dark';
+  const { effectiveTheme, themeMode } = useThemeContext();
+  const isDarkMode = effectiveTheme === 'dark';
 
   return {
     colors: isDarkMode ? darkColors : lightColors,
@@ -17,6 +17,8 @@ export const useTheme = () => {
     shadows,
     animations,
     isDarkMode,
+    themeMode,
+    effectiveTheme,
   };
 };
 

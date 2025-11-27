@@ -4,8 +4,10 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { colors } from '../../constants/colors';
 import { typography } from '../../constants/typography';
 import { spacing } from '../../constants/spacing';
+import { useTheme } from '../../theme/useTheme';
 
 export const SubscriptionScreen = ({ navigation }: any) => {
+  const { colors: themeColors } = useTheme();
   const plans = [
     {
       id: 'monthly',
@@ -46,10 +48,7 @@ export const SubscriptionScreen = ({ navigation }: any) => {
   ];
 
   return (
-    <LinearGradient
-      colors={[colors.primary.darkBlue, colors.primary.cobaltBlue]}
-      style={styles.container}
-    >
+    <View style={[styles.container, { backgroundColor: themeColors.background.primary }]}>
       <ScrollView style={styles.scrollView}>
         <View style={styles.header}>
           <TouchableOpacity onPress={() => navigation.goBack()}>
@@ -128,7 +127,7 @@ export const SubscriptionScreen = ({ navigation }: any) => {
           </Text>
         </View>
       </ScrollView>
-    </LinearGradient>
+    </View>
   );
 };
 

@@ -11,6 +11,8 @@ import {
 } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { colors } from '../../constants';
+import { useTheme } from '../../theme/useTheme';
+import { getThemedScreenImage } from '../../theme/getThemeImage';
 
 const { width, height } = Dimensions.get('window');
 
@@ -40,6 +42,7 @@ const PLAN_PRICING: Record<PlanType, PlanPricing> = {
 };
 
 export const ReviewSummaryScreen: React.FC<Props> = ({ navigation, route }) => {
+  const { colors: themeColors, isDarkMode } = useTheme();
   const plan = (route?.params?.plan || 'monthly') as PlanType;
   const paymentMethodId = route?.params?.paymentMethodId || 'pm1';
   const [termsAccepted, setTermsAccepted] = useState(false);
@@ -65,9 +68,9 @@ export const ReviewSummaryScreen: React.FC<Props> = ({ navigation, route }) => {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container, { backgroundColor: themeColors.background.primary }]}>
       <Image
-        source={require('../../figma-extracted/assets/screens/light-theme/116-light-review-summary.png')}
+        source={getThemedScreenImage('ReviewSummary', isDarkMode)}
         style={styles.backgroundImage}
         resizeMode="cover"
       />

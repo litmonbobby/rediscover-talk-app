@@ -15,6 +15,8 @@ import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { Input } from '../../components/core/Input';
 import { Button } from '../../components/core/Button';
 import { colors } from '../../constants';
+import { useTheme } from '../../theme/useTheme';
+import { getThemedScreenImage } from '../../theme/getThemeImage';
 
 const { width, height } = Dimensions.get('window');
 
@@ -29,6 +31,7 @@ interface FormErrors {
 }
 
 export const ForgotPasswordScreen: React.FC<Props> = ({ navigation }) => {
+  const { colors: themeColors, isDarkMode } = useTheme();
   const [formData, setFormData] = useState<FormData>({
     email: '',
   });
@@ -69,9 +72,9 @@ export const ForgotPasswordScreen: React.FC<Props> = ({ navigation }) => {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container, { backgroundColor: themeColors.background.primary }]}>
       <Image
-        source={require('../../figma-extracted/assets/screens/light-theme/23-light-forgot-password.png')}
+        source={getThemedScreenImage('ForgotPassword', isDarkMode)}
         style={styles.backgroundImage}
         resizeMode="cover"
       />

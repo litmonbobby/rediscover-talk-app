@@ -11,6 +11,8 @@ import {
   SafeAreaView,
 } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { useTheme } from '../../theme/useTheme';
+import { getThemedScreenImage } from '../../theme/getThemeImage';
 
 const { width, height } = Dimensions.get('window');
 
@@ -18,25 +20,17 @@ type Props = NativeStackScreenProps<any, 'Onboarding'>;
 
 interface OnboardingSlide {
   id: number;
-  image: any; // Complete Figma screen design
+  screenKey: 'Walkthrough1' | 'Walkthrough2' | 'Walkthrough3';
 }
 
 const slides: OnboardingSlide[] = [
-  {
-    id: 1,
-    image: require('../../figma-extracted/assets/screens/light-theme/2-light-walkthrough-1.png'),
-  },
-  {
-    id: 2,
-    image: require('../../figma-extracted/assets/screens/light-theme/3-light-walkthrough-2.png'),
-  },
-  {
-    id: 3,
-    image: require('../../figma-extracted/assets/screens/light-theme/4-light-walkthrough-3.png'),
-  },
+  { id: 1, screenKey: 'Walkthrough1' },
+  { id: 2, screenKey: 'Walkthrough2' },
+  { id: 3, screenKey: 'Walkthrough3' },
 ];
 
 export const OnboardingScreen: React.FC<Props> = ({ navigation }) => {
+  const { colors, isDarkMode } = useTheme();
   const [currentIndex, setCurrentIndex] = useState(0);
   const scrollViewRef = useRef<ScrollView>(null);
 
@@ -62,7 +56,7 @@ export const OnboardingScreen: React.FC<Props> = ({ navigation }) => {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background.primary }]}>
       <ScrollView
         ref={scrollViewRef}
         horizontal
@@ -75,7 +69,7 @@ export const OnboardingScreen: React.FC<Props> = ({ navigation }) => {
         {slides.map((slide, index) => (
           <View key={slide.id} style={styles.slide}>
             <Image
-              source={slide.image}
+              source={getThemedScreenImage(slide.screenKey, isDarkMode)}
               style={styles.fullScreenImage}
               resizeMode="cover"
             />

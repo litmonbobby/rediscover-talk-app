@@ -12,12 +12,16 @@ import {
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { Button } from '../../components/core/Button';
 import { colors } from '../../constants';
+import { useTheme } from '../../theme/useTheme';
+import { getThemedScreenImage } from '../../theme/getThemeImage';
 
 const { width, height } = Dimensions.get('window');
 
 type Props = NativeStackScreenProps<any, 'Welcome'>;
 
 export const WelcomeScreen: React.FC<Props> = ({ navigation }) => {
+  const { colors: themeColors, isDarkMode } = useTheme();
+
   const handleGoogleSignIn = () => {
     // Navigate to goal selection (simulating successful social login)
     navigation.navigate('GoalSelection');
@@ -47,9 +51,9 @@ export const WelcomeScreen: React.FC<Props> = ({ navigation }) => {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container, { backgroundColor: themeColors.background.primary }]}>
       <Image
-        source={require('../../figma-extracted/assets/screens/light-theme/5-light-welcome-screen.png')}
+        source={getThemedScreenImage('Welcome', isDarkMode)}
         style={styles.backgroundImage}
         resizeMode="cover"
       />

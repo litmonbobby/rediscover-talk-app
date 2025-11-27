@@ -11,6 +11,8 @@ import {
 } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { colors } from '../../constants';
+import { useTheme } from '../../theme/useTheme';
+import { getThemedScreenImage } from '../../theme/getThemeImage';
 
 const { width, height } = Dimensions.get('window');
 
@@ -33,6 +35,7 @@ const BREATHING_PATTERNS: Record<string, BreathingPattern> = {
 };
 
 export const BreathingExerciseScreen: React.FC<Props> = ({ route, navigation }) => {
+  const { colors: themeColors, isDarkMode } = useTheme();
   const { breathing } = route.params || { breathing: {
     title: '4-7-8 Breathing',
     duration: '19 sec',
@@ -122,25 +125,25 @@ export const BreathingExerciseScreen: React.FC<Props> = ({ route, navigation }) 
     navigation.navigate('Home');
   };
 
-  const getScreenImage = () => {
+  const getScreenImageKey = (): keyof typeof import('../../theme/getThemeImage').ScreenMap => {
     if (isCompleted) {
-      return require('../../figma-extracted/assets/screens/light-theme/67-light-breathing-completed.png');
+      return 'BreathingCompleted';
     }
 
     switch (currentPhase) {
       case 'hold':
-        return require('../../figma-extracted/assets/screens/light-theme/65-light-start-or-play-breathing-hold.png');
+        return 'BreathingHold';
       case 'exhale':
-        return require('../../figma-extracted/assets/screens/light-theme/66-light-start-or-play-breathing-exhale.png');
+        return 'BreathingExhale';
       default:
-        return require('../../figma-extracted/assets/screens/light-theme/64-light-start-or-play-breathing-inhale.png');
+        return 'BreathingInhale';
     }
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container, { backgroundColor: themeColors.background.primary }]}>
       <Image
-        source={getScreenImage()}
+        source={getThemedScreenImage(getScreenImageKey(), isDarkMode)}
         style={styles.backgroundImage}
         resizeMode="cover"
       />

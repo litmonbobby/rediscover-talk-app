@@ -11,20 +11,24 @@ import {
 } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { colors } from '../../constants';
+import { useTheme } from '../../theme/useTheme';
+import { getThemedScreenImage } from '../../theme/getThemeImage';
 
 const { width, height } = Dimensions.get('window');
 
 type Props = NativeStackScreenProps<any, 'PrivacyPolicy'>;
 
 export const PrivacyPolicyScreen: React.FC<Props> = ({ navigation }) => {
+  const { colors: themeColors, isDarkMode } = useTheme();
+
   const handleBack = () => {
     navigation.goBack();
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container, { backgroundColor: themeColors.background.primary }]}>
       <Image
-        source={require('../../figma-extracted/assets/screens/light-theme/136-light-settings-help-support-privacy-policy.png')}
+        source={getThemedScreenImage('PrivacyPolicy', isDarkMode)}
         style={styles.backgroundImage}
         resizeMode="cover"
       />

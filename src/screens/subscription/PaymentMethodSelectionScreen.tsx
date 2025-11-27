@@ -11,6 +11,8 @@ import {
 } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { colors } from '../../constants';
+import { useTheme } from '../../theme/useTheme';
+import { getThemedScreenImage } from '../../theme/getThemeImage';
 
 const { width, height } = Dimensions.get('window');
 
@@ -47,6 +49,7 @@ const PAYMENT_METHODS: PaymentMethod[] = [
 ];
 
 export const PaymentMethodSelectionScreen: React.FC<Props> = ({ navigation, route }) => {
+  const { colors: themeColors, isDarkMode } = useTheme();
   const plan = route?.params?.plan || 'monthly';
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<string>(
     PAYMENT_METHODS.find((pm) => pm.isDefault)?.id || PAYMENT_METHODS[0].id
@@ -82,9 +85,9 @@ export const PaymentMethodSelectionScreen: React.FC<Props> = ({ navigation, rout
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container, { backgroundColor: themeColors.background.primary }]}>
       <Image
-        source={require('../../figma-extracted/assets/screens/light-theme/115-light-choose-payment-methods.png')}
+        source={getThemedScreenImage('ChoosePaymentMethods', isDarkMode)}
         style={styles.backgroundImage}
         resizeMode="cover"
       />

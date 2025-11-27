@@ -12,12 +12,15 @@ import {
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { Button } from '../../components/core/Button';
 import { colors } from '../../constants';
+import { useTheme } from '../../theme/useTheme';
+import { getThemedScreenImage } from '../../theme/getThemeImage';
 
 const { width, height } = Dimensions.get('window');
 
 type Props = NativeStackScreenProps<any, 'MeditationDetails'>;
 
 export const MeditationDetailsScreen: React.FC<Props> = ({ route, navigation }) => {
+  const { colors: themeColors, isDarkMode } = useTheme();
   const { meditation } = route.params || { meditation: {
     id: '1',
     title: 'Morning Calm',
@@ -45,13 +48,12 @@ export const MeditationDetailsScreen: React.FC<Props> = ({ route, navigation }) 
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container, { backgroundColor: themeColors.background.primary }]}>
       <Image
-        source={
-          isFavorite
-            ? require('../../figma-extracted/assets/screens/light-theme/56-light-meditation-details-save-to-favorites.png')
-            : require('../../figma-extracted/assets/screens/light-theme/55-light-meditation-details.png')
-        }
+        source={getThemedScreenImage(
+          isFavorite ? 'MeditationDetailsFavorite' : 'MeditationDetails',
+          isDarkMode
+        )}
         style={styles.backgroundImage}
         resizeMode="cover"
       />

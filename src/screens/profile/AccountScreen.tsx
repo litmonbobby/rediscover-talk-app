@@ -11,6 +11,8 @@ import {
 } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { colors } from '../../constants';
+import { useTheme } from '../../theme/useTheme';
+import { getThemedScreenImage } from '../../theme/getThemeImage';
 
 const { width, height } = Dimensions.get('window');
 
@@ -77,6 +79,8 @@ const MENU_ITEMS: MenuItem[] = [
 ];
 
 export const AccountScreen: React.FC<Props> = ({ navigation }) => {
+  const { colors: themeColors, isDarkMode } = useTheme();
+
   const handleBack = () => {
     navigation.goBack();
   };
@@ -86,9 +90,9 @@ export const AccountScreen: React.FC<Props> = ({ navigation }) => {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container, { backgroundColor: themeColors.background.primary }]}>
       <Image
-        source={require('../../figma-extracted/assets/screens/light-theme/112-light-account.png')}
+        source={getThemedScreenImage('Account', isDarkMode)}
         style={styles.backgroundImage}
         resizeMode="cover"
       />

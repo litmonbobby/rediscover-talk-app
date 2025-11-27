@@ -7,12 +7,16 @@ import {
   SafeAreaView,
 } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { useTheme } from '../../theme/useTheme';
+import { getThemedScreenImage } from '../../theme/getThemeImage';
 
 const { width, height } = Dimensions.get('window');
 
 type Props = NativeStackScreenProps<any, 'ProcessingPayment'>;
 
 export const ProcessingPaymentScreen: React.FC<Props> = ({ navigation }) => {
+  const { colors: themeColors, isDarkMode } = useTheme();
+
   useEffect(() => {
     // Simulate payment processing
     const timer = setTimeout(() => {
@@ -23,10 +27,10 @@ export const ProcessingPaymentScreen: React.FC<Props> = ({ navigation }) => {
   }, [navigation]);
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container, { backgroundColor: themeColors.background.primary }]}>
       <View style={styles.content}>
         <Image
-          source={require('../../figma-extracted/assets/screens/light-theme/117-light-processing-payment.png')}
+          source={getThemedScreenImage('ProcessingPayment', isDarkMode)}
           style={styles.fullScreenImage}
           resizeMode="cover"
         />
@@ -38,7 +42,6 @@ export const ProcessingPaymentScreen: React.FC<Props> = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
   },
   content: {
     flex: 1,

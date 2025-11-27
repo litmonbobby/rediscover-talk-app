@@ -12,12 +12,15 @@ import {
 } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { colors } from '../../constants';
+import { useTheme } from '../../theme/useTheme';
+import { getThemedScreenImage } from '../../theme/getThemeImage';
 
 const { width, height } = Dimensions.get('window');
 
 type Props = NativeStackScreenProps<any, 'SleepPlayer'>;
 
 export const SleepPlayerScreen: React.FC<Props> = ({ route, navigation }) => {
+  const { colors: themeColors, isDarkMode } = useTheme();
   const { sound, category } = route.params;
   const [isPlaying, setIsPlaying] = useState(false);
   const [elapsed, setElapsed] = useState(0);
@@ -95,9 +98,9 @@ export const SleepPlayerScreen: React.FC<Props> = ({ route, navigation }) => {
   });
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container, { backgroundColor: themeColors.background.primary }]}>
       <Image
-        source={require('../../figma-extracted/assets/screens/light-theme/109-light-play-sleep-music-or-stories.png')}
+        source={getThemedScreenImage('PlaySleepMusicOrStories', isDarkMode)}
         style={styles.backgroundImage}
         resizeMode="cover"
       />

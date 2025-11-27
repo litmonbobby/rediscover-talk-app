@@ -10,12 +10,15 @@ import {
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { Button } from '../../components/core/Button';
 import { colors } from '../../constants';
+import { useTheme } from '../../theme/useTheme';
+import { getThemedScreenImage } from '../../theme/getThemeImage';
 
 const { width, height } = Dimensions.get('window');
 
 type Props = NativeStackScreenProps<any, 'ResetPasswordSuccess'>;
 
 export const ResetPasswordSuccessScreen: React.FC<Props> = ({ navigation }) => {
+  const { colors: themeColors, isDarkMode } = useTheme();
   const [countdown, setCountdown] = useState(3);
 
   useEffect(() => {
@@ -39,9 +42,9 @@ export const ResetPasswordSuccessScreen: React.FC<Props> = ({ navigation }) => {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container, { backgroundColor: themeColors.background.primary }]}>
       <Image
-        source={require('../../figma-extracted/assets/screens/light-theme/26-light-reset-password-successful.png')}
+        source={getThemedScreenImage('ResetPasswordSuccess', isDarkMode)}
         style={styles.backgroundImage}
         resizeMode="cover"
       />

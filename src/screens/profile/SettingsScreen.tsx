@@ -2,11 +2,13 @@ import React from 'react';
 import { View, Text, TouchableOpacity, ScrollView, StyleSheet, Switch, SafeAreaView } from 'react-native';
 import Animated, { FadeInUp } from 'react-native-reanimated';
 import { useTheme } from '../../theme/useTheme';
+import { useThemeContext } from '../../theme/ThemeContext';
+import type { ThemeMode } from '../../theme/ThemeContext';
 
 export const SettingsScreen = () => {
   const { colors, typography, spacing, borderRadius, shadows } = useTheme();
+  const { themeMode, setThemeMode } = useThemeContext();
   const [notifications, setNotifications] = React.useState(true);
-  const [darkMode, setDarkMode] = React.useState(false);
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background.primary }]}>
@@ -73,34 +75,71 @@ export const SettingsScreen = () => {
 
           <Animated.View
             entering={FadeInUp.delay(250).springify()}
-            style={[styles.settingItem, {
+            style={[styles.themeContainer, {
               backgroundColor: colors.background.card,
               borderRadius: borderRadius.md,
               borderColor: colors.border.light,
               ...shadows.sm
             }]}
           >
-            <View style={styles.settingInfo}>
-              <Text style={[styles.settingLabel, {
-                color: colors.text.primary,
-                fontFamily: typography.fontFamily.primary,
-                fontWeight: typography.fontWeight.semibold
-              }]}>
-                Dark Mode
-              </Text>
-              <Text style={[styles.settingDescription, {
-                color: colors.text.tertiary,
-                fontFamily: typography.fontFamily.primary
-              }]}>
-                Toggle dark theme
-              </Text>
+            <Text style={[styles.settingLabel, {
+              color: colors.text.primary,
+              fontFamily: typography.fontFamily.primary,
+              fontWeight: typography.fontWeight.semibold,
+              marginBottom: 12
+            }]}>
+              App Theme
+            </Text>
+            <View style={styles.themeOptions}>
+              <TouchableOpacity
+                style={[styles.themeOption, {
+                  backgroundColor: themeMode === 'light' ? colors.primary.main : colors.background.secondary,
+                  borderRadius: borderRadius.sm
+                }]}
+                onPress={() => setThemeMode('light')}
+                activeOpacity={0.7}
+              >
+                <Text style={[styles.themeOptionText, {
+                  color: themeMode === 'light' ? '#FFFFFF' : colors.text.primary,
+                  fontFamily: typography.fontFamily.primary,
+                  fontWeight: typography.fontWeight.semibold
+                }]}>
+                  ☀️ Light
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.themeOption, {
+                  backgroundColor: themeMode === 'dark' ? colors.primary.main : colors.background.secondary,
+                  borderRadius: borderRadius.sm
+                }]}
+                onPress={() => setThemeMode('dark')}
+                activeOpacity={0.7}
+              >
+                <Text style={[styles.themeOptionText, {
+                  color: themeMode === 'dark' ? '#FFFFFF' : colors.text.primary,
+                  fontFamily: typography.fontFamily.primary,
+                  fontWeight: typography.fontWeight.semibold
+                }]}>
+                  🌙 Dark
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.themeOption, {
+                  backgroundColor: themeMode === 'system' ? colors.primary.main : colors.background.secondary,
+                  borderRadius: borderRadius.sm
+                }]}
+                onPress={() => setThemeMode('system')}
+                activeOpacity={0.7}
+              >
+                <Text style={[styles.themeOptionText, {
+                  color: themeMode === 'system' ? '#FFFFFF' : colors.text.primary,
+                  fontFamily: typography.fontFamily.primary,
+                  fontWeight: typography.fontWeight.semibold
+                }]}>
+                  ⚙️ System
+                </Text>
+              </TouchableOpacity>
             </View>
-            <Switch
-              value={darkMode}
-              onValueChange={setDarkMode}
-              trackColor={{ false: colors.background.secondary, true: colors.primary.main }}
-              thumbColor={colors.background.primary}
-            />
           </Animated.View>
         </View>
 
@@ -352,5 +391,25 @@ const styles = StyleSheet.create({
   },
   logoutText: {
     fontSize: 16,
+  },
+  themeContainer: {
+    padding: 16,
+    marginBottom: 12,
+    borderWidth: 1,
+  },
+  themeOptions: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  themeOption: {
+    flex: 1,
+    paddingVertical: 12,
+    paddingHorizontal: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  themeOptionText: {
+    fontSize: 14,
+    textAlign: 'center',
   },
 });

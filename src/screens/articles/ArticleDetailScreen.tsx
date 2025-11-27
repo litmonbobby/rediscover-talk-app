@@ -12,6 +12,8 @@ import {
 } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { colors } from '../../constants';
+import { useTheme } from '../../theme/useTheme';
+import { getThemedScreenImage } from '../../theme/getThemeImage';
 
 const { width, height } = Dimensions.get('window');
 
@@ -173,6 +175,7 @@ Quality sleep is a pillar of good health. With consistent habits and the right e
 };
 
 export const ArticleDetailScreen: React.FC<Props> = ({ route, navigation }) => {
+  const { colors: themeColors, isDarkMode } = useTheme();
   const { article } = route.params;
 
   const handleBack = () => {
@@ -190,9 +193,9 @@ export const ArticleDetailScreen: React.FC<Props> = ({ route, navigation }) => {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container, { backgroundColor: themeColors.background.primary }]}>
       <Image
-        source={require('../../figma-extracted/assets/screens/light-theme/69-light-article-details.png')}
+        source={getThemedScreenImage('ArticleDetails', isDarkMode)}
         style={styles.backgroundImage}
         resizeMode="cover"
       />

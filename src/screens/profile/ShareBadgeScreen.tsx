@@ -8,12 +8,15 @@ import {
   SafeAreaView,
 } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { useTheme } from '../../theme/useTheme';
+import { getThemedScreenImage } from '../../theme/getThemeImage';
 
 const { width, height } = Dimensions.get('window');
 
 type Props = NativeStackScreenProps<any, 'ShareBadge'>;
 
 export const ShareBadgeScreen: React.FC<Props> = ({ navigation, route }) => {
+  const { colors: themeColors, isDarkMode } = useTheme();
   const badgeId = route?.params?.badgeId;
 
   const handleBack = () => {
@@ -26,10 +29,10 @@ export const ShareBadgeScreen: React.FC<Props> = ({ navigation, route }) => {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container, { backgroundColor: themeColors.background.primary }]}>
       <View style={styles.content}>
         <Image
-          source={require('../../figma-extracted/assets/screens/light-theme/120-light-share-badge.png')}
+          source={getThemedScreenImage('ShareBadgeProfile', isDarkMode)}
           style={styles.fullScreenImage}
           resizeMode="cover"
         />

@@ -1,12 +1,15 @@
 import React, { useEffect } from 'react';
 import { View, Image, StyleSheet, Animated, Dimensions } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { useTheme } from '../../theme/useTheme';
+import { getThemedScreenImage } from '../../theme/getThemeImage';
 
 const { width, height } = Dimensions.get('window');
 
 type Props = NativeStackScreenProps<any, 'Splash'>;
 
 export const SplashScreen: React.FC<Props> = ({ navigation }) => {
+  const { colors, isDarkMode } = useTheme();
   const fadeAnim = new Animated.Value(0);
 
   useEffect(() => {
@@ -26,9 +29,9 @@ export const SplashScreen: React.FC<Props> = ({ navigation }) => {
   }, [navigation]);
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: colors.background.primary }]}>
       <Animated.Image
-        source={require('../../figma-extracted/assets/screens/light-theme/1-light-splash-screen.png')}
+        source={getThemedScreenImage('Splash', isDarkMode)}
         style={[
           styles.splashImage,
           {

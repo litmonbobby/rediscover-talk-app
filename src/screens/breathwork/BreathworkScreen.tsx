@@ -12,6 +12,8 @@ import {
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { Button } from '../../components/core/Button';
 import { colors } from '../../constants';
+import { useTheme } from '../../theme/useTheme';
+import { getThemedScreenImage } from '../../theme/getThemeImage';
 
 const { width, height } = Dimensions.get('window');
 
@@ -68,6 +70,7 @@ const breathingPatterns: BreathingPattern[] = [
 ];
 
 export const BreathworkScreen: React.FC<Props> = ({ navigation }) => {
+  const { colors: themeColors, isDarkMode } = useTheme();
   const [selectedPattern, setSelectedPattern] = useState<BreathPattern>('4-7-8');
   const [isActive, setIsActive] = useState(false);
   const [instruction, setInstruction] = useState('Tap to start');
@@ -145,9 +148,9 @@ export const BreathworkScreen: React.FC<Props> = ({ navigation }) => {
   }, []);
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container, { backgroundColor: themeColors.background.primary }]}>
       <Image
-        source={require('../../figma-extracted/assets/screens/light-theme/64-light-start-or-play-breathing-inhale.png')}
+        source={getThemedScreenImage('BreathingInhale', isDarkMode)}
         style={styles.backgroundImage}
         resizeMode="cover"
       />
