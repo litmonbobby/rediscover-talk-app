@@ -6,9 +6,10 @@ import {
   TouchableOpacity,
   Image,
   SafeAreaView,
-  ScrollView,
+  Text,
 } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { colors } from '../../constants';
 
 const { width, height } = Dimensions.get('window');
 
@@ -30,32 +31,49 @@ export const LogoutScreen: React.FC<Props> = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView style={styles.scrollView}>
-        <View style={styles.content}>
-          <Image
-            source={require('../../figma-extracted/assets/screens/light-theme/138-light-settings-logout.png')}
-            style={styles.fullScreenImage}
-            resizeMode="cover"
-          />
+      <Image
+        source={require('../../figma-extracted/assets/screens/light-theme/138-light-settings-logout.png')}
+        style={styles.backgroundImage}
+        resizeMode="cover"
+      />
 
-          {/* Semi-transparent overlay for modal effect */}
-          <View style={styles.overlay} />
+      {/* Dark Overlay */}
+      <View style={styles.overlay} />
 
-          {/* Cancel button */}
-          <TouchableOpacity
-            style={styles.cancelButton}
-            onPress={handleCancel}
-            activeOpacity={1}
-          />
+      {/* Logout Confirmation Modal */}
+      <View style={styles.modalContainer}>
+        <View style={styles.modal}>
+          {/* Icon */}
+          <View style={styles.iconContainer}>
+            <Text style={styles.icon}>👋</Text>
+          </View>
 
-          {/* Confirm logout button */}
-          <TouchableOpacity
-            style={styles.logoutButton}
-            onPress={handleConfirmLogout}
-            activeOpacity={1}
-          />
+          {/* Title and Message */}
+          <Text style={styles.title}>Log Out</Text>
+          <Text style={styles.message}>
+            Are you sure you want to log out? You'll need to sign in again to access your account.
+          </Text>
+
+          {/* Action Buttons */}
+          <View style={styles.buttonContainer}>
+            <TouchableOpacity
+              style={styles.cancelButton}
+              onPress={handleCancel}
+              activeOpacity={0.7}
+            >
+              <Text style={styles.cancelButtonText}>Cancel</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.logoutButton}
+              onPress={handleConfirmLogout}
+              activeOpacity={0.7}
+            >
+              <Text style={styles.logoutButtonText}>Log Out</Text>
+            </TouchableOpacity>
+          </View>
         </View>
-      </ScrollView>
+      </View>
     </SafeAreaView>
   );
 };
@@ -65,16 +83,11 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#FFFFFF',
   },
-  scrollView: {
-    flex: 1,
-  },
-  content: {
+  backgroundImage: {
     width,
-    minHeight: height,
-  },
-  fullScreenImage: {
-    width,
-    height: height * 1.2,
+    height,
+    position: 'absolute',
+    opacity: 0.1,
   },
   overlay: {
     position: 'absolute',
@@ -82,23 +95,86 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    zIndex: 5,
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+  },
+  modal: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 24,
+    padding: 32,
+    width: '100%',
+    maxWidth: 400,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.3,
+    shadowRadius: 16,
+    elevation: 10,
+  },
+  iconContainer: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    backgroundColor: '#FFF5E5',
+    justifyContent: 'center',
+    alignItems: 'center',
+    alignSelf: 'center',
+    marginBottom: 24,
+  },
+  icon: {
+    fontSize: 40,
+  },
+  title: {
+    fontSize: 28,
+    fontWeight: '700',
+    color: '#1A1A1A',
+    textAlign: 'center',
+    marginBottom: 12,
+  },
+  message: {
+    fontSize: 16,
+    color: '#666',
+    textAlign: 'center',
+    lineHeight: 24,
+    marginBottom: 32,
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    gap: 12,
   },
   cancelButton: {
-    position: 'absolute',
-    top: height * 0.5,
-    left: width * 0.1,
-    width: width * 0.35,
-    height: 60,
-    zIndex: 10,
+    flex: 1,
+    backgroundColor: '#F5F5F5',
+    borderRadius: 12,
+    paddingVertical: 16,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#E0E0E0',
+  },
+  cancelButtonText: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#666',
   },
   logoutButton: {
-    position: 'absolute',
-    top: height * 0.5,
-    right: width * 0.1,
-    width: width * 0.35,
-    height: 60,
-    zIndex: 10,
+    flex: 1,
+    backgroundColor: '#FF4444',
+    borderRadius: 12,
+    paddingVertical: 16,
+    alignItems: 'center',
+    shadowColor: '#FF4444',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 5,
+  },
+  logoutButtonText: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#FFFFFF',
   },
 });
