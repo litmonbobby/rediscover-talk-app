@@ -7,8 +7,10 @@ import {
   Image,
   SafeAreaView,
   ScrollView,
+  Text,
 } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { colors } from '../../constants';
 
 const { width, height } = Dimensions.get('window');
 
@@ -21,24 +23,76 @@ export const TermsOfServiceScreen: React.FC<Props> = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView style={styles.scrollView}>
-        <View style={styles.content}>
-          <Image
-            source={require('../../figma-extracted/assets/screens/light-theme/137-light-settings-help-support-terms-of-service.png')}
-            style={styles.fullScreenImage}
-            resizeMode="cover"
-          />
+      <Image
+        source={require('../../figma-extracted/assets/screens/light-theme/137-light-settings-help-support-terms-of-service.png')}
+        style={styles.backgroundImage}
+        resizeMode="cover"
+      />
 
-          {/* Back button */}
-          <TouchableOpacity
-            style={styles.backButton}
-            onPress={handleBack}
-            activeOpacity={1}
-          />
+      {/* Header */}
+      <View style={styles.header}>
+        <TouchableOpacity
+          style={styles.backButton}
+          onPress={handleBack}
+          activeOpacity={0.7}
+        >
+          <Text style={styles.backButtonText}>←</Text>
+        </TouchableOpacity>
+        <Text style={styles.headerTitle}>Terms of Service</Text>
+        <View style={styles.headerSpacer} />
+      </View>
 
-          {/* Terms of service content area - scrollable text */}
-          <View style={styles.contentArea} />
-        </View>
+      <ScrollView
+        style={styles.scrollView}
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={true}
+      >
+        <Text style={styles.lastUpdated}>Last updated: November 26, 2025</Text>
+
+        <Text style={styles.sectionTitle}>1. Acceptance of Terms</Text>
+        <Text style={styles.paragraph}>
+          By accessing and using RediscoverTalk, you accept and agree to be bound by the terms and provision of this agreement. If you do not agree to these terms, please do not use our services.
+        </Text>
+
+        <Text style={styles.sectionTitle}>2. Use License</Text>
+        <Text style={styles.paragraph}>
+          Permission is granted to temporarily download one copy of RediscoverTalk for personal, non-commercial use only. This is the grant of a license, not a transfer of title, and under this license you may not modify, distribute, or use the materials for any commercial purpose.
+        </Text>
+
+        <Text style={styles.sectionTitle}>3. User Accounts</Text>
+        <Text style={styles.paragraph}>
+          When you create an account with us, you must provide accurate, complete, and current information. Failure to do so constitutes a breach of the Terms, which may result in immediate termination of your account.
+        </Text>
+
+        <Text style={styles.sectionTitle}>4. Prohibited Uses</Text>
+        <Text style={styles.paragraph}>
+          You may not use our services for any illegal or unauthorized purpose. You must not, in the use of the service, violate any laws in your jurisdiction including but not limited to copyright laws.
+        </Text>
+
+        <Text style={styles.sectionTitle}>5. Intellectual Property</Text>
+        <Text style={styles.paragraph}>
+          The service and its original content, features, and functionality are and will remain the exclusive property of RediscoverTalk and its licensors. Our trademarks and trade dress may not be used in connection with any product or service without prior written consent.
+        </Text>
+
+        <Text style={styles.sectionTitle}>6. Termination</Text>
+        <Text style={styles.paragraph}>
+          We may terminate or suspend your account immediately, without prior notice or liability, for any reason whatsoever, including without limitation if you breach the Terms. Upon termination, your right to use the service will immediately cease.
+        </Text>
+
+        <Text style={styles.sectionTitle}>7. Limitation of Liability</Text>
+        <Text style={styles.paragraph}>
+          In no event shall RediscoverTalk, nor its directors, employees, partners, agents, suppliers, or affiliates, be liable for any indirect, incidental, special, consequential or punitive damages arising out of or relating to your access to or use of the service.
+        </Text>
+
+        <Text style={styles.sectionTitle}>8. Changes to Terms</Text>
+        <Text style={styles.paragraph}>
+          We reserve the right to modify or replace these Terms at any time. We will provide notice of any changes by posting the new Terms on this page. Your continued use of the service after any such changes constitutes your acceptance of the new Terms.
+        </Text>
+
+        <Text style={styles.sectionTitle}>9. Contact Information</Text>
+        <Text style={styles.paragraph}>
+          If you have any questions about these Terms, please contact us at legal@rediscovertalk.com
+        </Text>
       </ScrollView>
     </SafeAreaView>
   );
@@ -49,31 +103,69 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#FFFFFF',
   },
+  backgroundImage: {
+    width,
+    height,
+    position: 'absolute',
+    opacity: 0.1,
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingTop: 60,
+    paddingBottom: 16,
+    paddingHorizontal: 20,
+    backgroundColor: 'rgba(255, 255, 255, 0.98)',
+    borderBottomWidth: 1,
+    borderBottomColor: '#E0E0E0',
+  },
+  backButton: {
+    width: 40,
+    height: 40,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 20,
+    backgroundColor: '#F5F5F5',
+  },
+  backButtonText: {
+    fontSize: 24,
+    color: colors.primary.DEFAULT,
+  },
+  headerTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#1A1A1A',
+    flex: 1,
+    textAlign: 'center',
+  },
+  headerSpacer: {
+    width: 40,
+  },
   scrollView: {
     flex: 1,
   },
-  content: {
-    width,
-    minHeight: height,
+  scrollContent: {
+    padding: 20,
+    paddingBottom: 40,
   },
-  fullScreenImage: {
-    width,
-    height: height * 1.2,
+  lastUpdated: {
+    fontSize: 14,
+    color: '#999',
+    marginBottom: 24,
+    fontStyle: 'italic',
   },
-  backButton: {
-    position: 'absolute',
-    top: 50,
-    left: 20,
-    width: 50,
-    height: 50,
-    zIndex: 10,
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#1A1A1A',
+    marginTop: 20,
+    marginBottom: 12,
   },
-  contentArea: {
-    position: 'absolute',
-    top: 120,
-    left: 20,
-    right: 20,
-    height: height * 0.7,
-    zIndex: 5,
+  paragraph: {
+    fontSize: 16,
+    color: '#666',
+    lineHeight: 24,
+    marginBottom: 16,
   },
 });
