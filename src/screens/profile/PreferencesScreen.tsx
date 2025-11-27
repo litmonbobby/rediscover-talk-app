@@ -7,89 +7,113 @@ import {
   Image,
   SafeAreaView,
   ScrollView,
+  Text,
 } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { colors } from '../../constants';
 
 const { width, height } = Dimensions.get('window');
 
 type Props = NativeStackScreenProps<any, 'Preferences'>;
+
+interface PreferenceItem {
+  id: string;
+  icon: string;
+  title: string;
+  subtitle?: string;
+  navigateTo: string;
+}
+
+const PREFERENCE_ITEMS: PreferenceItem[] = [
+  {
+    id: 'p1',
+    icon: '📱',
+    title: 'App Appearance',
+    subtitle: 'Customize theme and display settings',
+    navigateTo: 'AppAppearance',
+  },
+  {
+    id: 'p2',
+    icon: '🌐',
+    title: 'Language',
+    subtitle: 'Change app language',
+    navigateTo: 'AppLanguage',
+  },
+  {
+    id: 'p3',
+    icon: '🔔',
+    title: 'Daily Reminder',
+    subtitle: 'Set your daily check-in time',
+    navigateTo: 'DailyReminder',
+  },
+  {
+    id: 'p4',
+    icon: '🎨',
+    title: 'App Theme',
+    subtitle: 'Light or dark mode',
+    navigateTo: 'AppTheme',
+  },
+];
 
 export const PreferencesScreen: React.FC<Props> = ({ navigation }) => {
   const handleBack = () => {
     navigation.goBack();
   };
 
-  const handlePersonalInfo = () => {
-    navigation.navigate('PersonalInfo');
-  };
-
-  const handleAccountSecurity = () => {
-    navigation.navigate('AccountSecurity');
-  };
-
-  const handleLinkedAccounts = () => {
-    navigation.navigate('LinkedAccounts');
-  };
-
-  const handleBilling = () => {
-    navigation.navigate('BillingSubscriptions');
-  };
-
-  const handleAppAppearance = () => {
-    navigation.navigate('AppAppearance');
+  const handleNavigate = (screen: string) => {
+    navigation.navigate(screen);
   };
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView style={styles.scrollView}>
-        <View style={styles.content}>
-          <Image
-            source={require('../../figma-extracted/assets/screens/light-theme/122-light-preferences.png')}
-            style={styles.fullScreenImage}
-            resizeMode="cover"
-          />
+      <Image
+        source={require('../../figma-extracted/assets/screens/light-theme/122-light-preferences.png')}
+        style={styles.backgroundImage}
+        resizeMode="cover"
+      />
 
-          {/* Back button - top left */}
-          <TouchableOpacity
-            style={styles.backButton}
-            onPress={handleBack}
-            activeOpacity={1}
-          />
+      {/* Header */}
+      <View style={styles.header}>
+        <TouchableOpacity
+          style={styles.backButton}
+          onPress={handleBack}
+          activeOpacity={0.7}
+        >
+          <Text style={styles.backButtonText}>←</Text>
+        </TouchableOpacity>
+        <Text style={styles.headerTitle}>Preferences</Text>
+        <View style={styles.headerSpacer} />
+      </View>
 
-          {/* Personal Info option */}
-          <TouchableOpacity
-            style={styles.personalInfoButton}
-            onPress={handlePersonalInfo}
-            activeOpacity={1}
-          />
+      <ScrollView
+        style={styles.scrollView}
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+      >
+        <Text style={styles.title}>App Preferences</Text>
+        <Text style={styles.subtitle}>
+          Customize your app experience
+        </Text>
 
-          {/* Account Security option */}
-          <TouchableOpacity
-            style={styles.securityButton}
-            onPress={handleAccountSecurity}
-            activeOpacity={1}
-          />
-
-          {/* Linked Accounts option */}
-          <TouchableOpacity
-            style={styles.linkedAccountsButton}
-            onPress={handleLinkedAccounts}
-            activeOpacity={1}
-          />
-
-          {/* Billing option */}
-          <TouchableOpacity
-            style={styles.billingButton}
-            onPress={handleBilling}
-            activeOpacity={1}
-          />
-
-          {/* App Appearance option */}
-          <TouchableOpacity
-            style={styles.appearanceButton}
-            onPress={handleAppAppearance}
-            activeOpacity={1}
-          />
+        {/* Preference Menu Items */}
+        <View style={styles.menuContainer}>
+          {PREFERENCE_ITEMS.map((item) => (
+            <TouchableOpacity
+              key={item.id}
+              style={styles.menuItem}
+              onPress={() => handleNavigate(item.navigateTo)}
+              activeOpacity={0.7}
+            >
+              <Text style={styles.menuIcon}>{item.icon}</Text>
+              <View style={styles.menuContent}>
+                <Text style={styles.menuTitle}>{item.title}</Text>
+                {item.subtitle && (
+                  <Text style={styles.menuSubtitle}>{item.subtitle}</Text>
+                )}
+              </View>
+              <Text style={styles.menuArrow}>→</Text>
+            </TouchableOpacity>
+          ))}
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -101,63 +125,103 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#FFFFFF',
   },
+  backgroundImage: {
+    width,
+    height,
+    position: 'absolute',
+    opacity: 0.1,
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingTop: 60,
+    paddingBottom: 16,
+    paddingHorizontal: 20,
+    backgroundColor: 'rgba(255, 255, 255, 0.98)',
+    borderBottomWidth: 1,
+    borderBottomColor: '#E0E0E0',
+  },
+  backButton: {
+    width: 40,
+    height: 40,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 20,
+    backgroundColor: '#F5F5F5',
+  },
+  backButtonText: {
+    fontSize: 24,
+    color: colors.primary.DEFAULT,
+  },
+  headerTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#1A1A1A',
+    flex: 1,
+    textAlign: 'center',
+  },
+  headerSpacer: {
+    width: 40,
+  },
   scrollView: {
     flex: 1,
   },
-  content: {
-    width,
-    minHeight: height,
+  scrollContent: {
+    padding: 20,
+    paddingBottom: 40,
   },
-  fullScreenImage: {
-    width,
-    height: height * 1.2,
+  title: {
+    fontSize: 28,
+    fontWeight: '700',
+    color: '#1A1A1A',
+    marginBottom: 8,
+    textAlign: 'center',
   },
-  backButton: {
-    position: 'absolute',
-    top: 50,
-    left: 20,
-    width: 50,
-    height: 50,
-    zIndex: 10,
+  subtitle: {
+    fontSize: 16,
+    color: '#666',
+    marginBottom: 32,
+    textAlign: 'center',
+    lineHeight: 24,
   },
-  personalInfoButton: {
-    position: 'absolute',
-    top: 150,
-    left: 20,
-    right: 20,
-    height: 70,
-    zIndex: 10,
+  menuContainer: {
+    gap: 12,
   },
-  securityButton: {
-    position: 'absolute',
-    top: 240,
-    left: 20,
-    right: 20,
-    height: 70,
-    zIndex: 10,
+  menuItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(255, 255, 255, 0.98)',
+    borderRadius: 16,
+    padding: 20,
+    borderWidth: 1,
+    borderColor: '#E0E0E0',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
   },
-  linkedAccountsButton: {
-    position: 'absolute',
-    top: 330,
-    left: 20,
-    right: 20,
-    height: 70,
-    zIndex: 10,
+  menuIcon: {
+    fontSize: 32,
+    marginRight: 16,
   },
-  billingButton: {
-    position: 'absolute',
-    top: 420,
-    left: 20,
-    right: 20,
-    height: 70,
-    zIndex: 10,
+  menuContent: {
+    flex: 1,
   },
-  appearanceButton: {
-    position: 'absolute',
-    top: 510,
-    left: 20,
-    right: 20,
-    height: 70,
-    zIndex: 10,
+  menuTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#1A1A1A',
+    marginBottom: 4,
+  },
+  menuSubtitle: {
+    fontSize: 14,
+    color: '#666',
+    lineHeight: 20,
+  },
+  menuArrow: {
+    fontSize: 24,
+    color: colors.primary.DEFAULT,
   },
 });
