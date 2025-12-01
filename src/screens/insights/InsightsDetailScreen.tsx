@@ -80,7 +80,7 @@ const RECOMMENDATIONS = [
   {
     id: 'r1',
     title: 'Keep up your streak!',
-    description: 'You\\'re on a 7-day wellness streak. Try meditation today to maintain momentum.',
+    description: "You're on a 7-day wellness streak. Try meditation today to maintain momentum.",
     emoji: '🌟',
   },
   {

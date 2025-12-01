@@ -8,7 +8,6 @@ import {
   SafeAreaView,
   Text,
   Animated,
-  Slider,
 } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { colors } from '../../constants';
@@ -148,16 +147,25 @@ export const SleepPlayerScreen: React.FC<Props> = ({ route, navigation }) => {
       {/* Volume Control */}
       <View style={styles.volumeContainer}>
         <Text style={styles.volumeLabel}>🔊 Volume</Text>
-        <Slider
-          style={styles.volumeSlider}
-          minimumValue={0}
-          maximumValue={1}
-          value={volume}
-          onValueChange={handleVolumeChange}
-          minimumTrackTintColor={colors.primary.DEFAULT}
-          maximumTrackTintColor="#E0E0E0"
-          thumbTintColor={colors.primary.DEFAULT}
-        />
+        <View style={styles.volumeSliderContainer}>
+          <TouchableOpacity
+            style={styles.volumeButton}
+            onPress={() => handleVolumeChange(Math.max(0, volume - 0.1))}
+            activeOpacity={0.7}
+          >
+            <Text style={styles.volumeButtonText}>−</Text>
+          </TouchableOpacity>
+          <View style={styles.volumeTrack}>
+            <View style={[styles.volumeFill, { width: `${volume * 100}%` }]} />
+          </View>
+          <TouchableOpacity
+            style={styles.volumeButton}
+            onPress={() => handleVolumeChange(Math.min(1, volume + 0.1))}
+            activeOpacity={0.7}
+          >
+            <Text style={styles.volumeButtonText}>+</Text>
+          </TouchableOpacity>
+        </View>
         <Text style={styles.volumeValue}>{Math.round(volume * 100)}%</Text>
       </View>
 
@@ -290,9 +298,37 @@ const styles = StyleSheet.create({
     color: '#333',
     marginBottom: 12,
   },
-  volumeSlider: {
+  volumeSliderContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
     width: width * 0.70,
+    marginBottom: 8,
+  },
+  volumeButton: {
+    width: 40,
     height: 40,
+    borderRadius: 20,
+    backgroundColor: colors.primary.DEFAULT,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  volumeButtonText: {
+    fontSize: 24,
+    color: '#FFFFFF',
+    fontWeight: '700',
+  },
+  volumeTrack: {
+    flex: 1,
+    height: 8,
+    backgroundColor: '#E0E0E0',
+    borderRadius: 4,
+    marginHorizontal: 12,
+    overflow: 'hidden',
+  },
+  volumeFill: {
+    height: '100%',
+    backgroundColor: colors.primary.DEFAULT,
+    borderRadius: 4,
   },
   volumeValue: {
     fontSize: 14,

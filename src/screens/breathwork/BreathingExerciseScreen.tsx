@@ -12,7 +12,7 @@ import {
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { colors } from '../../constants';
 import { useTheme } from '../../theme/useTheme';
-import { getThemedScreenImage } from '../../theme/getThemeImage';
+import { getThemedScreenImage, ScreenKey } from '../../theme/getThemeImage';
 
 const { width, height } = Dimensions.get('window');
 
@@ -125,7 +125,7 @@ export const BreathingExerciseScreen: React.FC<Props> = ({ route, navigation }) 
     navigation.navigate('Home');
   };
 
-  const getScreenImageKey = (): keyof typeof import('../../theme/getThemeImage').ScreenMap => {
+  const getScreenImageKey = (): ScreenKey => {
     if (isCompleted) {
       return 'BreathingCompleted';
     }

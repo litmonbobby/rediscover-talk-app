@@ -13,7 +13,7 @@ import {
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { colors } from '../../constants';
 import { useTheme } from '../../theme/useTheme';
-import { getThemedScreenImage } from '../../theme/getThemeImage';
+import { getThemedScreenImage, ScreenKey } from '../../theme/getThemeImage';
 
 const { width, height } = Dimensions.get('window');
 
@@ -82,7 +82,7 @@ export const SleepCategoriesScreen: React.FC<Props> = ({ navigation }) => {
 
   const filteredSounds = SOUNDS.filter((s) => s.category === selectedCategory);
 
-  const getScreenImageKey = (): keyof typeof import('../../theme/getThemeImage').ScreenMap => {
+  const getScreenImageKey = (): ScreenKey => {
     switch (selectedCategory) {
       case 'traffic':
         return 'SleepSoundsTraffic';

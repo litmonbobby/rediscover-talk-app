@@ -102,6 +102,8 @@ export const InsightsScreen = ({ navigation }: any) => {
             chartConfig={chartConfig}
             style={styles.chart}
             showValuesOnTopOfBars
+            yAxisLabel=""
+            yAxisSuffix=""
           />
         </View>
 

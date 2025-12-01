@@ -1,182 +1,333 @@
 /**
- * Helper function to get theme-specific image paths
- *
- * Usage:
- * const imagePath = getThemeImage(122, 'preferences', isDarkMode);
- * <Image source={imagePath} />
- *
- * OR use the map helper:
- * const imagePath = getThemedScreenImage('Preferences', isDarkMode);
+ * Static image mapping for theme-specific Figma assets
+ * Metro bundler requires static require statements - no dynamic paths
  */
 
+// Light theme images (static requires)
+const lightImages: Record<string, any> = {
+  'Splash': require('../figma-extracted/assets/screens/light-theme/1-light-splash-screen.png'),
+  'Walkthrough1': require('../figma-extracted/assets/screens/light-theme/2-light-walkthrough-1.png'),
+  'Walkthrough2': require('../figma-extracted/assets/screens/light-theme/3-light-walkthrough-2.png'),
+  'Walkthrough3': require('../figma-extracted/assets/screens/light-theme/4-light-walkthrough-3.png'),
+  'Welcome': require('../figma-extracted/assets/screens/light-theme/5-light-welcome-screen.png'),
+  'SignUpBlank': require('../figma-extracted/assets/screens/light-theme/6-light-sign-up-blank-form.png'),
+  'SignUpFilled': require('../figma-extracted/assets/screens/light-theme/7-light-sign-up-filled-form.png'),
+  'SignUpLoading': require('../figma-extracted/assets/screens/light-theme/8-light-sign-up-loading.png'),
+  'SignUpStep1': require('../figma-extracted/assets/screens/light-theme/9-light-sign-up-step-1-form.png'),
+  'SignUpStep2': require('../figma-extracted/assets/screens/light-theme/10-light-sign-up-step-2-form.png'),
+  'SignUpStep3': require('../figma-extracted/assets/screens/light-theme/11-light-sign-up-step-3-form.png'),
+  'SignUpStep4': require('../figma-extracted/assets/screens/light-theme/12-light-sign-up-step-4-form.png'),
+  'SignUpStep5': require('../figma-extracted/assets/screens/light-theme/13-light-sign-up-step-5-form.png'),
+  'SignUpStep6': require('../figma-extracted/assets/screens/light-theme/14-light-sign-up-step-6-form.png'),
+  'SignUpStep7': require('../figma-extracted/assets/screens/light-theme/15-light-sign-up-step-7-form.png'),
+  'SignUpStep8': require('../figma-extracted/assets/screens/light-theme/16-light-sign-up-step-8-form.png'),
+  'SignUpStep9': require('../figma-extracted/assets/screens/light-theme/17-light-sign-up-step-9-form.png'),
+  'SignUpStep10': require('../figma-extracted/assets/screens/light-theme/18-light-sign-up-step-10-form.png'),
+  'PreparingPlans': require('../figma-extracted/assets/screens/light-theme/19-light-preparing-personalized-plans.png'),
+  'SignInBlank': require('../figma-extracted/assets/screens/light-theme/20-light-sign-in-blank-form.png'),
+  'SignInFilled': require('../figma-extracted/assets/screens/light-theme/21-light-sign-in-filled-form.png'),
+  'SignInLoading': require('../figma-extracted/assets/screens/light-theme/22-light-sign-in-loading.png'),
+  'ForgotPassword': require('../figma-extracted/assets/screens/light-theme/23-light-forgot-password.png'),
+  'EnterOTP': require('../figma-extracted/assets/screens/light-theme/24-light-enter-otp-code.png'),
+  'CreateNewPassword': require('../figma-extracted/assets/screens/light-theme/25-light-create-new-password.png'),
+  'ResetPasswordSuccess': require('../figma-extracted/assets/screens/light-theme/26-light-reset-password-successful.png'),
+  'Home': require('../figma-extracted/assets/screens/light-theme/27-light-home.png'),
+  'MoodCheckInBad': require('../figma-extracted/assets/screens/light-theme/28-light-how-do-you-feel-today-not-good.png'),
+  'MoodCheckInGood': require('../figma-extracted/assets/screens/light-theme/29-light-how-do-you-feel-today-good.png'),
+  'MoodReasonWhy': require('../figma-extracted/assets/screens/light-theme/30-light-what-is-the-reason-that-makes-you-feel-that-way-.png'),
+  'MoodExactFeeling': require('../figma-extracted/assets/screens/light-theme/31-light-what-is-your-exact-feeling-.png'),
+  'MoodAddNotes': require('../figma-extracted/assets/screens/light-theme/32-light-add-notes.png'),
+  'ChatWithMindy': require('../figma-extracted/assets/screens/light-theme/33-light-chat-with-mindy.png'),
+  'ChatTypeMessage': require('../figma-extracted/assets/screens/light-theme/34-light-chat-with-mindy-type-message.png'),
+  'ChatGenerating': require('../figma-extracted/assets/screens/light-theme/35-light-chat-with-mindy-generating-response.png'),
+  'ChatMoreOptions': require('../figma-extracted/assets/screens/light-theme/36-light-chat-with-mindy-more-options-menu.png'),
+  'ChatSearch': require('../figma-extracted/assets/screens/light-theme/37-light-chat-with-mindy-search-text.png'),
+  'ChatClear': require('../figma-extracted/assets/screens/light-theme/38-light-chat-with-mindy-clear-chat.png'),
+  'ChatExport': require('../figma-extracted/assets/screens/light-theme/39-light-chat-with-mindy-export-chat.png'),
+  'ChatShare': require('../figma-extracted/assets/screens/light-theme/40-light-chat-with-mindy-share-exported-chat.png'),
+  'TalkWithCoach': require('../figma-extracted/assets/screens/light-theme/41-light-talk-with-coach.png'),
+  'CoachChat': require('../figma-extracted/assets/screens/light-theme/42-light-talk-with-coach-chat.png'),
+  'CoachVoiceCall': require('../figma-extracted/assets/screens/light-theme/43-light-talk-with-coach-voice-call.png'),
+  'CoachVideoCall': require('../figma-extracted/assets/screens/light-theme/44-light-talk-with-coach-video-call.png'),
+  'CoachHistoryChats': require('../figma-extracted/assets/screens/light-theme/45-light-talk-with-coach-history-chats.png'),
+  'CoachHistoryCalls': require('../figma-extracted/assets/screens/light-theme/46-light-talk-with-coach-history-calls.png'),
+  'HomeUnfinishedTasks': require('../figma-extracted/assets/screens/light-theme/47-light-home-unfinished-tasks.png'),
+  'HomeFinishedTasks': require('../figma-extracted/assets/screens/light-theme/48-light-home-finished-tasks.png'),
+  'CongratsAllTasksCompleted': require('../figma-extracted/assets/screens/light-theme/49-light-congratulations-for-all-tasks-completed.png'),
+  'CongratsEarnedBadge': require('../figma-extracted/assets/screens/light-theme/50-light-congratulations-for-earned-badge.png'),
+  'ShareBadge': require('../figma-extracted/assets/screens/light-theme/51-light-share-badge.png'),
+  'Explore': require('../figma-extracted/assets/screens/light-theme/52-light-explore.png'),
+  'ExploreFavorites': require('../figma-extracted/assets/screens/light-theme/53-light-explore-favorites.png'),
+  'ExploreMeditations': require('../figma-extracted/assets/screens/light-theme/54-light-explore-meditations.png'),
+  'MeditationDetails': require('../figma-extracted/assets/screens/light-theme/55-light-meditation-details.png'),
+  'MeditationDetailsFavorite': require('../figma-extracted/assets/screens/light-theme/56-light-meditation-details-save-to-favorites.png'),
+  'StartOrPlayMeditation': require('../figma-extracted/assets/screens/light-theme/57-light-start-or-play-meditation.png'),
+  'EditSounds': require('../figma-extracted/assets/screens/light-theme/58-light-edit-sounds.png'),
+  'MeditationCompleted': require('../figma-extracted/assets/screens/light-theme/60-light-meditation-completed.png'),
+  'PremiumContentUpgrade': require('../figma-extracted/assets/screens/light-theme/61-light-premium-content-upgrade-plan-to-unlock.png'),
+  'ExploreBreathing': require('../figma-extracted/assets/screens/light-theme/62-light-explore-breathing.png'),
+  'BreathingDetails': require('../figma-extracted/assets/screens/light-theme/63-light-breathing-details.png'),
+  'BreathingInhale': require('../figma-extracted/assets/screens/light-theme/64-light-start-or-play-breathing-inhale.png'),
+  'BreathingHold': require('../figma-extracted/assets/screens/light-theme/65-light-start-or-play-breathing-hold.png'),
+  'BreathingExhale': require('../figma-extracted/assets/screens/light-theme/66-light-start-or-play-breathing-exhale.png'),
+  'BreathingCompleted': require('../figma-extracted/assets/screens/light-theme/67-light-breathing-completed.png'),
+  'ExploreArticles': require('../figma-extracted/assets/screens/light-theme/68-light-explore-articles.png'),
+  'ArticleDetails': require('../figma-extracted/assets/screens/light-theme/69-light-article-details.png'),
+  'ExploreTests': require('../figma-extracted/assets/screens/light-theme/70-light-explore-tests.png'),
+  'TestDetails': require('../figma-extracted/assets/screens/light-theme/71-light-test-details.png'),
+  'AnsweringTestQuestion': require('../figma-extracted/assets/screens/light-theme/72-light-answering-test-question.png'),
+  'AnalyzingTestResults': require('../figma-extracted/assets/screens/light-theme/74-light-analyzing-test-results.png'),
+  'TestResults': require('../figma-extracted/assets/screens/light-theme/75-light-test-results.png'),
+  'ShareTestResults': require('../figma-extracted/assets/screens/light-theme/76-light-share-test-results.png'),
+  'ExploreSmartJournal': require('../figma-extracted/assets/screens/light-theme/77-light-explore-smart-journal.png'),
+  'JournalQuestionBlank': require('../figma-extracted/assets/screens/light-theme/78-light-answering-smart-journal-question-blank.png'),
+  'JournalQuestionFilled': require('../figma-extracted/assets/screens/light-theme/79-light-answering-smart-journal-question-filled.png'),
+  'ExploreNotepad': require('../figma-extracted/assets/screens/light-theme/82-light-explore-notepad.png'),
+  'AddNewNotesBlank': require('../figma-extracted/assets/screens/light-theme/83-light-add-new-notes-blank.png'),
+  'AddNewNotesFilled': require('../figma-extracted/assets/screens/light-theme/84-light-add-new-notes-filled.png'),
+  'ExploreAffirmations': require('../figma-extracted/assets/screens/light-theme/87-light-explore-affirmations.png'),
+  'AffirmationDetails': require('../figma-extracted/assets/screens/light-theme/88-light-affirmation-details-self-worth.png'),
+  'ShareAffirmation': require('../figma-extracted/assets/screens/light-theme/89-light-share-affirmation.png'),
+  'ExploreQuotes': require('../figma-extracted/assets/screens/light-theme/90-light-explore-quotes.png'),
+  'QuoteDetails': require('../figma-extracted/assets/screens/light-theme/91-light-quote-details-words-of-wisdom.png'),
+  'ShareQuotes': require('../figma-extracted/assets/screens/light-theme/92-light-share-quotes.png'),
+  'ExploreTips': require('../figma-extracted/assets/screens/light-theme/93-light-explore-tips.png'),
+  'TipsDetails': require('../figma-extracted/assets/screens/light-theme/94-light-tips-details.png'),
+  'SleepSounds': require('../figma-extracted/assets/screens/light-theme/95-light-sleep-sounds.png'),
+  'SleepSoundsPlay': require('../figma-extracted/assets/screens/light-theme/96-light-sleep-sounds-play-sounds.png'),
+  'SleepSoundsTimer': require('../figma-extracted/assets/screens/light-theme/97-light-sleep-sounds-set-timer.png'),
+  'SleepSoundsTimerSet': require('../figma-extracted/assets/screens/light-theme/98-light-sleep-sounds-timer-set.png'),
+  'SleepSoundsSelected': require('../figma-extracted/assets/screens/light-theme/99-light-sleep-sounds-sounds-selected.png'),
+  'SleepSoundsNature': require('../figma-extracted/assets/screens/light-theme/100-light-sleep-sounds-nature.png'),
+  'SleepSoundsTraffic': require('../figma-extracted/assets/screens/light-theme/101-light-sleep-sounds-traffic.png'),
+  'SleepSoundsSleep': require('../figma-extracted/assets/screens/light-theme/102-light-sleep-sounds-sleep.png'),
+  'SleepSoundsAnimals': require('../figma-extracted/assets/screens/light-theme/103-light-sleep-sounds-animals.png'),
+  'SleepSoundsMeditation': require('../figma-extracted/assets/screens/light-theme/104-light-sleep-sounds-meditation.png'),
+  'SleepSoundsASMR': require('../figma-extracted/assets/screens/light-theme/105-light-sleep-sounds-asmr.png'),
+  'SleepSoundsOther': require('../figma-extracted/assets/screens/light-theme/106-light-sleep-sounds-other.png'),
+  'SleepMusic': require('../figma-extracted/assets/screens/light-theme/107-light-sleep-music.png'),
+  'SleepStories': require('../figma-extracted/assets/screens/light-theme/108-light-sleep-stories.png'),
+  'PlaySleepMusicOrStories': require('../figma-extracted/assets/screens/light-theme/109-light-play-sleep-music-or-stories.png'),
+  'Insights': require('../figma-extracted/assets/screens/light-theme/110-light-insights.png'),
+  'InsightsDetail': require('../figma-extracted/assets/screens/light-theme/111-light-insights.png'),
+  'Account': require('../figma-extracted/assets/screens/light-theme/112-light-account.png'),
+  'UpgradePlanMonthly': require('../figma-extracted/assets/screens/light-theme/113-light-upgrade-plan-monthly.png'),
+  'UpgradePlanYearly': require('../figma-extracted/assets/screens/light-theme/114-light-upgrade-plan-yearly.png'),
+  'ChoosePaymentMethods': require('../figma-extracted/assets/screens/light-theme/115-light-choose-payment-methods.png'),
+  'ReviewSummary': require('../figma-extracted/assets/screens/light-theme/116-light-review-summary.png'),
+  'ProcessingPayment': require('../figma-extracted/assets/screens/light-theme/117-light-processing-payment.png'),
+  'SubscriptionSuccess': require('../figma-extracted/assets/screens/light-theme/118-light-upgrade-plan-subscription-successful.png'),
+  'MyBadges': require('../figma-extracted/assets/screens/light-theme/119-light-my-badges.png'),
+  'ShareBadgeProfile': require('../figma-extracted/assets/screens/light-theme/120-light-share-badge.png'),
+  'DailyReminder': require('../figma-extracted/assets/screens/light-theme/121-light-daily-reminder.png'),
+  'Preferences': require('../figma-extracted/assets/screens/light-theme/122-light-preferences.png'),
+  'PersonalInfo': require('../figma-extracted/assets/screens/light-theme/123-light-settings-personal-info.png'),
+  'AccountSecurity': require('../figma-extracted/assets/screens/light-theme/124-light-settings-account-security.png'),
+  'LinkedAccounts': require('../figma-extracted/assets/screens/light-theme/125-light-settings-linked-accounts.png'),
+  'BillingSubscriptions': require('../figma-extracted/assets/screens/light-theme/126-light-settings-billing-subscriptions.png'),
+  'PaymentMethodsSettings': require('../figma-extracted/assets/screens/light-theme/127-light-settings-payment-methods.png'),
+  'AddNewPayment': require('../figma-extracted/assets/screens/light-theme/128-light-add-new-payment.png'),
+  'NewPaymentAdded': require('../figma-extracted/assets/screens/light-theme/129-light-new-payment-method-added.png'),
+  'AppAppearance': require('../figma-extracted/assets/screens/light-theme/130-light-settings-app-appearance.png'),
+  'AppTheme': require('../figma-extracted/assets/screens/light-theme/131-light-settings-app-appearance-theme.png'),
+  'AppLanguage': require('../figma-extracted/assets/screens/light-theme/132-light-settings-app-appearance-app-language.png'),
+  'HelpSupport': require('../figma-extracted/assets/screens/light-theme/133-light-settings-help-support.png'),
+  'FAQ': require('../figma-extracted/assets/screens/light-theme/134-light-settings-help-support-faq.png'),
+  'ContactSupport': require('../figma-extracted/assets/screens/light-theme/135-light-settings-help-support-contact-support.png'),
+  'PrivacyPolicy': require('../figma-extracted/assets/screens/light-theme/136-light-settings-help-support-privacy-policy.png'),
+  'TermsOfService': require('../figma-extracted/assets/screens/light-theme/137-light-settings-help-support-terms-of-service.png'),
+  'Logout': require('../figma-extracted/assets/screens/light-theme/138-light-logout.png'),
+};
+
+// Dark theme images (static requires)
+const darkImages: Record<string, any> = {
+  'Splash': require('../figma-extracted/assets/screens/dark-theme/1-dark-splash-screen.png'),
+  'Walkthrough1': require('../figma-extracted/assets/screens/dark-theme/2-dark-walkthrough-1.png'),
+  'Walkthrough2': require('../figma-extracted/assets/screens/dark-theme/3-dark-walkthrough-2.png'),
+  'Walkthrough3': require('../figma-extracted/assets/screens/dark-theme/4-dark-walkthrough-3.png'),
+  'Welcome': require('../figma-extracted/assets/screens/dark-theme/5-dark-welcome-screen.png'),
+  'SignUpBlank': require('../figma-extracted/assets/screens/dark-theme/6-dark-sign-up-blank-form.png'),
+  'SignUpFilled': require('../figma-extracted/assets/screens/dark-theme/7-dark-sign-up-filled-form.png'),
+  'SignUpLoading': require('../figma-extracted/assets/screens/dark-theme/8-dark-sign-up-loading.png'),
+  'SignUpStep1': require('../figma-extracted/assets/screens/dark-theme/9-dark-sign-up-step-1-form.png'),
+  'SignUpStep2': require('../figma-extracted/assets/screens/dark-theme/10-dark-sign-up-step-2-form.png'),
+  'SignUpStep3': require('../figma-extracted/assets/screens/dark-theme/11-dark-sign-up-step-3-form.png'),
+  'SignUpStep4': require('../figma-extracted/assets/screens/dark-theme/12-dark-sign-up-step-4-form.png'),
+  'SignUpStep5': require('../figma-extracted/assets/screens/dark-theme/13-dark-sign-up-step-5-form.png'),
+  'SignUpStep6': require('../figma-extracted/assets/screens/dark-theme/14-dark-sign-up-step-6-form.png'),
+  'SignUpStep7': require('../figma-extracted/assets/screens/dark-theme/15-dark-sign-up-step-7-form.png'),
+  'SignUpStep8': require('../figma-extracted/assets/screens/dark-theme/16-dark-sign-up-step-8-form.png'),
+  'SignUpStep9': require('../figma-extracted/assets/screens/dark-theme/17-dark-sign-up-step-9-form.png'),
+  'SignUpStep10': require('../figma-extracted/assets/screens/dark-theme/18-dark-sign-up-step-10-form.png'),
+  'PreparingPlans': require('../figma-extracted/assets/screens/dark-theme/19-dark-preparing-personalized-plans.png'),
+  'SignInBlank': require('../figma-extracted/assets/screens/dark-theme/20-dark-sign-in-blank-form.png'),
+  'SignInFilled': require('../figma-extracted/assets/screens/dark-theme/21-dark-sign-in-filled-form.png'),
+  'SignInLoading': require('../figma-extracted/assets/screens/dark-theme/22-dark-sign-in-loading.png'),
+  'ForgotPassword': require('../figma-extracted/assets/screens/dark-theme/23-dark-forgot-password.png'),
+  'EnterOTP': require('../figma-extracted/assets/screens/dark-theme/24-dark-enter-otp-code.png'),
+  'CreateNewPassword': require('../figma-extracted/assets/screens/dark-theme/25-dark-create-new-password.png'),
+  'ResetPasswordSuccess': require('../figma-extracted/assets/screens/dark-theme/26-dark-reset-password-successful.png'),
+  'Home': require('../figma-extracted/assets/screens/dark-theme/27-dark-home.png'),
+  'MoodCheckInBad': require('../figma-extracted/assets/screens/dark-theme/28-dark-how-do-you-feel-today-not-good.png'),
+  'MoodCheckInGood': require('../figma-extracted/assets/screens/dark-theme/29-dark-how-do-you-feel-today-good.png'),
+  'MoodReasonWhy': require('../figma-extracted/assets/screens/dark-theme/30-dark-what-is-the-reason-that-makes-you-feel-that-way-.png'),
+  'MoodExactFeeling': require('../figma-extracted/assets/screens/dark-theme/31-dark-what-is-your-exact-feeling-.png'),
+  'MoodAddNotes': require('../figma-extracted/assets/screens/dark-theme/32-dark-add-notes.png'),
+  'ChatWithMindy': require('../figma-extracted/assets/screens/dark-theme/33-dark-chat-with-mindy.png'),
+  'ChatTypeMessage': require('../figma-extracted/assets/screens/dark-theme/34-dark-chat-with-mindy-type-message.png'),
+  'ChatGenerating': require('../figma-extracted/assets/screens/dark-theme/35-dark-chat-with-mindy-generating-response.png'),
+  'ChatMoreOptions': require('../figma-extracted/assets/screens/dark-theme/36-dark-chat-with-mindy-more-options-menu.png'),
+  'ChatSearch': require('../figma-extracted/assets/screens/dark-theme/37-dark-chat-with-mindy-search-text.png'),
+  'ChatClear': require('../figma-extracted/assets/screens/dark-theme/38-dark-chat-with-mindy-clear-chat.png'),
+  'ChatExport': require('../figma-extracted/assets/screens/dark-theme/39-dark-chat-with-mindy-export-chat.png'),
+  'ChatShare': require('../figma-extracted/assets/screens/dark-theme/40-dark-chat-with-mindy-share-exported-chat.png'),
+  'TalkWithCoach': require('../figma-extracted/assets/screens/dark-theme/41-dark-talk-with-coach.png'),
+  'CoachChat': require('../figma-extracted/assets/screens/dark-theme/42-dark-talk-with-coach-chat.png'),
+  'CoachVoiceCall': require('../figma-extracted/assets/screens/dark-theme/43-dark-talk-with-coach-voice-call.png'),
+  'CoachVideoCall': require('../figma-extracted/assets/screens/dark-theme/44-dark-talk-with-coach-video-call.png'),
+  'CoachHistoryChats': require('../figma-extracted/assets/screens/dark-theme/45-dark-talk-with-coach-history-chats.png'),
+  'CoachHistoryCalls': require('../figma-extracted/assets/screens/dark-theme/46-dark-talk-with-coach-history-calls.png'),
+  'HomeUnfinishedTasks': require('../figma-extracted/assets/screens/dark-theme/47-dark-home-unfinished-tasks.png'),
+  'HomeFinishedTasks': require('../figma-extracted/assets/screens/dark-theme/48-dark-home-finished-tasks.png'),
+  'CongratsAllTasksCompleted': require('../figma-extracted/assets/screens/dark-theme/49-dark-congratulations-for-all-tasks-completed.png'),
+  'CongratsEarnedBadge': require('../figma-extracted/assets/screens/dark-theme/50-dark-congratulations-for-earned-badge.png'),
+  'ShareBadge': require('../figma-extracted/assets/screens/dark-theme/51-dark-share-badge.png'),
+  'Explore': require('../figma-extracted/assets/screens/dark-theme/52-dark-explore.png'),
+  'ExploreFavorites': require('../figma-extracted/assets/screens/dark-theme/53-dark-explore-favorites.png'),
+  'ExploreMeditations': require('../figma-extracted/assets/screens/dark-theme/54-dark-explore-meditations.png'),
+  'MeditationDetails': require('../figma-extracted/assets/screens/dark-theme/55-dark-meditation-details.png'),
+  'MeditationDetailsFavorite': require('../figma-extracted/assets/screens/dark-theme/56-dark-meditation-details-save-to-favorites.png'),
+  'StartOrPlayMeditation': require('../figma-extracted/assets/screens/dark-theme/57-dark-start-or-play-meditation.png'),
+  'EditSounds': require('../figma-extracted/assets/screens/dark-theme/58-dark-edit-sounds.png'),
+  'MeditationCompleted': require('../figma-extracted/assets/screens/dark-theme/60-dark-meditation-completed.png'),
+  'PremiumContentUpgrade': require('../figma-extracted/assets/screens/dark-theme/61-dark-premium-content-upgrade-plan-to-unlock.png'),
+  'ExploreBreathing': require('../figma-extracted/assets/screens/dark-theme/62-dark-explore-breathing.png'),
+  'BreathingDetails': require('../figma-extracted/assets/screens/dark-theme/63-dark-breathing-details.png'),
+  'BreathingInhale': require('../figma-extracted/assets/screens/dark-theme/64-dark-start-or-play-breathing-inhale.png'),
+  'BreathingHold': require('../figma-extracted/assets/screens/dark-theme/65-dark-start-or-play-breathing-hold.png'),
+  'BreathingExhale': require('../figma-extracted/assets/screens/dark-theme/66-dark-start-or-play-breathing-exhale.png'),
+  'BreathingCompleted': require('../figma-extracted/assets/screens/dark-theme/67-dark-breathing-completed.png'),
+  'ExploreArticles': require('../figma-extracted/assets/screens/dark-theme/68-dark-explore-articles.png'),
+  'ArticleDetails': require('../figma-extracted/assets/screens/dark-theme/69-dark-article-details.png'),
+  'ExploreTests': require('../figma-extracted/assets/screens/dark-theme/70-dark-explore-tests.png'),
+  'TestDetails': require('../figma-extracted/assets/screens/dark-theme/71-dark-test-details.png'),
+  'AnsweringTestQuestion': require('../figma-extracted/assets/screens/dark-theme/72-dark-answering-test-question.png'),
+  'AnalyzingTestResults': require('../figma-extracted/assets/screens/dark-theme/74-dark-analyzing-test-results.png'),
+  'TestResults': require('../figma-extracted/assets/screens/dark-theme/75-dark-test-results.png'),
+  'ShareTestResults': require('../figma-extracted/assets/screens/dark-theme/76-dark-share-test-results.png'),
+  'ExploreSmartJournal': require('../figma-extracted/assets/screens/dark-theme/77-dark-explore-smart-journal.png'),
+  'JournalQuestionBlank': require('../figma-extracted/assets/screens/dark-theme/78-dark-answering-smart-journal-question-blank.png'),
+  'JournalQuestionFilled': require('../figma-extracted/assets/screens/dark-theme/79-dark-answering-smart-journal-question-filled.png'),
+  'ExploreNotepad': require('../figma-extracted/assets/screens/dark-theme/82-dark-explore-notepad.png'),
+  'AddNewNotesBlank': require('../figma-extracted/assets/screens/dark-theme/83-dark-add-new-notes-blank.png'),
+  'AddNewNotesFilled': require('../figma-extracted/assets/screens/dark-theme/84-dark-add-new-notes-filled.png'),
+  'ExploreAffirmations': require('../figma-extracted/assets/screens/dark-theme/87-dark-explore-affirmations.png'),
+  'AffirmationDetails': require('../figma-extracted/assets/screens/dark-theme/88-dark-affirmation-details-self-worth.png'),
+  'ShareAffirmation': require('../figma-extracted/assets/screens/dark-theme/89-dark-share-affirmation.png'),
+  'ExploreQuotes': require('../figma-extracted/assets/screens/dark-theme/90-dark-explore-quotes.png'),
+  'QuoteDetails': require('../figma-extracted/assets/screens/dark-theme/91-dark-quote-details-words-of-wisdom.png'),
+  'ShareQuotes': require('../figma-extracted/assets/screens/dark-theme/92-dark-share-quotes.png'),
+  'ExploreTips': require('../figma-extracted/assets/screens/dark-theme/93-dark-explore-tips.png'),
+  'TipsDetails': require('../figma-extracted/assets/screens/dark-theme/94-dark-tips-details.png'),
+  'SleepSounds': require('../figma-extracted/assets/screens/dark-theme/95-dark-sleep-sounds.png'),
+  'SleepSoundsPlay': require('../figma-extracted/assets/screens/dark-theme/96-dark-sleep-sounds-play-sounds.png'),
+  'SleepSoundsTimer': require('../figma-extracted/assets/screens/dark-theme/97-dark-sleep-sounds-set-timer.png'),
+  'SleepSoundsTimerSet': require('../figma-extracted/assets/screens/dark-theme/98-dark-sleep-sounds-timer-set.png'),
+  'SleepSoundsSelected': require('../figma-extracted/assets/screens/dark-theme/99-dark-sleep-sounds-sounds-selected.png'),
+  'SleepSoundsNature': require('../figma-extracted/assets/screens/dark-theme/100-dark-sleep-sounds-nature.png'),
+  'SleepSoundsTraffic': require('../figma-extracted/assets/screens/dark-theme/101-dark-sleep-sounds-traffic.png'),
+  'SleepSoundsSleep': require('../figma-extracted/assets/screens/dark-theme/102-dark-sleep-sounds-sleep.png'),
+  'SleepSoundsAnimals': require('../figma-extracted/assets/screens/dark-theme/103-dark-sleep-sounds-animals.png'),
+  'SleepSoundsMeditation': require('../figma-extracted/assets/screens/dark-theme/104-dark-sleep-sounds-meditation.png'),
+  'SleepSoundsASMR': require('../figma-extracted/assets/screens/dark-theme/105-dark-sleep-sounds-asmr.png'),
+  'SleepSoundsOther': require('../figma-extracted/assets/screens/dark-theme/106-dark-sleep-sounds-other.png'),
+  'SleepMusic': require('../figma-extracted/assets/screens/dark-theme/107-dark-sleep-music.png'),
+  'SleepStories': require('../figma-extracted/assets/screens/dark-theme/108-dark-sleep-stories.png'),
+  'PlaySleepMusicOrStories': require('../figma-extracted/assets/screens/dark-theme/109-dark-play-sleep-music-or-stories.png'),
+  'Insights': require('../figma-extracted/assets/screens/dark-theme/110-dark-insights.png'),
+  'InsightsDetail': require('../figma-extracted/assets/screens/dark-theme/111-dark-insights.png'),
+  'Account': require('../figma-extracted/assets/screens/dark-theme/112-dark-account.png'),
+  'UpgradePlanMonthly': require('../figma-extracted/assets/screens/dark-theme/113-dark-upgrade-plan-monthly.png'),
+  'UpgradePlanYearly': require('../figma-extracted/assets/screens/dark-theme/114-dark-upgrade-plan-yearly.png'),
+  'ChoosePaymentMethods': require('../figma-extracted/assets/screens/dark-theme/115-dark-choose-payment-methods.png'),
+  'ReviewSummary': require('../figma-extracted/assets/screens/dark-theme/116-dark-review-summary.png'),
+  'ProcessingPayment': require('../figma-extracted/assets/screens/dark-theme/117-dark-processing-payment.png'),
+  'SubscriptionSuccess': require('../figma-extracted/assets/screens/dark-theme/118-dark-upgrade-plan-subscription-successful.png'),
+  'MyBadges': require('../figma-extracted/assets/screens/dark-theme/119-dark-my-badges.png'),
+  'ShareBadgeProfile': require('../figma-extracted/assets/screens/dark-theme/120-dark-share-badge.png'),
+  'DailyReminder': require('../figma-extracted/assets/screens/dark-theme/121-dark-daily-reminder.png'),
+  'Preferences': require('../figma-extracted/assets/screens/dark-theme/122-dark-preferences.png'),
+  'PersonalInfo': require('../figma-extracted/assets/screens/dark-theme/123-dark-settings-personal-info.png'),
+  'AccountSecurity': require('../figma-extracted/assets/screens/dark-theme/124-dark-settings-account-security.png'),
+  'LinkedAccounts': require('../figma-extracted/assets/screens/dark-theme/125-dark-settings-linked-accounts.png'),
+  'BillingSubscriptions': require('../figma-extracted/assets/screens/dark-theme/126-dark-settings-billing-subscriptions.png'),
+  'PaymentMethodsSettings': require('../figma-extracted/assets/screens/dark-theme/127-dark-settings-payment-methods.png'),
+  'AddNewPayment': require('../figma-extracted/assets/screens/dark-theme/128-dark-add-new-payment.png'),
+  'NewPaymentAdded': require('../figma-extracted/assets/screens/dark-theme/129-dark-new-payment-method-added.png'),
+  'AppAppearance': require('../figma-extracted/assets/screens/dark-theme/130-dark-settings-app-appearance.png'),
+  'AppTheme': require('../figma-extracted/assets/screens/dark-theme/131-dark-settings-app-appearance-theme.png'),
+  'AppLanguage': require('../figma-extracted/assets/screens/dark-theme/132-dark-settings-app-appearance-app-language.png'),
+  'HelpSupport': require('../figma-extracted/assets/screens/dark-theme/133-dark-settings-help-support.png'),
+  'FAQ': require('../figma-extracted/assets/screens/dark-theme/134-dark-settings-help-support-faq.png'),
+  'ContactSupport': require('../figma-extracted/assets/screens/dark-theme/135-dark-settings-help-support-contact-support.png'),
+  'PrivacyPolicy': require('../figma-extracted/assets/screens/dark-theme/136-dark-settings-help-support-privacy-policy.png'),
+  'TermsOfService': require('../figma-extracted/assets/screens/dark-theme/137-dark-settings-help-support-terms-of-service.png'),
+  'Logout': require('../figma-extracted/assets/screens/dark-theme/138-dark-logout.png'),
+};
+
+// Screen key type for type safety
+export type ScreenKey = keyof typeof lightImages;
+
+// ScreenMap type for backward compatibility
+export type ScreenMap = Record<ScreenKey, any>;
+
 /**
- * Get the correct image path based on screen number and theme
- * @param screenNumber - The Figma screen number (e.g., 122)
- * @param screenName - The screen name (e.g., 'preferences')
+ * Get themed screen image based on current theme
+ * @param screenKey - The screen identifier (e.g., 'Home', 'Splash')
  * @param isDarkMode - Whether dark mode is active
- * @returns Image source require statement
+ * @returns Image source for the screen
+ */
+export const getThemedScreenImage = (
+  screenKey: ScreenKey,
+  isDarkMode: boolean
+): any => {
+  const images = isDarkMode ? darkImages : lightImages;
+  const image = images[screenKey];
+
+  if (!image) {
+    console.warn(`Image not found for screen: ${screenKey}, falling back to light theme`);
+    return lightImages[screenKey] || null;
+  }
+
+  return image;
+};
+
+/**
+ * Legacy function for backward compatibility
+ * @deprecated Use getThemedScreenImage instead
  */
 export const getThemeImage = (
   screenNumber: number,
   screenName: string,
   isDarkMode: boolean
 ): any => {
-  const theme = isDarkMode ? 'dark' : 'light';
-  const fileName = `${screenNumber}-${theme}-${screenName}.png`;
+  // Map old-style calls to new static system
+  const keyMap: Record<number, ScreenKey> = {
+    1: 'Splash', 2: 'Walkthrough1', 3: 'Walkthrough2', 4: 'Walkthrough3',
+    5: 'Welcome', 6: 'SignUpBlank', 7: 'SignUpFilled', 8: 'SignUpLoading',
+    27: 'Home', 122: 'Preferences', 138: 'Logout',
+  };
 
-  try {
-    // Dynamically require the image based on theme
-    return require(`../figma-extracted/assets/screens/${theme}-theme/${fileName}`);
-  } catch (error) {
-    console.warn(`Image not found: ${fileName}, falling back to light theme`);
-    // Fallback to light theme if dark theme image doesn't exist
-    try {
-      const fallbackFileName = `${screenNumber}-light-${screenName}.png`;
-      return require(`../figma-extracted/assets/screens/light-theme/${fallbackFileName}`);
-    } catch (fallbackError) {
-      console.error(`Failed to load image for screen ${screenNumber}: ${screenName}`, fallbackError);
-      return null;
-    }
+  const key = keyMap[screenNumber];
+  if (key) {
+    return getThemedScreenImage(key, isDarkMode);
   }
+
+  console.warn(`No mapping for screen number: ${screenNumber}`);
+  return null;
 };
 
-/**
- * Mapping of screen names to their Figma screen numbers and file names
- * Use this to get themed images easily: getThemeImage(ScreenMap.Preferences.number, ScreenMap.Preferences.name, isDarkMode)
- */
-export const ScreenMap = {
-  // Auth & Onboarding (1-26)
-  Splash: { number: 1, name: 'splash-screen' },
-  Walkthrough1: { number: 2, name: 'walkthrough-1' },
-  Walkthrough2: { number: 3, name: 'walkthrough-2' },
-  Walkthrough3: { number: 4, name: 'walkthrough-3' },
-  Welcome: { number: 5, name: 'welcome-screen' },
-  SignUpBlank: { number: 6, name: 'sign-up-blank-form' },
-  SignUpFilled: { number: 7, name: 'sign-up-filled-form' },
-  SignUpLoading: { number: 8, name: 'sign-up-loading' },
-  SignUpStep1: { number: 9, name: 'sign-up-step-1-form' },
-  SignUpStep2: { number: 10, name: 'sign-up-step-2-form' },
-  SignUpStep3: { number: 11, name: 'sign-up-step-3-form' },
-  SignUpStep4: { number: 12, name: 'sign-up-step-4-form' },
-  SignUpStep5: { number: 13, name: 'sign-up-step-5-form' },
-  SignUpStep6: { number: 14, name: 'sign-up-step-6-form' },
-  SignUpStep7: { number: 15, name: 'sign-up-step-7-form' },
-  SignUpStep8: { number: 16, name: 'sign-up-step-8-form' },
-  SignUpStep9: { number: 17, name: 'sign-up-step-9-form' },
-  SignUpStep10: { number: 18, name: 'sign-up-step-10-form' },
-  SignInBlank: { number: 20, name: 'sign-in-blank-form' },
-  SignInFilled: { number: 21, name: 'sign-in-filled-form' },
-  ForgotPassword: { number: 23, name: 'forgot-password' },
-  EnterOTP: { number: 24, name: 'enter-otp-code' },
-  CreateNewPassword: { number: 25, name: 'create-new-password' },
-  ResetPasswordSuccess: { number: 26, name: 'reset-password-successful' },
+// Export all screen keys for easy reference
+export const ScreenKeys = Object.keys(lightImages) as ScreenKey[];
 
-  // Home & Mood (27-32, 47-52)
-  Home: { number: 27, name: 'home' },
-  MoodCheckInBad: { number: 28, name: 'how-do-you-feel-today-not-good' },
-  MoodCheckInGood: { number: 29, name: 'how-do-you-feel-today-good' },
-  MoodReasonWhy: { number: 30, name: 'what-is-the-reason-that-makes-you-feel-that-way-' },
-  MoodExactFeeling: { number: 31, name: 'what-is-your-exact-feeling-' },
-  MoodAddNotes: { number: 32, name: 'add-notes' },
-  HomeUnfinishedTasks: { number: 47, name: 'home-unfinished-tasks' },
-  HomeFinishedTasks: { number: 48, name: 'home-finished-tasks' },
-  CongratsAllTasksCompleted: { number: 49, name: 'congratulations-for-all-tasks-completed' },
-  CongratsEarnedBadge: { number: 50, name: 'congratulations-for-earned-badge' },
-  ShareBadge: { number: 51, name: 'share-badge' },
-  Explore: { number: 52, name: 'explore' },
-
-  // Chat (33-46)
-  ChatWithMindy: { number: 33, name: 'chat-with-mindy' },
-
-  // Meditation (53-60)
-  ExploreFavorites: { number: 53, name: 'explore-favorites' },
-  ExploreMeditations: { number: 54, name: 'explore-meditations' },
-  MeditationDetails: { number: 55, name: 'meditation-details' },
-  MeditationDetailsFavorite: { number: 56, name: 'meditation-details-save-to-favorites' },
-  StartOrPlayMeditation: { number: 57, name: 'start-or-play-meditation' },
-  EditSounds: { number: 58, name: 'edit-sounds' },
-  MeditationCompleted: { number: 60, name: 'meditation-completed' },
-
-  // Breathing (62-67)
-  ExploreBreathing: { number: 62, name: 'explore-breathing' },
-  BreathingDetails: { number: 63, name: 'breathing-details' },
-  BreathingInhale: { number: 64, name: 'start-or-play-breathing-inhale' },
-  BreathingHold: { number: 65, name: 'start-or-play-breathing-hold' },
-  BreathingExhale: { number: 66, name: 'start-or-play-breathing-exhale' },
-  BreathingCompleted: { number: 67, name: 'breathing-completed' },
-
-  // Articles (68-69)
-  ExploreArticles: { number: 68, name: 'explore-articles' },
-  ArticleDetails: { number: 69, name: 'article-details' },
-
-  // Journal (77-79)
-  ExploreSmartJournal: { number: 77, name: 'explore-smart-journal' },
-  JournalQuestionBlank: { number: 78, name: 'answering-smart-journal-question-blank' },
-  JournalQuestionFilled: { number: 79, name: 'answering-smart-journal-question-filled' },
-
-  // Sleep (100-109)
-  SleepSoundsNature: { number: 100, name: 'sleep-sounds-nature' },
-  SleepSoundsTraffic: { number: 101, name: 'sleep-sounds-traffic' },
-  SleepSoundsSleep: { number: 102, name: 'sleep-sounds-sleep' },
-  SleepSoundsAnimals: { number: 103, name: 'sleep-sounds-animals' },
-  SleepSoundsMeditation: { number: 104, name: 'sleep-sounds-meditation' },
-  SleepSoundsASMR: { number: 105, name: 'sleep-sounds-asmr' },
-  SleepSoundsOther: { number: 106, name: 'sleep-sounds-other' },
-  SleepMusic: { number: 107, name: 'sleep-music' },
-  SleepStories: { number: 108, name: 'sleep-stories' },
-  PlaySleepMusicOrStories: { number: 109, name: 'play-sleep-music-or-stories' },
-
-  // Insights & Account (110-112)
-  Insights: { number: 110, name: 'insights' },
-  InsightsDetail: { number: 111, name: 'insights' },
-  Account: { number: 112, name: 'account' },
-
-  // Subscription & Payment (113-118)
-  UpgradePlanMonthly: { number: 113, name: 'upgrade-plan-monthly' },
-  UpgradePlanYearly: { number: 114, name: 'upgrade-plan-yearly' },
-  ChoosePaymentMethods: { number: 115, name: 'choose-payment-methods' },
-  ReviewSummary: { number: 116, name: 'review-summary' },
-  ProcessingPayment: { number: 117, name: 'processing-payment' },
-  SubscriptionSuccess: { number: 118, name: 'upgrade-plan-subscription-successful' },
-
-  // Badges (119-120)
-  MyBadges: { number: 119, name: 'my-badges' },
-  ShareBadgeProfile: { number: 120, name: 'share-badge' },
-
-  // Settings & Profile (121-138)
-  DailyReminder: { number: 121, name: 'daily-reminder' },
-  Preferences: { number: 122, name: 'preferences' },
-  PersonalInfo: { number: 123, name: 'settings-personal-info' },
-  AccountSecurity: { number: 124, name: 'settings-account-security' },
-  LinkedAccounts: { number: 125, name: 'settings-linked-accounts' },
-  BillingSubscriptions: { number: 126, name: 'settings-billing-subscriptions' },
-  PaymentMethodsSettings: { number: 127, name: 'settings-payment-methods' },
-  AddNewPayment: { number: 128, name: 'add-new-payment' },
-  NewPaymentAdded: { number: 129, name: 'new-payment-method-added' },
-  AppAppearance: { number: 130, name: 'settings-app-appearance' },
-  AppTheme: { number: 131, name: 'settings-app-appearance-theme' },
-  AppLanguage: { number: 132, name: 'settings-app-appearance-app-language' },
-  HelpSupport: { number: 133, name: 'settings-help-support' },
-  FAQ: { number: 134, name: 'settings-help-support-faq' },
-  ContactSupport: { number: 135, name: 'settings-help-support-contact-support' },
-  PrivacyPolicy: { number: 136, name: 'settings-help-support-privacy-policy' },
-  TermsOfService: { number: 137, name: 'settings-help-support-terms-of-service' },
-  Logout: { number: 138, name: 'logout' },
-
-  // Add more mappings as needed for all 139 screens
-} as const;
-
-/**
- * Shorthand helper that uses the ScreenMap
- * @param screenKey - Key from ScreenMap (e.g., 'Preferences')
- * @param isDarkMode - Whether dark mode is active
- */
-export const getThemedScreenImage = (
-  screenKey: keyof typeof ScreenMap,
-  isDarkMode: boolean
-): any => {
-  const screen = ScreenMap[screenKey];
-  return getThemeImage(screen.number, screen.name, isDarkMode);
-};
-
-export default getThemeImage;
+export default getThemedScreenImage;

@@ -12,6 +12,7 @@ import {
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useTheme } from '../../theme/useTheme';
 import { getThemedScreenImage } from '../../theme/getThemeImage';
+import { colors } from '../../constants';
 
 const { width, height } = Dimensions.get('window');
 

@@ -11,36 +11,39 @@ import {
   ScrollView,
   KeyboardAvoidingView,
   Platform,
+  ImageSourcePropType,
 } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { Button } from '../../components/core/Button';
 import { colors } from '../../constants';
 import { useTheme } from '../../theme/useTheme';
 import { getThemedScreenImage } from '../../theme/getThemeImage';
+import { moodIcons, MoodKey, moodColors } from '../../assets/moodIcons';
 
 const { width, height } = Dimensions.get('window');
 
 type Props = NativeStackScreenProps<any, 'MoodCheckIn'>;
 
 interface Mood {
-  emoji: string;
+  icon: ImageSourcePropType;
   label: string;
-  value: string;
+  value: MoodKey;
   color: string;
 }
 
 export const MoodCheckInScreen: React.FC<Props> = ({ navigation }) => {
   const { colors: themeColors, isDarkMode } = useTheme();
-  const [selectedMood, setSelectedMood] = useState<string | null>(null);
+  const [selectedMood, setSelectedMood] = useState<MoodKey | null>(null);
   const [note, setNote] = useState('');
   const [loading, setLoading] = useState(false);
 
+  // Real Figma mood icons
   const moods: Mood[] = [
-    { emoji: '😁', label: 'Amazing', value: 'amazing', color: '#4CAF50' },
-    { emoji: '😊', label: 'Good', value: 'good', color: '#8BC34A' },
-    { emoji: '😐', label: 'Okay', value: 'okay', color: '#FFC107' },
-    { emoji: '😞', label: 'Bad', value: 'bad', color: '#FF9800' },
-    { emoji: '😢', label: 'Terrible', value: 'terrible', color: '#F44336' },
+    { icon: moodIcons.great, label: 'Great', value: 'great', color: moodColors.great },
+    { icon: moodIcons.good, label: 'Good', value: 'good', color: moodColors.good },
+    { icon: moodIcons.okay, label: 'Okay', value: 'okay', color: moodColors.okay },
+    { icon: moodIcons.notGood, label: 'Not Good', value: 'notGood', color: moodColors.notGood },
+    { icon: moodIcons.bad, label: 'Bad', value: 'bad', color: moodColors.bad },
   ];
 
   const handleSaveMood = async () => {
@@ -90,7 +93,7 @@ export const MoodCheckInScreen: React.FC<Props> = ({ navigation }) => {
             <Text style={styles.titleText}>How do you feel today?</Text>
             <Text style={styles.subtitleText}>Select your current mood</Text>
 
-            {/* Mood Selector Grid */}
+            {/* Mood Selector Grid - Real Figma Icons */}
             <View style={styles.moodContainer}>
               {moods.map((mood) => (
                 <TouchableOpacity
@@ -106,8 +109,17 @@ export const MoodCheckInScreen: React.FC<Props> = ({ navigation }) => {
                   onPress={() => setSelectedMood(mood.value)}
                   activeOpacity={0.7}
                 >
-                  <Text style={styles.moodEmoji}>{mood.emoji}</Text>
-                  <Text style={styles.moodLabel}>{mood.label}</Text>
+                  <Image
+                    source={mood.icon}
+                    style={styles.moodIcon}
+                    resizeMode="contain"
+                  />
+                  <Text style={[
+                    styles.moodLabel,
+                    selectedMood === mood.value && { color: mood.color, fontWeight: '700' }
+                  ]}>
+                    {mood.label}
+                  </Text>
                 </TouchableOpacity>
               ))}
             </View>
@@ -219,8 +231,9 @@ const styles = StyleSheet.create({
     flex: 1,
     marginHorizontal: 4,
   },
-  moodEmoji: {
-    fontSize: 32,
+  moodIcon: {
+    width: 40,
+    height: 40,
     marginBottom: 4,
   },
   moodLabel: {
