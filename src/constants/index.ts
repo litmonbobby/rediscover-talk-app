@@ -3,10 +3,36 @@
  * Central export for all design constants
  */
 
-// Export design constants directly from their source files
+// Export legacy constants for backwards compatibility
 export { colors } from './colors';
 export { typography } from './typography';
 export { spacing } from './spacing';
+
+// Export comprehensive design system
+export {
+  colors as designColors,
+  typography as designTypography,
+  spacing as designSpacing,
+  layout,
+  borderRadius,
+  shadows,
+  animation,
+  breakpoints,
+  zIndex,
+  components,
+  screen,
+  designSystem,
+} from './design-system';
+
+// Export Figma colors
+export { figmaColors } from './figma-colors';
+
+// Re-export uppercase versions for legacy compatibility
+export { colors as Colors } from './colors';
+export { typography as Typography } from './typography';
+export { spacing as Spacing } from './spacing';
+export { BorderRadius } from './spacing';
+export { Shadows } from './spacing';
 
 export const Layout = {
   window: {
