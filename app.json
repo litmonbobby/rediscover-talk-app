@@ -7,59 +7,109 @@
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
+    "scheme": "rediscovertalk",
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "cover",
       "backgroundColor": "#0066CC"
     },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.rediscovertalk.app",
-      "deploymentTarget": "26.0",
+      "buildNumber": "1",
+      "deploymentTarget": "15.0",
+      "config": {
+        "usesNonExemptEncryption": false
+      },
       "infoPlist": {
         "UIBackgroundModes": [
           "audio"
         ],
-        "NSMicrophoneUsageDescription": "This app uses the microphone for meditation session recordings.",
-        "NSCameraUsageDescription": "This app uses the camera to take profile photos."
+        "NSMicrophoneUsageDescription": "Rediscover Talk uses your microphone to record audio for meditation sessions and voice journaling.",
+        "NSCameraUsageDescription": "Rediscover Talk uses your camera to capture profile photos and moments of gratitude.",
+        "NSPhotoLibraryUsageDescription": "Rediscover Talk accesses your photo library to set profile pictures and add images to journal entries.",
+        "NSUserTrackingUsageDescription": "Rediscover Talk uses this to provide personalized wellness recommendations and improve your experience.",
+        "ITSAppUsesNonExemptEncryption": false,
+        "CFBundleDevelopmentRegion": "en",
+        "CFBundleAllowMixedLocalizations": true
+      },
+      "associatedDomains": [
+        "applinks:rediscovertalk.com"
+      ],
+      "privacyManifests": {
+        "NSPrivacyAccessedAPITypes": [
+          {
+            "NSPrivacyAccessedAPIType": "NSPrivacyAccessedAPICategoryUserDefaults",
+            "NSPrivacyAccessedAPITypeReasons": ["CA92.1"]
+          }
+        ]
       }
     },
     "android": {
       "package": "com.rediscovertalk.app",
-      "compileSdkVersion": 36,
-      "targetSdkVersion": 36,
-      "minSdkVersion": 26,
+      "versionCode": 1,
+      "compileSdkVersion": 34,
+      "targetSdkVersion": 34,
+      "minSdkVersion": 24,
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#0066CC"
       },
-      "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false,
       "permissions": [
         "RECORD_AUDIO",
         "VIBRATE",
         "FOREGROUND_SERVICE",
-        "FOREGROUND_SERVICE_MEDIA_PLAYBACK"
+        "FOREGROUND_SERVICE_MEDIA_PLAYBACK",
+        "READ_EXTERNAL_STORAGE",
+        "WRITE_EXTERNAL_STORAGE",
+        "CAMERA"
       ]
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/favicon.png",
+      "bundler": "metro"
     },
     "plugins": [
       "expo-font",
       [
         "expo-av",
         {
-          "microphonePermission": "Allow Rediscover Talk to access your microphone for meditation recordings."
+          "microphonePermission": "Allow Rediscover Talk to access your microphone for meditation recordings and voice journaling."
         }
       ],
       "expo-asset",
-      "expo-secure-store"
+      "expo-secure-store",
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/icon.png",
+          "color": "#0066CC"
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Allow Rediscover Talk to access your photos for profile pictures and journal entries.",
+          "cameraPermission": "Allow Rediscover Talk to access your camera for taking photos."
+        }
+      ]
     ],
     "extra": {
       "eas": {
-        "projectId": "rediscover-talk"
+        "projectId": "your-project-id"
       }
+    },
+    "owner": "rediscovertalk",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/your-project-id",
+      "enabled": true,
+      "fallbackToCacheTimeout": 0
     }
   }
 }

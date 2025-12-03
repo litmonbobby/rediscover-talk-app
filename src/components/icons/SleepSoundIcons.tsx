@@ -299,6 +299,300 @@ export const CrownIcon: React.FC<IconProps> = ({ size = 16, color = '#FFFFFF' })
   </Svg>
 );
 
+// Birds - Bird shape
+export const BirdsIcon: React.FC<IconProps> = ({ size = defaultSize, color = defaultColor }) => (
+  <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+    <Path
+      d="M16 7C16 9.20914 14.2091 11 12 11C9.79086 11 8 9.20914 8 7"
+      stroke={color}
+      strokeWidth={1.5}
+      strokeLinecap="round"
+    />
+    <Path
+      d="M3 8L8 10L12 7L16 10L21 8"
+      stroke={color}
+      strokeWidth={1.5}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <Path
+      d="M6 15C6 16.6569 8.68629 18 12 18C15.3137 18 18 16.6569 18 15"
+      stroke={color}
+      strokeWidth={1.5}
+      strokeLinecap="round"
+    />
+    <Path
+      d="M2 14L6 15L12 13L18 15L22 14"
+      stroke={color}
+      strokeWidth={1.5}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </Svg>
+);
+
+// Crickets - Bug/cricket shape
+export const CricketsIcon: React.FC<IconProps> = ({ size = defaultSize, color = defaultColor }) => (
+  <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+    <Circle cx="12" cy="12" r="4" stroke={color} strokeWidth={1.5} />
+    <Path d="M12 8V4" stroke={color} strokeWidth={1.5} strokeLinecap="round" />
+    <Path d="M9 9L6 6" stroke={color} strokeWidth={1.5} strokeLinecap="round" />
+    <Path d="M15 9L18 6" stroke={color} strokeWidth={1.5} strokeLinecap="round" />
+    <Path d="M8 12H2" stroke={color} strokeWidth={1.5} strokeLinecap="round" />
+    <Path d="M22 12H16" stroke={color} strokeWidth={1.5} strokeLinecap="round" />
+    <Path d="M9 15L6 18" stroke={color} strokeWidth={1.5} strokeLinecap="round" />
+    <Path d="M15 15L18 18" stroke={color} strokeWidth={1.5} strokeLinecap="round" />
+    <Path d="M12 16V20" stroke={color} strokeWidth={1.5} strokeLinecap="round" />
+  </Svg>
+);
+
+// Waterfall - Water dropping
+export const WaterfallIcon: React.FC<IconProps> = ({ size = defaultSize, color = defaultColor }) => (
+  <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+    <Path
+      d="M12 2V8"
+      stroke={color}
+      strokeWidth={1.5}
+      strokeLinecap="round"
+    />
+    <Path
+      d="M8 4V10"
+      stroke={color}
+      strokeWidth={1.5}
+      strokeLinecap="round"
+    />
+    <Path
+      d="M16 4V10"
+      stroke={color}
+      strokeWidth={1.5}
+      strokeLinecap="round"
+    />
+    <Path
+      d="M12 12C12 12 8 16 8 18C8 20.2091 9.79086 22 12 22C14.2091 22 16 20.2091 16 18C16 16 12 12 12 12Z"
+      stroke={color}
+      strokeWidth={1.5}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </Svg>
+);
+
+// Cafe - Coffee cup
+export const CafeIcon: React.FC<IconProps> = ({ size = defaultSize, color = defaultColor }) => (
+  <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+    <Path
+      d="M17 8H18C19.6569 8 21 9.34315 21 11C21 12.6569 19.6569 14 18 14H17"
+      stroke={color}
+      strokeWidth={1.5}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <Path
+      d="M3 8H17V15C17 17.7614 14.7614 20 12 20H8C5.23858 20 3 17.7614 3 15V8Z"
+      stroke={color}
+      strokeWidth={1.5}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <Path
+      d="M6 2V4"
+      stroke={color}
+      strokeWidth={1.5}
+      strokeLinecap="round"
+    />
+    <Path
+      d="M10 2V4"
+      stroke={color}
+      strokeWidth={1.5}
+      strokeLinecap="round"
+    />
+    <Path
+      d="M14 2V4"
+      stroke={color}
+      strokeWidth={1.5}
+      strokeLinecap="round"
+    />
+  </Svg>
+);
+
+// Train - Train/Railway
+export const TrainIcon: React.FC<IconProps> = ({ size = defaultSize, color = defaultColor }) => (
+  <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+    <Path
+      d="M4 11V6C4 4.34315 5.34315 3 7 3H17C18.6569 3 20 4.34315 20 6V11"
+      stroke={color}
+      strokeWidth={1.5}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <Path
+      d="M4 11V16C4 17.6569 5.34315 19 7 19H17C18.6569 19 20 17.6569 20 16V11H4Z"
+      stroke={color}
+      strokeWidth={1.5}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <Circle cx="8" cy="15" r="1" fill={color} />
+    <Circle cx="16" cy="15" r="1" fill={color} />
+    <Path d="M6 22L8 19" stroke={color} strokeWidth={1.5} strokeLinecap="round" />
+    <Path d="M18 22L16 19" stroke={color} strokeWidth={1.5} strokeLinecap="round" />
+    <Path d="M9 7H15" stroke={color} strokeWidth={1.5} strokeLinecap="round" />
+  </Svg>
+);
+
+// Fan - Spinning fan
+export const FanIcon: React.FC<IconProps> = ({ size = defaultSize, color = defaultColor }) => (
+  <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+    <Circle cx="12" cy="12" r="2" stroke={color} strokeWidth={1.5} />
+    <Path
+      d="M12 10C12 10 12 4 8 2C8 6 10 10 12 10Z"
+      stroke={color}
+      strokeWidth={1.5}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <Path
+      d="M14 12C14 12 20 12 22 8C18 8 14 10 14 12Z"
+      stroke={color}
+      strokeWidth={1.5}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <Path
+      d="M12 14C12 14 12 20 16 22C16 18 14 14 12 14Z"
+      stroke={color}
+      strokeWidth={1.5}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <Path
+      d="M10 12C10 12 4 12 2 16C6 16 10 14 10 12Z"
+      stroke={color}
+      strokeWidth={1.5}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </Svg>
+);
+
+// Waves - Gentle ocean waves
+export const WavesIcon: React.FC<IconProps> = ({ size = defaultSize, color = defaultColor }) => (
+  <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+    <Path
+      d="M2 7C3.5 7 4.5 9 6 9C7.5 9 8.5 7 10 7C11.5 7 12.5 9 14 9C15.5 9 16.5 7 18 7C19.5 7 20.5 9 22 9"
+      stroke={color}
+      strokeWidth={1.5}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <Path
+      d="M2 12C3.5 12 4.5 14 6 14C7.5 14 8.5 12 10 12C11.5 12 12.5 14 14 14C15.5 14 16.5 12 18 12C19.5 12 20.5 14 22 14"
+      stroke={color}
+      strokeWidth={1.5}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <Path
+      d="M2 17C3.5 17 4.5 19 6 19C7.5 19 8.5 17 10 17C11.5 17 12.5 19 14 19C15.5 19 16.5 17 18 17C19.5 17 20.5 19 22 19"
+      stroke={color}
+      strokeWidth={1.5}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </Svg>
+);
+
+// Heartbeat - Heart with pulse
+export const HeartbeatIcon: React.FC<IconProps> = ({ size = defaultSize, color = defaultColor }) => (
+  <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+    <Path
+      d="M20.84 4.61C20.3292 4.099 19.7228 3.69364 19.0554 3.41708C18.3879 3.14052 17.6725 2.99817 16.95 2.99817C16.2275 2.99817 15.5121 3.14052 14.8446 3.41708C14.1772 3.69364 13.5708 4.099 13.06 4.61L12 5.67L10.94 4.61C9.9083 3.57831 8.50903 2.99871 7.05 2.99871C5.59096 2.99871 4.19169 3.57831 3.16 4.61C2.1283 5.64169 1.54871 7.04097 1.54871 8.5C1.54871 9.95903 2.1283 11.3583 3.16 12.39L12 21.23L20.84 12.39C21.351 11.8792 21.7563 11.2728 22.0329 10.6054C22.3095 9.93789 22.4518 9.22248 22.4518 8.5C22.4518 7.77752 22.3095 7.0621 22.0329 6.39464C21.7563 5.72718 21.351 5.12075 20.84 4.61Z"
+      stroke={color}
+      strokeWidth={1.5}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <Path
+      d="M3 12H6L8 9L11 15L13 12H16"
+      stroke={color}
+      strokeWidth={1.5}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </Svg>
+);
+
+// Leaves - Falling leaves
+export const LeavesIcon: React.FC<IconProps> = ({ size = defaultSize, color = defaultColor }) => (
+  <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+    <Path
+      d="M11 20C11 20 6 17 6 12C6 7 11 4 11 4"
+      stroke={color}
+      strokeWidth={1.5}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <Path
+      d="M13 4C13 4 18 7 18 12C18 17 13 20 13 20"
+      stroke={color}
+      strokeWidth={1.5}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <Path
+      d="M12 20V12"
+      stroke={color}
+      strokeWidth={1.5}
+      strokeLinecap="round"
+    />
+    <Path
+      d="M12 12L8 8"
+      stroke={color}
+      strokeWidth={1.5}
+      strokeLinecap="round"
+    />
+    <Path
+      d="M12 12L16 8"
+      stroke={color}
+      strokeWidth={1.5}
+      strokeLinecap="round"
+    />
+  </Svg>
+);
+
+// Bell - Wind chimes / bells
+export const BellIcon: React.FC<IconProps> = ({ size = defaultSize, color = defaultColor }) => (
+  <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+    <Path
+      d="M18 8C18 6.4087 17.3679 4.88258 16.2426 3.75736C15.1174 2.63214 13.5913 2 12 2C10.4087 2 8.88258 2.63214 7.75736 3.75736C6.63214 4.88258 6 6.4087 6 8C6 15 3 17 3 17H21C21 17 18 15 18 8Z"
+      stroke={color}
+      strokeWidth={1.5}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <Path
+      d="M13.73 21C13.5542 21.3031 13.3019 21.5547 12.9982 21.7295C12.6946 21.9044 12.3504 21.9965 12 21.9965C11.6496 21.9965 11.3054 21.9044 11.0018 21.7295C10.6981 21.5547 10.4458 21.3031 10.27 21"
+      stroke={color}
+      strokeWidth={1.5}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </Svg>
+);
+
+// Snowflake - Winter/Snow
+export const SnowflakeIcon: React.FC<IconProps> = ({ size = defaultSize, color = defaultColor }) => (
+  <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+    <Path d="M12 2V22" stroke={color} strokeWidth={1.5} strokeLinecap="round" />
+    <Path d="M4.93 4.93L19.07 19.07" stroke={color} strokeWidth={1.5} strokeLinecap="round" />
+    <Path d="M19.07 4.93L4.93 19.07" stroke={color} strokeWidth={1.5} strokeLinecap="round" />
+    <Path d="M12 2L9 5" stroke={color} strokeWidth={1.5} strokeLinecap="round" />
+    <Path d="M12 2L15 5" stroke={color} strokeWidth={1.5} strokeLinecap="round" />
+    <Path d="M12 22L9 19" stroke={color} strokeWidth={1.5} strokeLinecap="round" />
+    <Path d="M12 22L15 19" stroke={color} strokeWidth={1.5} strokeLinecap="round" />
+  </Svg>
+);
+
 // Export all icons
 export const SleepSoundIcons = {
   rain: RainIcon,
@@ -314,6 +608,17 @@ export const SleepSoundIcons = {
   soundBars: SoundBarsIcon,
   planet: PlanetIcon,
   crown: CrownIcon,
+  birds: BirdsIcon,
+  crickets: CricketsIcon,
+  waterfall: WaterfallIcon,
+  cafe: CafeIcon,
+  train: TrainIcon,
+  fan: FanIcon,
+  waves: WavesIcon,
+  heartbeat: HeartbeatIcon,
+  leaves: LeavesIcon,
+  bell: BellIcon,
+  snowflake: SnowflakeIcon,
 };
 
 export default SleepSoundIcons;

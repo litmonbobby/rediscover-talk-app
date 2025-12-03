@@ -34,7 +34,7 @@ type NavigationProp = NativeStackNavigationProp<InsightsStackParamList, 'Insight
 
 // Figma-extracted assets
 const assets = {
-  logo: require('../../figma-extracted/assets/components/icons/iconly-curved-bold-category.png'),
+  logo: require('../../../assets/icon.png'),
   menu: require('../../figma-extracted/assets/components/icons/iconly-curved-outline-category.png'),
 
   // Mood indicators
@@ -91,6 +91,9 @@ const moodColors: Record<MoodName, string> = {
 
 // Days of week abbreviations
 const WEEKDAYS = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
+
+// Month abbreviations
+const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
 // Circular Progress Component
 interface CircularProgressProps {
@@ -152,7 +155,7 @@ const CircularProgress: React.FC<CircularProgressProps> = ({ value, label, color
   );
 };
 
-// Mini Bar Chart Component for weekly mood
+// Mini Bar Chart Component for mood data (supports weekly, monthly, yearly)
 interface MiniBarChartProps {
   data: { day: string; value: number; color: string }[];
 }
@@ -160,8 +163,14 @@ interface MiniBarChartProps {
 const MiniBarChart: React.FC<MiniBarChartProps> = ({ data }) => {
   const chartWidth = width - 72;
   const chartHeight = 120;
-  const barWidth = (chartWidth - 48) / 7;
+  const dataCount = data.length;
   const maxValue = 5;
+
+  // Adjust bar gap and width based on data count
+  const isMonthly = dataCount === 30;
+  const barGap = isMonthly ? 1 : 4;
+  const totalBarSpace = chartWidth - 32;
+  const singleBarWidth = (totalBarSpace - (dataCount - 1) * barGap) / dataCount;
 
   return (
     <View style={styles.miniChartContainer}>
@@ -183,29 +192,33 @@ const MiniBarChart: React.FC<MiniBarChartProps> = ({ data }) => {
         {/* Bars */}
         {data.map((item, index) => {
           const barHeight = (item.value / maxValue) * (chartHeight - 40);
-          const x = 24 + index * barWidth + barWidth / 4;
+          const x = 16 + index * (singleBarWidth + barGap);
           const y = chartHeight - 24 - barHeight;
+          const displayBarWidth = isMonthly ? singleBarWidth : Math.min(singleBarWidth * 0.7, 24);
+          const barRadius = isMonthly ? 2 : 4;
 
           return (
             <G key={index}>
               <Rect
-                x={x}
-                y={y}
-                width={barWidth / 2}
-                height={barHeight}
-                rx={4}
-                ry={4}
-                fill={item.value > 0 ? item.color : '#E8E8E8'}
+                x={x + (singleBarWidth - displayBarWidth) / 2}
+                y={item.value > 0 ? y : chartHeight - 24 - 2}
+                width={displayBarWidth}
+                height={Math.max(barHeight, 2)}
+                rx={barRadius}
+                ry={barRadius}
+                fill={item.value > 0 ? item.color : '#E0E0E0'}
               />
-              <SvgText
-                x={x + barWidth / 4}
-                y={chartHeight - 6}
-                textAnchor="middle"
-                fontSize={11}
-                fill="#666666"
-              >
-                {item.day}
-              </SvgText>
+              {item.day !== '' && (
+                <SvgText
+                  x={x + singleBarWidth / 2}
+                  y={chartHeight - 6}
+                  textAnchor="middle"
+                  fontSize={isMonthly ? 8 : (dataCount > 7 ? 9 : 11)}
+                  fill="#666666"
+                >
+                  {item.day}
+                </SvgText>
+              )}
             </G>
           );
         })}
@@ -319,6 +332,83 @@ export const InsightsScreen: React.FC = () => {
 
     return data;
   }, [entries]);
+
+  // Get monthly chart data (last 30 days, showing every 5th day label)
+  const monthlyChartData = useMemo(() => {
+    const data: { day: string; value: number; color: string }[] = [];
+
+    for (let i = 29; i >= 0; i--) {
+      const date = new Date();
+      date.setDate(date.getDate() - i);
+      const dateStr = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+      const entry = entries.find((e: MoodEntry) => e.date === dateStr);
+
+      // Show label every 5 days for readability
+      const dayLabel = (29 - i) % 5 === 0 ? String(date.getDate()) : '';
+
+      data.push({
+        day: dayLabel,
+        value: entry ? moodLevelValues[entry.name] : 0,
+        color: entry ? moodColors[entry.name] : '#E8E8E8',
+      });
+    }
+
+    return data;
+  }, [entries]);
+
+  // Get yearly chart data (last 12 months)
+  const yearlyChartData = useMemo(() => {
+    const data: { day: string; value: number; color: string }[] = [];
+
+    for (let monthOffset = 11; monthOffset >= 0; monthOffset--) {
+      const date = new Date();
+      date.setMonth(date.getMonth() - monthOffset);
+      const targetMonth = date.getMonth();
+      const targetYear = date.getFullYear();
+
+      // Get entries for this month
+      const monthEntries = entries.filter((e: MoodEntry) => {
+        const entryDate = new Date(e.date);
+        return entryDate.getMonth() === targetMonth && entryDate.getFullYear() === targetYear;
+      });
+
+      // Calculate average mood for the month
+      const avgValue = monthEntries.length > 0
+        ? monthEntries.reduce((sum: number, e: MoodEntry) => sum + moodLevelValues[e.name], 0) / monthEntries.length
+        : 0;
+
+      // Get dominant mood color
+      const dominantMood = monthEntries.length > 0
+        ? monthEntries.reduce((acc: Record<string, number>, e: MoodEntry) => {
+            acc[e.name] = (acc[e.name] || 0) + 1;
+            return acc;
+          }, {} as Record<string, number>)
+        : null;
+      const topMood = dominantMood
+        ? Object.entries(dominantMood).sort((a, b) => b[1] - a[1])[0]?.[0] as MoodName
+        : null;
+
+      data.push({
+        day: MONTHS[targetMonth].substring(0, 1),
+        value: Math.round(avgValue * 10) / 10,
+        color: topMood ? moodColors[topMood] : '#E8E8E8',
+      });
+    }
+
+    return data;
+  }, [entries]);
+
+  // Get current chart data based on active period
+  const currentChartData = useMemo(() => {
+    switch (activePeriod) {
+      case 'monthly':
+        return monthlyChartData;
+      case 'yearly':
+        return yearlyChartData;
+      default:
+        return weeklyChartData;
+    }
+  }, [activePeriod, weeklyChartData, monthlyChartData, yearlyChartData]);
 
   // Get calendar mood data for current month
   const calendarMoodData = useMemo(() => {
@@ -438,7 +528,7 @@ export const InsightsScreen: React.FC = () => {
         <View style={styles.header}>
           <Image
             source={assets.logo}
-            style={[styles.headerLogo, { tintColor: '#9EB567' }]}
+            style={styles.headerLogo}
             resizeMode="contain"
           />
           <Text style={[styles.headerTitle, { color: colors.text.primary }]}>
@@ -508,7 +598,7 @@ export const InsightsScreen: React.FC = () => {
           {/* Mood Chart - Real Data */}
           <View style={[styles.chartCard, { backgroundColor: colors.background.card }]}>
             {entries.length > 0 ? (
-              <MiniBarChart data={weeklyChartData} />
+              <MiniBarChart data={currentChartData} />
             ) : (
               <View style={styles.emptyChartContainer}>
                 <Text style={[styles.emptyText, { color: colors.text.secondary }]}>

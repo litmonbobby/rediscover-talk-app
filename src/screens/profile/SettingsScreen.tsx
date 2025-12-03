@@ -3,7 +3,7 @@
  * Proper React Native components with Figma-extracted assets
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -15,11 +15,14 @@ import {
   ScrollView,
   Switch,
   Dimensions,
+  Alert,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import Svg, { Path } from 'react-native-svg';
 import { useTheme } from '../../theme/useTheme';
+import { affirmationNotificationService } from '../../services/AffirmationNotificationService';
+import { quoteNotificationService } from '../../services/QuoteNotificationService';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -209,11 +212,110 @@ const SettingItem: React.FC<SettingItemProps> = ({
   </TouchableOpacity>
 );
 
+// Sparkle Icon for Affirmations
+const SparkleIcon: React.FC<{ size?: number; color?: string }> = ({ size = 24, color = '#333' }) => (
+  <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+    <Path
+      d="M12 2L13.09 8.26L18 6L14.74 10.91L21 12L14.74 13.09L18 18L13.09 15.74L12 22L10.91 15.74L6 18L9.26 13.09L3 12L9.26 10.91L6 6L10.91 8.26L12 2Z"
+      stroke={color}
+      strokeWidth={1.5}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </Svg>
+);
+
+// Quote/Chat Icon for Daily Quotes
+const QuoteIcon: React.FC<{ size?: number; color?: string }> = ({ size = 24, color = '#333' }) => (
+  <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+    <Path
+      d="M3 21C3 21 5.5 18.5 6 18C6.5 17.5 10 16 10 12V5C10 4 9 3 8 3H5C4 3 3 4 3 5V12C3 13 4 14 5 14H7C7 17 3 21 3 21Z"
+      stroke={color}
+      strokeWidth={1.5}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <Path
+      d="M14 21C14 21 16.5 18.5 17 18C17.5 17.5 21 16 21 12V5C21 4 20 3 19 3H16C15 3 14 4 14 5V12C14 13 15 14 16 14H18C18 17 14 21 14 21Z"
+      stroke={color}
+      strokeWidth={1.5}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </Svg>
+);
+
 export const SettingsScreen: React.FC = () => {
   const navigation = useNavigation<NavigationProp>();
   const { colors, isDarkMode, toggleTheme } = useTheme();
   const [pushNotifications, setPushNotifications] = useState(true);
   const [dailyReminder, setDailyReminder] = useState(true);
+  const [affirmationNotifications, setAffirmationNotifications] = useState(false);
+  const [quoteNotifications, setQuoteNotifications] = useState(false);
+
+  // Load notification preferences on mount
+  useEffect(() => {
+    const loadNotificationPreferences = async () => {
+      try {
+        const affirmationEnabled = await affirmationNotificationService.isEnabled();
+        setAffirmationNotifications(affirmationEnabled);
+
+        const quoteEnabled = await quoteNotificationService.isEnabled();
+        setQuoteNotifications(quoteEnabled);
+      } catch (error) {
+        console.error('Error loading notification preferences:', error);
+      }
+    };
+    loadNotificationPreferences();
+  }, []);
+
+  // Handle affirmation notification toggle
+  const handleAffirmationToggle = async (enabled: boolean) => {
+    try {
+      setAffirmationNotifications(enabled);
+      await affirmationNotificationService.setEnabled(enabled);
+
+      if (enabled) {
+        Alert.alert(
+          'Affirmations Enabled ✨',
+          'You will receive a daily affirmation at 9:00 AM to start your day with positivity!',
+          [{ text: 'Great!' }]
+        );
+      }
+    } catch (error) {
+      console.error('Error toggling affirmation notifications:', error);
+      setAffirmationNotifications(!enabled); // Revert on error
+      Alert.alert(
+        'Error',
+        'Unable to update notification settings. Please try again.',
+        [{ text: 'OK' }]
+      );
+    }
+  };
+
+  // Handle quote notification toggle
+  const handleQuoteToggle = async (enabled: boolean) => {
+    try {
+      setQuoteNotifications(enabled);
+      await quoteNotificationService.setEnabled(enabled);
+
+      if (enabled) {
+        Alert.alert(
+          'Quotes Enabled 💭',
+          'You will receive a daily inspirational quote at 8:00 AM to inspire your day!',
+          [{ text: 'Great!' }]
+        );
+      }
+    } catch (error) {
+      console.error('Error toggling quote notifications:', error);
+      setQuoteNotifications(!enabled); // Revert on error
+      Alert.alert(
+        'Error',
+        'Unable to update notification settings. Please try again.',
+        [{ text: 'OK' }]
+      );
+    }
+  };
 
   const handleBack = () => {
     navigation.goBack();
@@ -273,7 +375,7 @@ export const SettingsScreen: React.FC = () => {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        {/* App Appearance Section */}
+        {/* App Appearance Section - Hidden for now
         <View style={styles.section}>
           <Text style={[styles.sectionTitle, { color: colors.text.secondary }]}>
             App Appearance
@@ -298,6 +400,7 @@ export const SettingsScreen: React.FC = () => {
             />
           </View>
         </View>
+        */}
 
         {/* Notifications Section */}
         <View style={styles.section}>
@@ -335,6 +438,26 @@ export const SettingsScreen: React.FC = () => {
               isToggle
               toggleValue={dailyReminder}
               onToggle={setDailyReminder}
+              colors={colors}
+            />
+            <SettingItem
+              icon={<SparkleIcon size={22} color="#9EB567" />}
+              label="Daily Affirmations"
+              subtitle="Receive positive affirmations at 9 AM"
+              onPress={() => {}}
+              isToggle
+              toggleValue={affirmationNotifications}
+              onToggle={handleAffirmationToggle}
+              colors={colors}
+            />
+            <SettingItem
+              icon={<QuoteIcon size={22} color="#9EB567" />}
+              label="Daily Quotes"
+              subtitle="Receive inspirational quotes at 8 AM"
+              onPress={() => {}}
+              isToggle
+              toggleValue={quoteNotifications}
+              onToggle={handleQuoteToggle}
               colors={colors}
             />
           </View>

@@ -5,7 +5,7 @@ import { ArticlesListScreen, ArticleDetailScreen } from '../../screens/articles'
 
 export type JournalStackParamList = {
   JournalList: undefined;
-  JournalEntry: undefined;
+  JournalEntry: { entryId?: string; promptId?: string; prompt?: string };
   ArticlesList: undefined;
   ArticleDetail: { article: any };
 };

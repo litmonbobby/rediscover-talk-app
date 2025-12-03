@@ -4,7 +4,7 @@
  * Graceful fallbacks for older iOS and Android
  */
 
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import {
   View,
   Text,
@@ -17,14 +17,11 @@ import {
   Dimensions,
   ImageBackground,
 } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useTheme } from '../../theme/useTheme';
-import {
-  GlassCard,
-  GlassCardContainer,
-  isGlassEffectSupported,
-} from '../../components/core/GlassCard';
+import { GlassCard } from '../../components/core/GlassCard';
+import { userProfileService, UserProfile } from '../../services/UserProfileService';
 
 const { width } = Dimensions.get('window');
 
@@ -53,8 +50,8 @@ interface PlanItem {
 // Figma-extracted assets
 const assets = {
   // Icons
-  logo: require('../../figma-extracted/assets/components/icons/iconly-curved-bold-category.png'),
-  search: require('../../figma-extracted/assets/components/icons/iconly-curved-outline-search.png'),
+  logo: require('../../../assets/icon.png'),
+  profile: require('../../figma-extracted/assets/components/icons/iconly-regular-bold-profile.png'),
 
   // Mood indicators (extracted from Figma)
   moodBad: require('../../figma-extracted/assets/components/mood-indicators/mood-bad-component-mood-indicator.png'),
@@ -65,6 +62,7 @@ const assets = {
 
   // Illustrations for plan cards
   meditation1: require('../../figma-extracted/assets/components/illustrations/illustration-illustration-10-component-illustrations-set.png'),
+  meditationPerson: require('../../../assets/images/meditation-person.png'),
   article: require('../../figma-extracted/assets/components/illustrations/illustration-illustration-12-component-illustrations-set.png'),
   breathing: require('../../figma-extracted/assets/components/illustrations/illustration-illustration-13-component-illustrations-set.png'),
   journal: require('../../figma-extracted/assets/components/illustrations/illustration-illustration-14-component-illustrations-set.png'),
@@ -121,7 +119,7 @@ const initialPlans: PlanItem[] = [
 // Get illustration based on index
 const getIllustration = (index: number) => {
   const illustrationMap: { [key: number]: any } = {
-    1: assets.meditation1,
+    1: assets.meditationPerson,
     2: assets.article,
     3: assets.breathing,
     4: assets.journal,
@@ -144,6 +142,32 @@ export const HomeScreen: React.FC = () => {
   const { colors, isDarkMode } = useTheme();
   const [plans, setPlans] = useState<PlanItem[]>(initialPlans);
   const [selectedMood, setSelectedMood] = useState<string | null>(null);
+  const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [greeting, setGreeting] = useState('Good Morning');
+
+  // Load profile on focus
+  useFocusEffect(
+    useCallback(() => {
+      loadProfile();
+    }, [])
+  );
+
+  const loadProfile = async () => {
+    try {
+      const userProfile = await userProfileService.getProfile();
+      setProfile(userProfile);
+      setGreeting(userProfileService.getTimeBasedGreeting());
+    } catch (error) {
+      console.error('Error loading profile:', error);
+    }
+  };
+
+  const getDisplayName = () => {
+    if (profile?.firstName) {
+      return profile.firstName;
+    }
+    return 'Friend';
+  };
 
   const toggleComplete = (id: string) => {
     setPlans(prev =>
@@ -196,31 +220,55 @@ export const HomeScreen: React.FC = () => {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        {/* Header - Figma exact */}
+        {/* Header with Greeting */}
         <View style={styles.header}>
+          <View style={styles.headerLeft}>
+            {profile?.profilePicture ? (
+              <Image
+                source={{ uri: profile.profilePicture }}
+                style={styles.headerAvatar}
+              />
+            ) : (
+              <View style={[styles.headerAvatarPlaceholder, { backgroundColor: '#9EB567' }]}>
+                <Image
+                  source={assets.profile}
+                  style={styles.headerAvatarIcon}
+                  resizeMode="contain"
+                />
+              </View>
+            )}
+          </View>
+          <View style={styles.headerCenter}>
+            <Text style={[styles.greetingText, { color: colors.text.secondary }]}>
+              {greeting}, {getDisplayName()}! 👋
+            </Text>
+            <Text style={[styles.headerSubtitle, { color: colors.text.tertiary }]}>
+              How are you feeling today?
+            </Text>
+          </View>
           <Image
             source={assets.logo}
-            style={[styles.headerLogo, { tintColor: '#9EB567' }]}
+            style={styles.headerLogo}
             resizeMode="contain"
           />
-          <Text style={[styles.headerTitle, { color: colors.text.primary }]}>
-            Home
-          </Text>
-          <TouchableOpacity style={styles.searchButton}>
-            <Image
-              source={assets.search}
-              style={[styles.searchIcon, { tintColor: colors.text.primary }]}
-              resizeMode="contain"
-            />
-          </TouchableOpacity>
         </View>
 
         {/* Feature Banner - Green card */}
-        <TouchableOpacity style={styles.featureBanner}>
+        <TouchableOpacity
+          style={styles.featureBanner}
+          onPress={() => navigation.navigate('ArticleDetail', {
+            id: 'intro-mental-health',
+            title: 'Introduction to Mental Health Issues',
+          })}
+          activeOpacity={0.8}
+        >
           <View style={styles.bannerContent}>
             <Text style={styles.bannerTitle}>Introduction to</Text>
             <Text style={styles.bannerTitle}>Mental Health</Text>
             <Text style={styles.bannerTitle}>Issues</Text>
+            <View style={styles.bannerButton}>
+              <Text style={styles.bannerButtonText}>Learn More</Text>
+            </View>
           </View>
           <Image
             source={assets.bannerIllustration}
@@ -255,55 +303,33 @@ export const HomeScreen: React.FC = () => {
           </View>
         </GlassCard>
 
-        {/* Quick Action Cards - Liquid Glass with Merging */}
-        <GlassCardContainer spacing={12} style={styles.quickActions}>
-          <GlassCard
-            variant="regular"
-            interactive
-            onPress={() => navigation.navigate('Chat')}
-            style={styles.quickActionCard}
-            padding={16}
-          >
-            <View style={styles.quickActionContent}>
-              <Image
-                source={assets.logo}
-                style={[styles.quickActionIcon, { tintColor: '#9EB567' }]}
-                resizeMode="contain"
-              />
-              <View>
-                <Text style={[styles.quickActionTitle, { color: colors.text.primary }]}>
-                  Chat with
-                </Text>
-                <Text style={[styles.quickActionSubtitle, { color: colors.text.primary }]}>
-                  Mindy
-                </Text>
-              </View>
+        {/* Chat with Talia Card - Full Width */}
+        <GlassCard
+          variant="regular"
+          interactive
+          onPress={() => navigation.navigate('Chat')}
+          style={styles.chatCard}
+          padding={20}
+        >
+          <View style={styles.chatCardContent}>
+            <Image
+              source={assets.meditation1}
+              style={styles.chatAvatar}
+              resizeMode="cover"
+            />
+            <View style={styles.chatTextContainer}>
+              <Text style={[styles.chatTitle, { color: colors.text.primary }]}>
+                Chat with Talia
+              </Text>
+              <Text style={[styles.chatSubtitle, { color: colors.text.secondary }]}>
+                Your AI wellness companion
+              </Text>
             </View>
-          </GlassCard>
-
-          <GlassCard
-            variant="regular"
-            interactive
-            style={styles.quickActionCard}
-            padding={16}
-          >
-            <View style={styles.quickActionContent}>
-              <Image
-                source={assets.meditation1}
-                style={styles.quickActionAvatar}
-                resizeMode="cover"
-              />
-              <View>
-                <Text style={[styles.quickActionTitle, { color: colors.text.primary }]}>
-                  Talk with
-                </Text>
-                <Text style={[styles.quickActionSubtitle, { color: colors.text.primary }]}>
-                  Coach
-                </Text>
-              </View>
+            <View style={styles.chatArrow}>
+              <Text style={styles.chatArrowText}>→</Text>
             </View>
-          </GlassCard>
-        </GlassCardContainer>
+          </View>
+        </GlassCard>
 
         {/* Daily Plans Section */}
         <View style={styles.plansSection}>
@@ -399,28 +425,48 @@ const styles = StyleSheet.create({
     paddingBottom: 100,
   },
 
-  // Header
+  // Header with Greeting
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
     paddingHorizontal: 20,
     paddingVertical: 12,
+  },
+  headerLeft: {
+    marginRight: 12,
+  },
+  headerAvatar: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: '#E0E0E0',
+  },
+  headerAvatarPlaceholder: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  headerAvatarIcon: {
+    width: 22,
+    height: 22,
+    tintColor: '#FFFFFF',
+  },
+  headerCenter: {
+    flex: 1,
+  },
+  greetingText: {
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  headerSubtitle: {
+    fontSize: 13,
+    marginTop: 2,
   },
   headerLogo: {
     width: 28,
     height: 28,
-  },
-  headerTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-  },
-  searchButton: {
-    padding: 4,
-  },
-  searchIcon: {
-    width: 24,
-    height: 24,
   },
 
   // Feature Banner
@@ -452,6 +498,19 @@ const styles = StyleSheet.create({
     position: 'absolute',
     right: -10,
     bottom: -20,
+  },
+  bannerButton: {
+    backgroundColor: 'rgba(255, 255, 255, 0.25)',
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 20,
+    alignSelf: 'flex-start',
+    marginTop: 12,
+  },
+  bannerButtonText: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    fontWeight: '600',
   },
 
   // Mood Widget
@@ -489,47 +548,51 @@ const styles = StyleSheet.create({
     height: 48,
   },
 
-  // Quick Actions
-  quickActions: {
-    flexDirection: 'row',
-    paddingHorizontal: 20,
+  // Chat Card - Full Width
+  chatCard: {
+    marginHorizontal: 20,
     marginBottom: 24,
-    gap: 12,
-  },
-  quickActionCard: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 16,
     borderRadius: 16,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 8,
-    elevation: 2,
-    gap: 12,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 12,
+    elevation: 4,
   },
-  quickActionIcon: {
-    width: 40,
-    height: 40,
+  chatCardContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
-  quickActionAvatar: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
+  chatAvatar: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    marginRight: 16,
   },
-  quickActionTitle: {
+  chatTextContainer: {
+    flex: 1,
+  },
+  chatTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    marginBottom: 4,
+  },
+  chatSubtitle: {
     fontSize: 14,
     fontWeight: '400',
   },
-  quickActionSubtitle: {
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  quickActionContent: {
-    flexDirection: 'row',
+  chatArrow: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: '#9EB567',
+    justifyContent: 'center',
     alignItems: 'center',
-    gap: 12,
+  },
+  chatArrowText: {
+    color: '#FFFFFF',
+    fontSize: 18,
+    fontWeight: '600',
   },
 
   // Plans Section

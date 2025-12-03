@@ -5,9 +5,9 @@
  * Uses expo-sharing and expo-file-system for file operations.
  */
 
-import * as FileSystem from 'expo-file-system';
+import { Paths, File } from 'expo-file-system';
 import * as Sharing from 'expo-sharing';
-import { Platform, Alert } from 'react-native';
+import { Alert } from 'react-native';
 import { secureStorage } from './SecureStorageService';
 
 // Types
@@ -181,7 +181,8 @@ class ExportService {
    */
   private async getReminderData(): Promise<any[]> {
     try {
-      const reminders = await secureStorage.getItem<any[]>('reminders', 'list');
+      // Reminders are stored in settings category
+      const reminders = await secureStorage.getItem<any[]>('settings', 'reminders');
       return reminders || [];
     } catch (error) {
       console.warn('[ExportService] Could not get reminder data:', error);
@@ -338,12 +339,13 @@ class ExportService {
    */
   private async saveAndShare(content: string, fileName: string, format: ExportFormat): Promise<boolean> {
     try {
-      const fileUri = `${FileSystem.documentDirectory}${fileName}`;
+      // Create file in document directory using new expo-file-system API
+      const file = new File(Paths.document, fileName);
 
-      // Write file
-      await FileSystem.writeAsStringAsync(fileUri, content, {
-        encoding: FileSystem.EncodingType.UTF8,
-      });
+      // Write content to file
+      await file.write(content);
+
+      const fileUri = file.uri;
 
       // Check if sharing is available
       const isAvailable = await Sharing.isAvailableAsync();
@@ -388,7 +390,7 @@ class ExportService {
         secureStorage.clearCategory('mood'),
         secureStorage.clearCategory('journal'),
         secureStorage.clearCategory('meditation'),
-        secureStorage.clearCategory('reminders'),
+        secureStorage.clearCategory('settings'),
       ]);
 
       console.log('[ExportService] All data deleted');

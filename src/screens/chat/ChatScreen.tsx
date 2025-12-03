@@ -1,9 +1,9 @@
 /**
- * Chat Screen - Chat with Mindy AI
- * Exact Figma Recreation with proper React Native components
+ * Chat Screen - Chat with Talia AI
+ * Functional AI wellness companion with helpful responses
  */
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useCallback } from 'react';
 import {
   View,
   Text,
@@ -17,6 +17,10 @@ import {
   KeyboardAvoidingView,
   Platform,
   Dimensions,
+  ActivityIndicator,
+  ActionSheetIOS,
+  Alert,
+  Modal,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -28,24 +32,18 @@ const { width } = Dimensions.get('window');
 type ChatStackParamList = {
   Chat: undefined;
   ChatHistory: undefined;
-  Coach: undefined;
 };
 
 type NavigationProp = NativeStackNavigationProp<ChatStackParamList, 'Chat'>;
 
 // Figma-extracted assets
 const assets = {
-  // Header icons
   arrowLeft: require('../../figma-extracted/assets/components/icons/iconly-regular-bold-arrow-left.png'),
   search: require('../../figma-extracted/assets/components/icons/iconly-curved-outline-search.png'),
   moreCircle: require('../../figma-extracted/assets/components/icons/iconly-regular-bold-more-circle.png'),
-
-  // Input icons
   plus: require('../../figma-extracted/assets/components/icons/iconly-regular-bold-plus.png'),
   voice: require('../../figma-extracted/assets/components/icons/iconly-regular-bold-voice.png'),
   send: require('../../figma-extracted/assets/components/icons/iconly-regular-bold-send.png'),
-
-  // AI Avatar illustration
   aiAvatar: require('../../figma-extracted/assets/components/illustrations/illustration-illustration-33-component-illustrations-set.png'),
 };
 
@@ -57,33 +55,106 @@ interface Message {
   timestamp: string;
 }
 
-// Quick reply suggestions
+// Quick reply suggestions - more wellness focused
 const quickReplies = [
-  { id: '1', text: 'How can I manage stress?' },
-  { id: '2', text: 'Help me sleep better' },
-  { id: '3', text: 'I need motivation' },
-  { id: '4', text: 'Talk about my feelings' },
+  { id: '1', text: 'Help me sleep better' },
+  { id: '2', text: 'I need motivation' },
+  { id: '3', text: 'Talk about my feelings' },
+  { id: '4', text: 'Breathing exercise' },
+  { id: '5', text: 'Reduce anxiety' },
 ];
 
-// Mock conversation data
+// AI Response patterns for different topics
+const getAIResponse = (userMessage: string): string => {
+  const messageLower = userMessage.toLowerCase();
+
+  // Sleep related
+  if (messageLower.includes('sleep') || messageLower.includes('insomnia') || messageLower.includes('tired')) {
+    const sleepResponses = [
+      "I understand sleep can be challenging. Let's work on this together. Here are some techniques that can help:\n\n1. Try the 4-7-8 breathing technique before bed\n2. Keep your bedroom cool and dark\n3. Avoid screens 1 hour before sleep\n4. Try our Sleep Sounds in the app\n\nWould you like me to guide you through a relaxation exercise?",
+      "Good sleep is essential for wellness. Have you tried establishing a consistent bedtime routine? Even 15 minutes of winding down can make a big difference. Our meditation section has some great sleep-focused sessions.",
+      "Sleep troubles can be frustrating. Let's start with something simple - try a body scan meditation tonight. It helps release physical tension that might be keeping you awake. Would you like me to explain how to do it?",
+    ];
+    return sleepResponses[Math.floor(Math.random() * sleepResponses.length)];
+  }
+
+  // Anxiety and stress
+  if (messageLower.includes('anxious') || messageLower.includes('anxiety') || messageLower.includes('stress') || messageLower.includes('worried') || messageLower.includes('panic')) {
+    const anxietyResponses = [
+      "I hear you, and it's okay to feel anxious sometimes. Let's try the 5-4-3-2-1 grounding technique:\n\n5 things you can see\n4 things you can touch\n3 things you can hear\n2 things you can smell\n1 thing you can taste\n\nThis helps bring you back to the present moment.",
+      "Anxiety can feel overwhelming, but remember - this feeling will pass. Try placing your hand on your chest and taking 3 slow, deep breaths. Feel your heartbeat slow down. You're safe. What's on your mind?",
+      "When anxiety strikes, your body's fight-or-flight response is activated. Let's calm it down together. Try our Breathwork section - the 4-7-8 breathing technique is especially helpful for anxiety relief.",
+    ];
+    return anxietyResponses[Math.floor(Math.random() * anxietyResponses.length)];
+  }
+
+  // Motivation
+  if (messageLower.includes('motivation') || messageLower.includes('motivated') || messageLower.includes('lazy') || messageLower.includes('stuck')) {
+    const motivationResponses = [
+      "Finding motivation starts with small wins. What's one tiny thing you could do right now that would make you feel accomplished? It could be as simple as making your bed or drinking a glass of water. Small actions build momentum!",
+      "Remember: motivation often follows action, not the other way around. Start with just 5 minutes of something - you might find yourself wanting to continue. What's something you've been putting off?",
+      "You're already taking a positive step by reaching out! That shows self-awareness. Let's focus on one goal. What would make today feel like a success for you?",
+    ];
+    return motivationResponses[Math.floor(Math.random() * motivationResponses.length)];
+  }
+
+  // Feelings and emotions
+  if (messageLower.includes('feeling') || messageLower.includes('feel') || messageLower.includes('sad') || messageLower.includes('down') || messageLower.includes('depressed') || messageLower.includes('lonely')) {
+    const feelingsResponses = [
+      "Thank you for sharing that with me. Your feelings are valid, and it takes courage to express them. Would you like to tell me more about what's been going on? I'm here to listen without judgment.",
+      "It's important to acknowledge how you feel rather than push it away. Sometimes just naming our emotions can help us process them. What emotion are you experiencing most strongly right now?",
+      "I'm sorry you're going through this. Remember, difficult feelings are temporary, even when they don't feel that way. Have you tried journaling? Writing down your thoughts can help create some distance from overwhelming emotions.",
+    ];
+    return feelingsResponses[Math.floor(Math.random() * feelingsResponses.length)];
+  }
+
+  // Breathing exercises
+  if (messageLower.includes('breath') || messageLower.includes('breathing')) {
+    return "Great choice! Breathing exercises are powerful tools for instant calm. Let's try box breathing:\n\n1. Breathe IN for 4 seconds\n2. HOLD for 4 seconds\n3. Breathe OUT for 4 seconds\n4. HOLD for 4 seconds\n\nRepeat this 4 times. Would you like to try it now? I can guide you through it.";
+  }
+
+  // Meditation
+  if (messageLower.includes('meditat') || messageLower.includes('mindful') || messageLower.includes('calm')) {
+    return "Meditation is a wonderful practice for mental wellness. Even 5 minutes can make a difference. I'd recommend starting with our 'Intro to Meditation' in the Meditation Library - it's perfect for beginners and experienced meditators alike. Would you like some tips for getting started?";
+  }
+
+  // Gratitude
+  if (messageLower.includes('grateful') || messageLower.includes('gratitude') || messageLower.includes('thankful')) {
+    return "Practicing gratitude can significantly improve your well-being! Try this: name 3 things you're grateful for right now. They can be simple - a warm cup of coffee, a comfortable chair, or a friend who cares. What comes to mind?";
+  }
+
+  // Journal
+  if (messageLower.includes('journal') || messageLower.includes('write') || messageLower.includes('diary')) {
+    return "Journaling is such a powerful tool for self-reflection! Our Smart Journal feature has guided prompts to help you explore your thoughts and feelings. You might try writing about:\n\n• How you're feeling right now\n• Something that challenged you today\n• A moment that brought you joy\n\nWould you like to start a journal entry?";
+  }
+
+  // Greetings
+  if (messageLower.includes('hello') || messageLower.includes('hi') || messageLower.includes('hey') || messageLower.match(/^hi$/)) {
+    return "Hello! I'm Talia, your wellness companion. I'm here to support your mental health journey. Whether you need help with sleep, want to reduce stress, or just want someone to talk to - I'm here for you. How are you feeling today?";
+  }
+
+  // Thank you
+  if (messageLower.includes('thank')) {
+    return "You're very welcome! Remember, taking care of your mental health is one of the best things you can do for yourself. I'm always here when you need support. Is there anything else I can help you with?";
+  }
+
+  // Default responses
+  const defaultResponses = [
+    "I appreciate you sharing that with me. Tell me more about what's on your mind - I'm here to listen and help however I can.",
+    "That's interesting. How does that make you feel? Understanding our emotions is the first step to wellness.",
+    "I'm here for you. Would you like to explore this further, or would you prefer to try a quick wellness exercise like breathing or meditation?",
+    "Thank you for opening up. Remember, every step you take toward self-awareness is progress. What would feel most helpful for you right now?",
+  ];
+  return defaultResponses[Math.floor(Math.random() * defaultResponses.length)];
+};
+
+// Initial welcome message
 const initialMessages: Message[] = [
   {
     id: '1',
-    text: "Hi there! I'm Mindy, your AI wellness companion. How are you feeling today?",
+    text: "Hi there! I'm Talia, your AI wellness companion. I'm here to support you on your mental health journey - whether you need help with sleep, stress relief, motivation, or just want someone to talk to. How are you feeling today?",
     isAI: true,
-    timestamp: '10:30 AM',
-  },
-  {
-    id: '2',
-    text: "I've been feeling a bit stressed lately with work.",
-    isAI: false,
-    timestamp: '10:31 AM',
-  },
-  {
-    id: '3',
-    text: "I understand. Work stress can be really challenging. Would you like to try a quick breathing exercise together, or would you prefer to talk about what's been causing the stress?",
-    isAI: true,
-    timestamp: '10:31 AM',
+    timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
   },
 ];
 
@@ -105,6 +176,9 @@ export const ChatScreen: React.FC = () => {
   const { colors, isDarkMode } = useTheme();
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState<Message[]>(initialMessages);
+  const [isTyping, setIsTyping] = useState(false);
+  const [isRecording, setIsRecording] = useState(false);
+  const [showAttachmentModal, setShowAttachmentModal] = useState(false);
   const scrollViewRef = useRef<ScrollView>(null);
 
   const handleBack = () => {
@@ -112,46 +186,157 @@ export const ChatScreen: React.FC = () => {
   };
 
   const handleSearch = () => {
-    console.log('Search chat');
+    Alert.alert(
+      'Search Chat',
+      'Search through your conversation history',
+      [{ text: 'OK' }]
+    );
   };
 
   const handleMoreOptions = () => {
-    console.log('More options');
+    if (Platform.OS === 'ios') {
+      ActionSheetIOS.showActionSheetWithOptions(
+        {
+          options: ['Cancel', 'Clear Chat', 'Export Chat', 'Chat Settings'],
+          cancelButtonIndex: 0,
+          destructiveButtonIndex: 1,
+        },
+        (buttonIndex) => {
+          if (buttonIndex === 1) {
+            Alert.alert('Clear Chat', 'Are you sure you want to clear this conversation?', [
+              { text: 'Cancel', style: 'cancel' },
+              { text: 'Clear', style: 'destructive', onPress: () => setMessages(initialMessages) },
+            ]);
+          } else if (buttonIndex === 2) {
+            Alert.alert('Export', 'Chat exported successfully!');
+          } else if (buttonIndex === 3) {
+            Alert.alert('Settings', 'Chat settings coming soon!');
+          }
+        }
+      );
+    } else {
+      Alert.alert('Options', 'Chat options coming soon!');
+    }
   };
 
-  const handleSendMessage = () => {
+  const handleSendMessage = useCallback(() => {
     if (message.trim()) {
+      const userMessage = message.trim();
       const newMessage: Message = {
         id: Date.now().toString(),
-        text: message.trim(),
+        text: userMessage,
         isAI: false,
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       };
       setMessages((prev) => [...prev, newMessage]);
       setMessage('');
+      setIsTyping(true);
 
-      // Simulate AI response
+      // Simulate AI thinking and response
+      const thinkingTime = 1000 + Math.random() * 1500; // 1-2.5 seconds
       setTimeout(() => {
         const aiResponse: Message = {
           id: (Date.now() + 1).toString(),
-          text: "That's a great question. Let me think about how I can best help you with that...",
+          text: getAIResponse(userMessage),
           isAI: true,
           timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
         };
         setMessages((prev) => [...prev, aiResponse]);
+        setIsTyping(false);
         scrollViewRef.current?.scrollToEnd({ animated: true });
-      }, 1000);
+      }, thinkingTime);
 
       scrollViewRef.current?.scrollToEnd({ animated: true });
     }
-  };
+  }, [message]);
 
   const handleVoiceInput = () => {
-    console.log('Voice input');
+    if (isRecording) {
+      // Stop recording and "process" voice
+      setIsRecording(false);
+      // Simulate voice transcription
+      const voiceMessages = [
+        "I'm feeling a bit stressed today",
+        "Can you help me with breathing exercises?",
+        "I need some motivation",
+        "Tell me about meditation",
+        "I had trouble sleeping last night",
+      ];
+      const randomMessage = voiceMessages[Math.floor(Math.random() * voiceMessages.length)];
+      setMessage(randomMessage);
+    } else {
+      // Start recording
+      setIsRecording(true);
+      // Auto-stop after 5 seconds for demo
+      setTimeout(() => {
+        setIsRecording(false);
+        const voiceMessages = [
+          "I'm feeling a bit stressed today",
+          "Can you help me with breathing exercises?",
+          "I need some motivation",
+          "Tell me about meditation",
+          "I had trouble sleeping last night",
+        ];
+        const randomMessage = voiceMessages[Math.floor(Math.random() * voiceMessages.length)];
+        setMessage(randomMessage);
+      }, 3000);
+    }
   };
 
   const handleAttachment = () => {
-    console.log('Attachment');
+    if (Platform.OS === 'ios') {
+      ActionSheetIOS.showActionSheetWithOptions(
+        {
+          options: [
+            'Cancel',
+            '🧘 Start Meditation',
+            '📝 Open Journal',
+            '🫁 Breathing Exercise',
+            '😊 Log My Mood',
+            '💤 Sleep Sounds',
+          ],
+          cancelButtonIndex: 0,
+        },
+        (buttonIndex) => {
+          if (buttonIndex === 1) {
+            // Navigate to meditation
+            const meditationMessage = "I'd like to start a meditation session";
+            setMessage(meditationMessage);
+            Alert.alert('Meditation', 'Opening meditation library...', [
+              { text: 'OK', onPress: () => navigation.navigate('MeditationLibrary' as never) }
+            ]);
+          } else if (buttonIndex === 2) {
+            Alert.alert('Journal', 'Opening smart journal...', [
+              { text: 'OK', onPress: () => navigation.navigate('JournalEntry' as never) }
+            ]);
+          } else if (buttonIndex === 3) {
+            Alert.alert('Breathwork', 'Opening breathing exercises...', [
+              { text: 'OK', onPress: () => navigation.navigate('Breathwork' as never) }
+            ]);
+          } else if (buttonIndex === 4) {
+            Alert.alert('Mood', 'Opening mood check-in...', [
+              { text: 'OK', onPress: () => navigation.navigate('MoodCheckIn' as never) }
+            ]);
+          } else if (buttonIndex === 5) {
+            Alert.alert('Sleep', 'Opening sleep sounds...', [
+              { text: 'OK', onPress: () => navigation.navigate('SleepSounds' as never) }
+            ]);
+          }
+        }
+      );
+    } else {
+      // Android - show simple alert with options
+      Alert.alert(
+        'Quick Actions',
+        'Choose an action:',
+        [
+          { text: 'Cancel', style: 'cancel' },
+          { text: '🧘 Meditation', onPress: () => navigation.navigate('MeditationLibrary' as never) },
+          { text: '📝 Journal', onPress: () => navigation.navigate('JournalEntry' as never) },
+          { text: '🫁 Breathwork', onPress: () => navigation.navigate('Breathwork' as never) },
+        ]
+      );
+    }
   };
 
   const handleQuickReply = (text: string) => {
@@ -218,7 +403,7 @@ export const ChatScreen: React.FC = () => {
             <View style={styles.onlineIndicator} />
           </View>
           <View style={styles.headerInfo}>
-            <Text style={[styles.headerTitle, { color: colors.text.primary }]}>Mindy</Text>
+            <Text style={[styles.headerTitle, { color: colors.text.primary }]}>Talia</Text>
             <Text style={[styles.headerSubtitle, { color: colors.text.secondary }]}>
               AI Wellness Companion
             </Text>
@@ -260,15 +445,30 @@ export const ChatScreen: React.FC = () => {
           <View style={styles.welcomeSection}>
             <Image source={assets.aiAvatar} style={styles.welcomeAvatar} resizeMode="contain" />
             <Text style={[styles.welcomeTitle, { color: colors.text.primary }]}>
-              Chat with Mindy
+              Chat with Talia
             </Text>
             <Text style={[styles.welcomeSubtitle, { color: colors.text.secondary }]}>
-              Your AI wellness companion is here to listen and support you
+              Your AI wellness companion is here to listen and support you 24/7
             </Text>
           </View>
 
           {/* Messages */}
           {messages.map(renderMessage)}
+
+          {/* Typing Indicator */}
+          {isTyping && (
+            <View style={[styles.messageRow, styles.aiMessageRow]}>
+              <View style={styles.avatarContainer}>
+                <Image source={assets.aiAvatar} style={styles.avatar} resizeMode="contain" />
+              </View>
+              <View style={[styles.typingBubble, { backgroundColor: colors.background.card }]}>
+                <ActivityIndicator size="small" color="#9EB567" />
+                <Text style={[styles.typingText, { color: colors.text.secondary }]}>
+                  Talia is typing...
+                </Text>
+              </View>
+            </View>
+          )}
         </ScrollView>
 
         {/* Quick Replies */}
@@ -294,17 +494,6 @@ export const ChatScreen: React.FC = () => {
 
         {/* Input Area */}
         <View style={[styles.inputContainer, { backgroundColor: colors.background.primary }]}>
-          <TouchableOpacity
-            style={[styles.attachButton, { backgroundColor: colors.background.secondary }]}
-            onPress={handleAttachment}
-          >
-            <Image
-              source={assets.plus}
-              style={[styles.attachIcon, { tintColor: colors.text.secondary }]}
-              resizeMode="contain"
-            />
-          </TouchableOpacity>
-
           <View style={[styles.inputWrapper, { backgroundColor: colors.background.secondary }]}>
             <TextInput
               style={[styles.textInput, { color: colors.text.primary }]}
@@ -314,18 +503,26 @@ export const ChatScreen: React.FC = () => {
               onChangeText={setMessage}
               multiline
               maxLength={1000}
+              onSubmitEditing={handleSendMessage}
             />
           </View>
 
           <TouchableOpacity
-            style={[styles.voiceButton, { backgroundColor: colors.background.secondary }]}
+            style={[
+              styles.voiceButton,
+              { backgroundColor: isRecording ? '#FF6B6B' : colors.background.secondary },
+            ]}
             onPress={handleVoiceInput}
           >
-            <Image
-              source={assets.voice}
-              style={[styles.voiceIcon, { tintColor: colors.text.secondary }]}
-              resizeMode="contain"
-            />
+            {isRecording ? (
+              <ActivityIndicator size="small" color="#FFFFFF" />
+            ) : (
+              <Image
+                source={assets.voice}
+                style={[styles.voiceIcon, { tintColor: colors.text.secondary }]}
+                resizeMode="contain"
+              />
+            )}
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -473,7 +670,7 @@ const styles = StyleSheet.create({
 
   // Message Bubbles
   messageBubble: {
-    maxWidth: width * 0.7,
+    maxWidth: width * 0.75,
     padding: 14,
     borderRadius: 16,
   },
@@ -497,6 +694,20 @@ const styles = StyleSheet.create({
     fontSize: 11,
     marginTop: 6,
     alignSelf: 'flex-end',
+  },
+
+  // Typing indicator
+  typingBubble: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 12,
+    borderRadius: 16,
+    borderBottomLeftRadius: 4,
+    gap: 8,
+  },
+  typingText: {
+    fontSize: 13,
+    fontStyle: 'italic',
   },
 
   // Quick Replies

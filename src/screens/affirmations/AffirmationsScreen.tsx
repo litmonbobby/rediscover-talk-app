@@ -3,7 +3,7 @@
  * Matches 87-light-explore-affirmations.png design
  */
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   View,
   Text,
@@ -14,11 +14,13 @@ import {
   SafeAreaView,
   StatusBar,
   Dimensions,
+  Share,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import Svg, { Path } from 'react-native-svg';
 import { useTheme } from '../../theme/useTheme';
+import { affirmations, Affirmation, AffirmationCategory, getAffirmationsByCategory } from '../../data/affirmations';
 
 const { width } = Dimensions.get('window');
 
@@ -32,7 +34,7 @@ type NavigationProp = NativeStackNavigationProp<AffirmationsStackParamList, 'Aff
 // Figma-extracted assets
 const assets = {
   // Header icons
-  logo: require('../../figma-extracted/assets/components/icons/iconly-curved-bold-category.png'),
+  logo: require('../../../assets/icon.png'),
   arrowLeft: require('../../figma-extracted/assets/components/icons/iconly-regular-bold-arrow-left.png'),
   search: require('../../figma-extracted/assets/components/icons/iconly-curved-outline-search.png'),
   heart: require('../../figma-extracted/assets/components/icons/iconly-curved-outline-heart.png'),
@@ -51,102 +53,39 @@ const assets = {
   calm2: require('../../figma-extracted/assets/components/illustrations/illustration-illustration-15-component-illustrations-set.png'),
 };
 
-// Category tabs
-const categories = [
+// Category tabs - now includes all 11 categories
+const categories: { id: AffirmationCategory | 'all'; label: string }[] = [
   { id: 'all', label: 'All' },
   { id: 'self-worth', label: 'Self-Worth' },
   { id: 'confidence', label: 'Confidence' },
   { id: 'growth', label: 'Growth' },
   { id: 'gratitude', label: 'Gratitude' },
   { id: 'calm', label: 'Calm' },
+  { id: 'strength', label: 'Strength' },
+  { id: 'success', label: 'Success' },
+  { id: 'love', label: 'Love' },
+  { id: 'health', label: 'Health' },
+  { id: 'morning', label: 'Morning' },
+  { id: 'evening', label: 'Evening' },
 ];
 
-// Affirmation data
-interface Affirmation {
-  id: string;
-  title: string;
-  message: string;
-  category: string;
-  illustration: any;
-  isFavorite?: boolean;
-}
-
-const affirmationsData: Affirmation[] = [
-  {
-    id: '1',
-    title: 'I Am Worthy',
-    message: 'I am worthy of love, happiness, and success. My worth is not determined by others.',
-    category: 'self-worth',
-    illustration: assets.selfWorth1,
-    isFavorite: true,
-  },
-  {
-    id: '2',
-    title: 'I Embrace My Uniqueness',
-    message: 'I embrace my unique qualities and celebrate what makes me different.',
-    category: 'self-worth',
-    illustration: assets.selfWorth2,
-  },
-  {
-    id: '3',
-    title: 'I Am Confident',
-    message: 'I believe in myself and my abilities. I can achieve anything I set my mind to.',
-    category: 'confidence',
-    illustration: assets.confidence1,
-    isFavorite: true,
-  },
-  {
-    id: '4',
-    title: 'I Speak With Courage',
-    message: 'I speak my truth with courage and confidence. My voice matters.',
-    category: 'confidence',
-    illustration: assets.confidence2,
-  },
-  {
-    id: '5',
-    title: 'I Am Growing',
-    message: 'Every day I am growing and becoming a better version of myself.',
-    category: 'growth',
-    illustration: assets.growth1,
-  },
-  {
-    id: '6',
-    title: 'I Welcome Change',
-    message: 'I welcome change as an opportunity for growth and new beginnings.',
-    category: 'growth',
-    illustration: assets.growth2,
-    isFavorite: true,
-  },
-  {
-    id: '7',
-    title: 'I Am Grateful',
-    message: 'I am grateful for all the blessings in my life, big and small.',
-    category: 'gratitude',
-    illustration: assets.gratitude1,
-  },
-  {
-    id: '8',
-    title: 'I Appreciate Today',
-    message: 'I appreciate this moment and find joy in the present.',
-    category: 'gratitude',
-    illustration: assets.gratitude2,
-  },
-  {
-    id: '9',
-    title: 'I Am At Peace',
-    message: 'I am calm and at peace. I release all tension and embrace tranquility.',
-    category: 'calm',
-    illustration: assets.calm1,
-    isFavorite: true,
-  },
-  {
-    id: '10',
-    title: 'I Breathe Deeply',
-    message: 'With each breath, I become more relaxed and centered.',
-    category: 'calm',
-    illustration: assets.calm2,
-  },
-];
+// Map categories to illustrations
+const getIllustrationForCategory = (category: string) => {
+  const illustrationMap: Record<string, any> = {
+    'self-worth': assets.selfWorth1,
+    confidence: assets.confidence1,
+    growth: assets.growth1,
+    gratitude: assets.gratitude1,
+    calm: assets.calm1,
+    strength: assets.confidence2,
+    success: assets.growth2,
+    love: assets.selfWorth2,
+    health: assets.calm2,
+    morning: assets.gratitude2,
+    evening: assets.calm1,
+  };
+  return illustrationMap[category] || assets.selfWorth1;
+};
 
 // Back Arrow Icon
 const BackIcon: React.FC<{ size?: number; color?: string }> = ({ size = 24, color = '#333' }) => (
@@ -182,10 +121,8 @@ const HeartIcon: React.FC<{ size?: number; color?: string; filled?: boolean }> =
 export const AffirmationsScreen: React.FC = () => {
   const navigation = useNavigation<NavigationProp>();
   const { colors, isDarkMode } = useTheme();
-  const [activeCategory, setActiveCategory] = useState('all');
-  const [favorites, setFavorites] = useState<Set<string>>(
-    new Set(affirmationsData.filter((a) => a.isFavorite).map((a) => a.id))
-  );
+  const [activeCategory, setActiveCategory] = useState<AffirmationCategory | 'all'>('all');
+  const [favorites, setFavorites] = useState<Set<string>>(new Set());
 
   const handleBack = () => {
     navigation.goBack();
@@ -211,84 +148,90 @@ export const AffirmationsScreen: React.FC = () => {
     });
   };
 
-  const handleShare = (affirmation: Affirmation) => {
-    console.log('Share affirmation:', affirmation.title);
+  const handleShare = async (affirmation: Affirmation) => {
+    try {
+      await Share.share({
+        message: `✨ ${affirmation.message}\n\n— Rediscover Talk Affirmations`,
+        title: affirmation.title,
+      });
+    } catch (error) {
+      console.error('Error sharing affirmation:', error);
+    }
   };
 
   const handleAffirmationPress = (affirmation: Affirmation) => {
     console.log('View affirmation detail:', affirmation.title);
-    // navigation.navigate('AffirmationDetail', {
-    //   id: affirmation.id,
-    //   title: affirmation.title,
-    //   category: affirmation.category,
-    // });
   };
 
-  // Filter affirmations by category
-  const filteredAffirmations =
-    activeCategory === 'all'
-      ? affirmationsData
-      : affirmationsData.filter((a) => a.category === activeCategory);
+  // Filter affirmations by category using the new data
+  const filteredAffirmations = useMemo(() => {
+    if (activeCategory === 'all') {
+      return affirmations;
+    }
+    return getAffirmationsByCategory(activeCategory);
+  }, [activeCategory]);
 
-  const renderAffirmationCard = (affirmation: Affirmation) => (
-    <TouchableOpacity
-      key={affirmation.id}
-      style={[styles.affirmationCard, { backgroundColor: colors.background.card }]}
-      onPress={() => handleAffirmationPress(affirmation)}
-      activeOpacity={0.7}
-    >
-      {/* Illustration */}
-      <View style={styles.illustrationContainer}>
-        <Image
-          source={affirmation.illustration}
-          style={styles.illustration}
-          resizeMode="contain"
-        />
-      </View>
+  const renderAffirmationCard = (affirmation: Affirmation) => {
+    return (
+      <TouchableOpacity
+        key={affirmation.id}
+        style={[styles.affirmationCard, { backgroundColor: colors.background.card }]}
+        onPress={() => handleAffirmationPress(affirmation)}
+        activeOpacity={0.7}
+      >
+        {/* Illustration */}
+        <View style={styles.illustrationContainer}>
+          <Image
+            source={getIllustrationForCategory(affirmation.category)}
+            style={styles.illustration}
+            resizeMode="contain"
+          />
+        </View>
 
-      {/* Content */}
-      <View style={styles.cardContent}>
-        <View style={styles.cardHeader}>
-          <Text style={[styles.cardTitle, { color: colors.text.primary }]}>
-            {affirmation.title}
+        {/* Content */}
+        <View style={styles.cardContent}>
+          <View style={styles.cardHeader}>
+            <Text style={[styles.cardTitle, { color: colors.text.primary }]} numberOfLines={1}>
+              {affirmation.title}
+            </Text>
+            <View style={styles.cardActions}>
+              <TouchableOpacity
+                style={styles.actionButton}
+                onPress={() => handleToggleFavorite(affirmation.id)}
+              >
+                <HeartIcon
+                  size={18}
+                  color={favorites.has(affirmation.id) ? '#FF6B6B' : colors.text.tertiary}
+                  filled={favorites.has(affirmation.id)}
+                />
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.actionButton}
+                onPress={() => handleShare(affirmation)}
+              >
+                <Image
+                  source={assets.share}
+                  style={[styles.shareIcon, { tintColor: colors.text.tertiary }]}
+                  resizeMode="contain"
+                />
+              </TouchableOpacity>
+            </View>
+          </View>
+          <Text
+            style={[styles.cardMessage, { color: colors.text.secondary }]}
+            numberOfLines={3}
+          >
+            {affirmation.message}
           </Text>
-          <View style={styles.cardActions}>
-            <TouchableOpacity
-              style={styles.actionButton}
-              onPress={() => handleToggleFavorite(affirmation.id)}
-            >
-              <HeartIcon
-                size={18}
-                color={favorites.has(affirmation.id) ? '#FF6B6B' : colors.text.tertiary}
-                filled={favorites.has(affirmation.id)}
-              />
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.actionButton}
-              onPress={() => handleShare(affirmation)}
-            >
-              <Image
-                source={assets.share}
-                style={[styles.shareIcon, { tintColor: colors.text.tertiary }]}
-                resizeMode="contain"
-              />
-            </TouchableOpacity>
+          <View style={styles.categoryBadge}>
+            <Text style={styles.categoryBadgeText}>
+              {categories.find((c) => c.id === affirmation.category)?.label}
+            </Text>
           </View>
         </View>
-        <Text
-          style={[styles.cardMessage, { color: colors.text.secondary }]}
-          numberOfLines={2}
-        >
-          {affirmation.message}
-        </Text>
-        <View style={styles.categoryBadge}>
-          <Text style={styles.categoryBadgeText}>
-            {categories.find((c) => c.id === affirmation.category)?.label}
-          </Text>
-        </View>
-      </View>
-    </TouchableOpacity>
-  );
+      </TouchableOpacity>
+    );
+  };
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background.primary }]}>

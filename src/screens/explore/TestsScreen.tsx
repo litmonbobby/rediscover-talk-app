@@ -1,5 +1,6 @@
 /**
- * Tests Screen - Placeholder for mental wellness assessments
+ * Tests Screen - Mental Health Assessments
+ * Functional tests using assessments data
  */
 
 import React from 'react';
@@ -12,19 +13,32 @@ import {
   ScrollView,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useTheme } from '../../theme/useTheme';
+import { assessments as assessmentData } from '../../data/assessments';
 
-const tests = [
-  { id: '1', title: 'Anxiety Assessment', description: 'Check your anxiety levels', duration: '5 mins' },
-  { id: '2', title: 'Depression Screening', description: 'PHQ-9 questionnaire', duration: '5 mins' },
-  { id: '3', title: 'Stress Level Test', description: 'Measure your stress', duration: '3 mins' },
-  { id: '4', title: 'Sleep Quality Quiz', description: 'Evaluate your sleep health', duration: '4 mins' },
-  { id: '5', title: 'Mindfulness Check', description: 'Assess your mindfulness practice', duration: '3 mins' },
-];
+type ExploreStackParamList = {
+  Tests: undefined;
+  Assessment: { assessmentId: string };
+};
+
+type NavigationProp = NativeStackNavigationProp<ExploreStackParamList, 'Tests'>;
+
+// Map assessment data to display format
+const tests = assessmentData.map((assessment) => ({
+  id: assessment.id,
+  title: assessment.title,
+  description: assessment.description,
+  duration: assessment.duration,
+}));
 
 export const TestsScreen: React.FC = () => {
-  const navigation = useNavigation();
+  const navigation = useNavigation<NavigationProp>();
   const { colors } = useTheme();
+
+  const handleTestPress = (testId: string) => {
+    navigation.navigate('Assessment', { assessmentId: testId });
+  };
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background.primary }]}>
@@ -47,6 +61,7 @@ export const TestsScreen: React.FC = () => {
             key={test.id}
             style={[styles.testCard, { backgroundColor: colors.background.card }]}
             activeOpacity={0.7}
+            onPress={() => handleTestPress(test.id)}
           >
             <View style={styles.testInfo}>
               <Text style={[styles.testTitle, { color: colors.text.primary }]}>{test.title}</Text>
@@ -61,9 +76,9 @@ export const TestsScreen: React.FC = () => {
           </TouchableOpacity>
         ))}
 
-        <View style={styles.comingSoon}>
-          <Text style={[styles.comingSoonText, { color: colors.text.tertiary }]}>
-            More assessments coming soon...
+        <View style={styles.disclaimer}>
+          <Text style={[styles.disclaimerText, { color: colors.text.tertiary }]}>
+            These assessments are for self-reflection and are not a substitute for professional diagnosis.
           </Text>
         </View>
       </ScrollView>
@@ -137,13 +152,16 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#9EB567',
   },
-  comingSoon: {
+  disclaimer: {
     alignItems: 'center',
     paddingVertical: 30,
+    paddingHorizontal: 10,
   },
-  comingSoonText: {
-    fontSize: 14,
+  disclaimerText: {
+    fontSize: 12,
     fontStyle: 'italic',
+    textAlign: 'center',
+    lineHeight: 18,
   },
 });
 

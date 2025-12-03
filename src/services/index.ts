@@ -25,3 +25,11 @@ export {
   type SyncStatus,
   type SyncState,
 } from './supabase';
+
+// RevenueCat Service
+export {
+  revenueCatService,
+  ENTITLEMENT_ID,
+  DEFAULT_OFFERING_ID,
+  type SubscriptionStatus,
+} from './RevenueCatService';

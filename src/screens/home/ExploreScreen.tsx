@@ -18,6 +18,21 @@ import {
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useTheme } from '../../theme/useTheme';
+import {
+  RainIcon,
+  DreamIcon,
+  WindIcon,
+  FireIcon,
+  ThunderIcon,
+  ForestIcon,
+  RiverIcon,
+  MelodyIcon,
+  OceanIcon,
+  MountainIcon,
+  SoundBarsIcon,
+  PlanetIcon,
+  CrownIcon,
+} from '../../components/icons';
 
 const { width } = Dimensions.get('window');
 const CARD_WIDTH = (width - 52) / 3; // 3 cards with gaps
@@ -35,6 +50,9 @@ type ExploreStackParamList = {
   Tips: undefined;
   Favorites: undefined;
   MeditationPlayer: { id?: string; title?: string; duration?: string; meditation?: any };
+  SleepSounds: undefined;
+  SoundPlayer: { id: string; name: string; icon: string };
+  Family: undefined;
 };
 
 type NavigationProp = NativeStackNavigationProp<ExploreStackParamList, 'Explore'>;
@@ -42,7 +60,7 @@ type NavigationProp = NativeStackNavigationProp<ExploreStackParamList, 'Explore'
 // Figma-extracted assets
 const assets = {
   // Header icons
-  logo: require('../../figma-extracted/assets/components/icons/iconly-curved-bold-category.png'),
+  logo: require('../../../assets/icon.png'),
   search: require('../../figma-extracted/assets/components/icons/iconly-curved-outline-search.png'),
   heart: require('../../figma-extracted/assets/components/icons/iconly-curved-outline-heart.png'),
 
@@ -98,6 +116,46 @@ const meditationCards = [
   },
 ];
 
+// Sound types with their corresponding icons
+type SoundIconType = 'rain' | 'dream' | 'wind' | 'fire' | 'thunder' | 'forest' | 'river' | 'melody' | 'ocean' | 'mountain' | 'soundBars' | 'planet';
+
+interface SoundItem {
+  id: string;
+  name: string;
+  icon: SoundIconType;
+  isPremium: boolean;
+}
+
+// Sleep sounds data
+const sleepSoundsData: SoundItem[] = [
+  { id: '1', name: 'Heavy Rain', icon: 'rain', isPremium: false },
+  { id: '2', name: 'Dream', icon: 'dream', isPremium: false },
+  { id: '3', name: 'Wind', icon: 'wind', isPremium: false },
+  { id: '4', name: 'Fire', icon: 'fire', isPremium: false },
+  { id: '5', name: 'Thunder', icon: 'thunder', isPremium: false },
+  { id: '6', name: 'Forest', icon: 'forest', isPremium: true },
+  { id: '7', name: 'River', icon: 'river', isPremium: true },
+  { id: '8', name: 'Melody', icon: 'melody', isPremium: false },
+  { id: '9', name: 'Ocean', icon: 'ocean', isPremium: true },
+  { id: '10', name: 'Mountains', icon: 'mountain', isPremium: true },
+];
+
+// Icon component mapping
+const IconComponents: Record<SoundIconType, React.FC<{ size?: number; color?: string }>> = {
+  rain: RainIcon,
+  dream: DreamIcon,
+  wind: WindIcon,
+  fire: FireIcon,
+  thunder: ThunderIcon,
+  forest: ForestIcon,
+  river: RiverIcon,
+  melody: MelodyIcon,
+  ocean: OceanIcon,
+  mountain: MountainIcon,
+  soundBars: SoundBarsIcon,
+  planet: PlanetIcon,
+};
+
 export const ExploreScreen: React.FC = () => {
   const navigation = useNavigation<NavigationProp>();
   const { colors, isDarkMode } = useTheme();
@@ -119,6 +177,23 @@ export const ExploreScreen: React.FC = () => {
     navigation.navigate('Favorites');
   };
 
+  const handleSoundPress = (sound: SoundItem) => {
+    navigation.navigate('SoundPlayer', {
+      id: sound.id,
+      name: sound.name,
+      icon: sound.icon,
+    });
+  };
+
+  const handleViewAllSounds = () => {
+    navigation.navigate('SleepSounds');
+  };
+
+  const renderSoundIcon = (iconType: SoundIconType) => {
+    const IconComponent = IconComponents[iconType];
+    return <IconComponent size={28} color="#9EB567" />;
+  };
+
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background.primary }]}>
       <StatusBar
@@ -135,7 +210,7 @@ export const ExploreScreen: React.FC = () => {
         <View style={styles.header}>
           <Image
             source={assets.logo}
-            style={[styles.headerLogo, { tintColor: '#9EB567' }]}
+            style={styles.headerLogo}
             resizeMode="contain"
           />
           <Text style={[styles.headerTitle, { color: colors.text.primary }]}>
@@ -223,6 +298,55 @@ export const ExploreScreen: React.FC = () => {
                 </Text>
                 <Text style={[styles.meditationDuration, { color: colors.text.secondary }]}>
                   {meditation.duration}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+        </View>
+
+        {/* Sleep Sounds Section */}
+        <View style={styles.sleepSoundsSection}>
+          <View style={styles.sectionHeader}>
+            <Text style={[styles.sectionTitle, { color: colors.text.primary }]}>
+              Sleep Sounds
+            </Text>
+            <TouchableOpacity style={styles.viewAllButton} onPress={handleViewAllSounds}>
+              <Text style={styles.viewAllText}>View All</Text>
+              <Text style={styles.viewAllArrow}>→</Text>
+            </TouchableOpacity>
+          </View>
+
+          {/* Sleep Sounds Horizontal Scroll */}
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.soundsScroll}
+          >
+            {sleepSoundsData.map((sound) => (
+              <TouchableOpacity
+                key={sound.id}
+                style={styles.soundCard}
+                onPress={() => handleSoundPress(sound)}
+                activeOpacity={0.7}
+              >
+                {/* Icon Circle */}
+                <View style={[styles.soundIconCircle, { backgroundColor: 'rgba(158, 181, 103, 0.15)' }]}>
+                  {renderSoundIcon(sound.icon)}
+
+                  {/* Premium Badge */}
+                  {sound.isPremium && (
+                    <View style={styles.premiumBadge}>
+                      <CrownIcon size={10} color="#FFFFFF" />
+                    </View>
+                  )}
+                </View>
+
+                {/* Sound Name */}
+                <Text
+                  style={[styles.soundName, { color: colors.text.primary }]}
+                  numberOfLines={1}
+                >
+                  {sound.name}
                 </Text>
               </TouchableOpacity>
             ))}
@@ -369,6 +493,45 @@ const styles = StyleSheet.create({
     fontSize: 12,
     paddingHorizontal: 12,
     paddingBottom: 12,
+  },
+
+  // Sleep Sounds Section
+  sleepSoundsSection: {
+    marginTop: 24,
+    paddingHorizontal: 20,
+  },
+  soundsScroll: {
+    paddingRight: 20,
+    gap: 16,
+  },
+  soundCard: {
+    alignItems: 'center',
+    width: 80,
+  },
+  soundIconCircle: {
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 8,
+    position: 'relative',
+  },
+  premiumBadge: {
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    width: 18,
+    height: 18,
+    borderRadius: 9,
+    backgroundColor: '#F5A623',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  soundName: {
+    fontSize: 12,
+    fontWeight: '500',
+    textAlign: 'center',
   },
 });
 

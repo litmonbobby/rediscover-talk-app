@@ -16,6 +16,7 @@ import { MeditationPlayerScreen } from '../../screens/meditation';
 import { JournalEntryScreen } from '../../screens/journal';
 import { ArticleDetailScreen } from '../../screens/articles';
 import { ChatScreen } from '../../screens/chat';
+import { FamilyScreen } from '../../screens/family/FamilyScreen';
 
 export type HomeStackParamList = {
   Home: undefined;
@@ -29,9 +30,10 @@ export type HomeStackParamList = {
   Affirmations: undefined;
   Breathwork: undefined;
   MeditationPlayer: { id: string; title: string; duration: string };
-  JournalEntry: { promptId?: string; prompt?: string } | undefined;
+  JournalEntry: { entryId?: string; promptId?: string; prompt?: string };
   ArticleDetail: { id: string; title: string; article?: any };
   Chat: undefined;
+  Family: undefined;
 };
 
 const Stack = createNativeStackNavigator<HomeStackParamList>();
@@ -80,9 +82,17 @@ export const HomeStackNavigator = () => {
       <Stack.Screen name="Affirmations" component={AffirmationsScreen} />
       <Stack.Screen name="Breathwork" component={BreathworkScreen} />
       <Stack.Screen name="MeditationPlayer" component={MeditationPlayerScreen} />
-      <Stack.Screen name="JournalEntry" component={JournalEntryScreen} />
+      <Stack.Screen
+        name="JournalEntry"
+        component={JournalEntryScreen}
+        options={{
+          presentation: 'modal',
+          animation: 'slide_from_bottom',
+        }}
+      />
       <Stack.Screen name="ArticleDetail" component={ArticleDetailScreen} />
       <Stack.Screen name="Chat" component={ChatScreen} />
+      <Stack.Screen name="Family" component={FamilyScreen} />
     </Stack.Navigator>
   );
 };

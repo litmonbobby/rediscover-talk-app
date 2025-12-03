@@ -1,6 +1,6 @@
 /**
  * Tab Navigator - Exact Figma Menu Bar Recreation
- * 5 tabs: Home, Explore, Sleep, Insights, Account
+ * 5 tabs: Home, Explore, Family, Insights, Account
  * Uses Figma-extracted Iconly icons
  */
 import React from 'react';
@@ -11,17 +11,14 @@ import { lightColors, darkColors } from '../theme';
 // Stack navigators for each tab
 import { HomeStackNavigator } from './stacks/HomeStack';
 import { ExploreStackNavigator } from './stacks/ExploreStack';
-import { SleepStackNavigator } from './stacks/SleepStack';
+import { FamilyStackNavigator } from './stacks/FamilyStack';
 import { InsightsStackNavigator } from './stacks/InsightsStack';
 import { ProfileStackNavigator } from './stacks/ProfileStack';
-
-// Moon icon SVG for Sleep tab (not in Iconly set)
-import { MoonIcon } from '../components/icons/MoonIcon';
 
 export type TabParamList = {
   HomeTab: undefined;
   ExploreTab: undefined;
-  SleepTab: undefined;
+  FamilyTab: undefined;
   InsightsTab: undefined;
   AccountTab: undefined;
 };
@@ -43,6 +40,10 @@ const icons = {
   explore: {
     outline: require('../figma-extracted/assets/components/icons/iconly-curved-outline-discovery.png'),
     bold: require('../figma-extracted/assets/components/icons/iconly-curved-bold-discovery.png'),
+  },
+  family: {
+    outline: require('../figma-extracted/assets/components/icons/iconly-curved-outline-2-user.png'),
+    bold: require('../figma-extracted/assets/components/icons/iconly-curved-bold-2-user.png'),
   },
   insights: {
     outline: require('../figma-extracted/assets/components/icons/iconly-curved-outline-activity.png'),
@@ -68,15 +69,6 @@ const TabIcon: React.FC<TabIconProps> = ({ focused, icon }) => (
       { tintColor: focused ? TAB_COLORS.active : TAB_COLORS.inactive },
     ]}
     resizeMode="contain"
-  />
-);
-
-// Sleep tab icon using SVG moon
-const SleepTabIcon: React.FC<{ focused: boolean }> = ({ focused }) => (
-  <MoonIcon
-    size={24}
-    color={focused ? TAB_COLORS.active : TAB_COLORS.inactive}
-    filled={focused}
   />
 );
 
@@ -126,11 +118,13 @@ export const TabNavigator = () => {
         }}
       />
       <Tab.Screen
-        name="SleepTab"
-        component={SleepStackNavigator}
+        name="FamilyTab"
+        component={FamilyStackNavigator}
         options={{
-          tabBarLabel: 'Sleep',
-          tabBarIcon: ({ focused }) => <SleepTabIcon focused={focused} />,
+          tabBarLabel: 'Family',
+          tabBarIcon: ({ focused }) => (
+            <TabIcon focused={focused} icon={icons.family} />
+          ),
         }}
       />
       <Tab.Screen

@@ -25,7 +25,7 @@ const CARD_WIDTH = (SCREEN_WIDTH - 56) / 2;
 
 type RootStackParamList = {
   MeditationLibrary: undefined;
-  MeditationPlayer: { id: string; title: string; duration: string };
+  MeditationPlayer: { id: string; title: string; duration: string; category: string; audioKey?: string };
 };
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'MeditationLibrary'>;
@@ -41,6 +41,7 @@ interface Meditation {
   category: Category;
   illustration: number;
   isFeatured?: boolean;
+  audioKey?: string;
 }
 
 // Illustrations
@@ -65,6 +66,7 @@ const meditations: Meditation[] = [
     category: 'Mindfulness',
     illustration: 1,
     isFeatured: true,
+    audioKey: 'introToMeditation',
   },
   {
     id: '2',
@@ -72,6 +74,7 @@ const meditations: Meditation[] = [
     duration: '10 mins',
     category: 'Mindfulness',
     illustration: 2,
+    audioKey: 'introToMeditation',
   },
   {
     id: '3',
@@ -79,6 +82,7 @@ const meditations: Meditation[] = [
     duration: '20 mins',
     category: 'Mindfulness',
     illustration: 3,
+    audioKey: 'introToMeditation',
   },
   {
     id: '4',
@@ -86,6 +90,7 @@ const meditations: Meditation[] = [
     duration: '15 mins',
     category: 'Stress Reduction',
     illustration: 4,
+    audioKey: 'introToMeditation',
   },
   {
     id: '5',
@@ -93,6 +98,7 @@ const meditations: Meditation[] = [
     duration: '12 mins',
     category: 'Sleep',
     illustration: 5,
+    audioKey: 'introToMeditation',
   },
   {
     id: '6',
@@ -100,6 +106,7 @@ const meditations: Meditation[] = [
     duration: '8 mins',
     category: 'Focus',
     illustration: 6,
+    audioKey: 'introToMeditation',
   },
   {
     id: '7',
@@ -107,13 +114,15 @@ const meditations: Meditation[] = [
     duration: '10 mins',
     category: 'Anxiety',
     illustration: 1,
+    audioKey: 'introToMeditation',
   },
   {
     id: '8',
-    title: 'Body Scan',
+    title: 'Gratitude Meditation',
     duration: '15 mins',
     category: 'Mindfulness',
     illustration: 2,
+    audioKey: 'gratitudeMeditation',
   },
 ];
 
@@ -144,6 +153,8 @@ export const MeditationLibraryScreen: React.FC = () => {
       id: meditation.id,
       title: meditation.title,
       duration: meditation.duration,
+      category: meditation.category,
+      audioKey: meditation.audioKey,
     });
   };
 

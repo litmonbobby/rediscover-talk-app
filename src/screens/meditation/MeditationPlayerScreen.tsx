@@ -1,6 +1,6 @@
 /**
- * Meditation Player Screen - Exact Figma Recreation
- * Proper React Native components with Figma-extracted assets
+ * Meditation Player Screen - With Real Audio Playback
+ * Uses expo-av for audio playback with Figma-inspired UI
  */
 
 import React, { useState, useEffect, useRef } from 'react';
@@ -13,16 +13,18 @@ import {
   SafeAreaView,
   StatusBar,
   Dimensions,
-  Animated,
+  Alert,
 } from 'react-native';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import Svg, { Path, Circle, G, Text as SvgText } from 'react-native-svg';
+import Svg, { Path } from 'react-native-svg';
 import { LinearGradient } from 'expo-linear-gradient';
+import { Audio, AVPlaybackStatus } from 'expo-av';
 import { useTheme } from '../../theme/useTheme';
 import { GlassCard } from '../../components/core/GlassCard';
+import { meditationSounds } from '../../../assets/audio';
 
-const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
+const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
 type MeditationStackParamList = {
   MeditationLibrary: undefined;
@@ -31,6 +33,7 @@ type MeditationStackParamList = {
     title?: string;
     duration?: number;
     category?: string;
+    audioKey?: string;
   };
   SleepSounds: undefined;
 };
@@ -40,15 +43,31 @@ type NavigationProp = NativeStackNavigationProp<MeditationStackParamList, 'Medit
 
 // Figma-extracted assets
 const assets = {
-  // Icons
-  closeSquare: require('../../figma-extracted/assets/components/icons/iconly-regular-bold-close-square.png'),
   heart: require('../../figma-extracted/assets/components/icons/iconly-curved-outline-heart.png'),
   heartFilled: require('../../figma-extracted/assets/components/icons/iconly-curved-bold-heart.png'),
   setting: require('../../figma-extracted/assets/components/icons/iconly-regular-bold-setting.png'),
   play: require('../../figma-extracted/assets/components/icons/iconly-regular-bold-play.png'),
+  meditationPerson: require('../../../assets/images/meditation-person.png'),
+};
 
-  // Meditation visualization illustration
-  meditationIllustration: require('../../figma-extracted/assets/components/illustrations/illustration-illustration-14-component-illustrations-set.png'),
+// Audio file mapping based on meditation title/key
+const getAudioSource = (title: string, audioKey?: string) => {
+  // Check by audioKey first
+  if (audioKey && meditationSounds[audioKey as keyof typeof meditationSounds]) {
+    return meditationSounds[audioKey as keyof typeof meditationSounds];
+  }
+
+  // Match by title
+  const titleLower = title.toLowerCase();
+  if (titleLower.includes('gratitude')) {
+    return meditationSounds.gratitudeMeditation;
+  }
+  if (titleLower.includes('intro') || titleLower.includes('morning') || titleLower.includes('beginner')) {
+    return meditationSounds.introToMeditation;
+  }
+
+  // Default to intro meditation
+  return meditationSounds.introToMeditation;
 };
 
 // Close Icon SVG
@@ -64,38 +83,6 @@ const CloseIcon: React.FC<{ size?: number; color?: string }> = ({ size = 24, col
   </Svg>
 );
 
-// Backward 15s Icon
-const BackwardIcon: React.FC<{ size?: number; color?: string }> = ({ size = 28, color = '#FFF' }) => (
-  <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
-    <Path
-      d="M11 19.5L4 12l7-7.5M4 12h16"
-      stroke={color}
-      strokeWidth={2}
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    />
-    <SvgText x="12" y="18" fill={color} fontSize="8" textAnchor="middle">
-      15
-    </SvgText>
-  </Svg>
-);
-
-// Forward 15s Icon
-const ForwardIcon: React.FC<{ size?: number; color?: string }> = ({ size = 28, color = '#FFF' }) => (
-  <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
-    <Path
-      d="M13 4.5L20 12l-7 7.5M20 12H4"
-      stroke={color}
-      strokeWidth={2}
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    />
-    <SvgText x="12" y="18" fill={color} fontSize="8" textAnchor="middle">
-      15
-    </SvgText>
-  </Svg>
-);
-
 // Pause Icon
 const PauseIcon: React.FC<{ size?: number; color?: string }> = ({ size = 32, color = '#1E1E3F' }) => (
   <Svg width={size} height={size} viewBox="0 0 24 24" fill={color}>
@@ -104,65 +91,105 @@ const PauseIcon: React.FC<{ size?: number; color?: string }> = ({ size = 32, col
 );
 
 // Format time helper
-const formatTime = (seconds: number): string => {
-  const mins = Math.floor(seconds / 60);
-  const secs = seconds % 60;
+const formatTime = (millis: number): string => {
+  if (isNaN(millis) || millis === null || millis === undefined) {
+    return '00:00';
+  }
+  const totalSecs = Math.max(0, Math.floor(millis / 1000));
+  const mins = Math.floor(totalSecs / 60);
+  const secs = totalSecs % 60;
   return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
 };
 
 export const MeditationPlayerScreen: React.FC = () => {
   const navigation = useNavigation<NavigationProp>();
   const route = useRoute<MeditationPlayerRouteProp>();
-  const { colors, isDarkMode } = useTheme();
 
   // Route params with defaults
-  const meditationTitle = route.params?.title || 'Morning Meditation';
-  const meditationDuration = route.params?.duration || 10; // minutes
+  const meditationTitle = route.params?.title || 'Introduction to Meditation';
   const meditationCategory = route.params?.category || 'Mindfulness';
+  const audioKey = route.params?.audioKey;
 
   // State
   const [isPlaying, setIsPlaying] = useState(false);
   const [isFavorite, setIsFavorite] = useState(false);
-  const [currentTime, setCurrentTime] = useState(0);
-  const totalSeconds = meditationDuration * 60;
+  const [currentPosition, setCurrentPosition] = useState(0);
+  const [duration, setDuration] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
 
-  // Animation for visualization
-  const pulseAnim = useRef(new Animated.Value(1)).current;
+  // Audio ref
+  const soundRef = useRef<Audio.Sound | null>(null);
 
-  // Timer effect when playing
+
+  // Initialize audio
   useEffect(() => {
-    let interval: NodeJS.Timeout;
-    if (isPlaying && currentTime < totalSeconds) {
-      interval = setInterval(() => {
-        setCurrentTime((prev) => Math.min(prev + 1, totalSeconds));
-      }, 1000);
-    }
-    return () => clearInterval(interval);
-  }, [isPlaying, currentTime, totalSeconds]);
+    const initAudio = async () => {
+      try {
+        setIsLoading(true);
+        setLoadError(null);
 
-  // Pulse animation when playing
-  useEffect(() => {
-    if (isPlaying) {
-      Animated.loop(
-        Animated.sequence([
-          Animated.timing(pulseAnim, {
-            toValue: 1.08,
-            duration: 2000,
-            useNativeDriver: true,
-          }),
-          Animated.timing(pulseAnim, {
-            toValue: 1,
-            duration: 2000,
-            useNativeDriver: true,
-          }),
-        ])
-      ).start();
-    } else {
-      pulseAnim.setValue(1);
-    }
-  }, [isPlaying, pulseAnim]);
+        // Configure audio mode
+        await Audio.setAudioModeAsync({
+          allowsRecordingIOS: false,
+          playsInSilentModeIOS: true,
+          staysActiveInBackground: true,
+          shouldDuckAndroid: true,
+        });
 
-  const handleClose = () => {
+        // Get the audio source
+        const audioSource = getAudioSource(meditationTitle, audioKey);
+
+        // Create and load the sound
+        const { sound, status } = await Audio.Sound.createAsync(
+          audioSource,
+          { shouldPlay: false },
+          onPlaybackStatusUpdate
+        );
+
+        soundRef.current = sound;
+
+        if (status.isLoaded) {
+          setDuration(status.durationMillis || 0);
+          setIsLoading(false);
+        }
+      } catch (error) {
+        console.error('Error loading audio:', error);
+        setLoadError('Failed to load audio');
+        setIsLoading(false);
+      }
+    };
+
+    initAudio();
+
+    // Cleanup
+    return () => {
+      if (soundRef.current) {
+        soundRef.current.unloadAsync();
+      }
+    };
+  }, [meditationTitle, audioKey]);
+
+  // Playback status update handler
+  const onPlaybackStatusUpdate = (status: AVPlaybackStatus) => {
+    if (status.isLoaded) {
+      setCurrentPosition(status.positionMillis);
+      setDuration(status.durationMillis || 0);
+      setIsPlaying(status.isPlaying);
+
+      if (status.didJustFinish) {
+        setIsPlaying(false);
+        setCurrentPosition(0);
+        soundRef.current?.setPositionAsync(0);
+      }
+    }
+  };
+
+
+  const handleClose = async () => {
+    if (soundRef.current) {
+      await soundRef.current.stopAsync();
+    }
     navigation.goBack();
   };
 
@@ -171,26 +198,46 @@ export const MeditationPlayerScreen: React.FC = () => {
   };
 
   const handleSettings = () => {
-    console.log('Settings pressed');
+    Alert.alert('Settings', 'Audio settings coming soon');
   };
 
-  const handleRewind = () => {
-    setCurrentTime(Math.max(0, currentTime - 15));
+  const handleRewind = async () => {
+    if (soundRef.current) {
+      const newPosition = Math.max(0, currentPosition - 15000);
+      await soundRef.current.setPositionAsync(newPosition);
+    }
   };
 
-  const handlePlayPause = () => {
-    setIsPlaying(!isPlaying);
+  const handlePlayPause = async () => {
+    if (!soundRef.current) {
+      Alert.alert('Error', 'Audio not loaded yet');
+      return;
+    }
+
+    try {
+      if (isPlaying) {
+        await soundRef.current.pauseAsync();
+      } else {
+        await soundRef.current.playAsync();
+      }
+    } catch (error) {
+      console.error('Playback error:', error);
+      Alert.alert('Error', 'Failed to play audio');
+    }
   };
 
-  const handleForward = () => {
-    setCurrentTime(Math.min(totalSeconds, currentTime + 15));
+  const handleForward = async () => {
+    if (soundRef.current) {
+      const newPosition = Math.min(duration, currentPosition + 15000);
+      await soundRef.current.setPositionAsync(newPosition);
+    }
   };
 
   const handleEditSounds = () => {
-    console.log('Edit sounds pressed');
+    Alert.alert('Edit Sounds', 'Background sounds mixing coming soon');
   };
 
-  const progress = currentTime / totalSeconds;
+  const progress = duration > 0 ? currentPosition / duration : 0;
 
   return (
     <View style={styles.container}>
@@ -239,29 +286,25 @@ export const MeditationPlayerScreen: React.FC = () => {
 
           {/* Visualization */}
           <View style={styles.visualizationContainer}>
-            <Animated.View
-              style={[
-                styles.visualizationCircle,
-                { transform: [{ scale: pulseAnim }] },
-              ]}
-            >
-              <LinearGradient
-                colors={['rgba(158, 181, 103, 0.3)', 'rgba(158, 181, 103, 0.1)']}
-                style={styles.visualizationGradient}
-              >
-                <Image
-                  source={assets.meditationIllustration}
-                  style={styles.visualizationImage}
-                  resizeMode="contain"
-                />
-              </LinearGradient>
-            </Animated.View>
+            <Image
+              source={assets.meditationPerson}
+              style={styles.visualizationImage}
+              resizeMode="contain"
+            />
 
             {/* Timer Display */}
             <View style={styles.timerContainer}>
-              <Text style={styles.currentTime}>{formatTime(currentTime)}</Text>
-              <Text style={styles.totalTime}>/ {formatTime(totalSeconds)}</Text>
+              <Text style={styles.currentTime}>{formatTime(currentPosition)}</Text>
+              <Text style={styles.totalTime}>/ {formatTime(duration)}</Text>
             </View>
+
+            {/* Loading/Error State */}
+            {isLoading && (
+              <Text style={styles.loadingText}>Loading audio...</Text>
+            )}
+            {loadError && (
+              <Text style={styles.errorText}>{loadError}</Text>
+            )}
           </View>
 
           {/* Progress Bar */}
@@ -270,17 +313,18 @@ export const MeditationPlayerScreen: React.FC = () => {
               <View style={[styles.progressFill, { width: `${progress * 100}%` }]} />
             </View>
             <View style={styles.progressTimes}>
-              <Text style={styles.progressTimeText}>{formatTime(currentTime)}</Text>
-              <Text style={styles.progressTimeText}>{formatTime(totalSeconds)}</Text>
+              <Text style={styles.progressTimeText}>{formatTime(currentPosition)}</Text>
+              <Text style={styles.progressTimeText}>{formatTime(duration)}</Text>
             </View>
           </View>
 
-          {/* Controls - Liquid Glass */}
-          <GlassCard variant="clear" style={styles.controlsCard} padding={24} borderRadius={32}>
+          {/* Controls */}
+          <GlassCard variant="clear" style={styles.controlsCard} padding={20} borderRadius={32}>
             <View style={styles.controlsRow}>
+              {/* Rewind Button */}
               <TouchableOpacity style={styles.skipButton} onPress={handleRewind}>
                 <View style={styles.skipButtonInner}>
-                  <Svg width={24} height={24} viewBox="0 0 24 24" fill="none">
+                  <Svg width={28} height={28} viewBox="0 0 24 24" fill="none">
                     <Path
                       d="M12.5 8V4L6 10l6.5 6v-4c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H5c0 4.41 3.59 8 8 8s8-3.59 8-8-3.59-8-8-8z"
                       fill="#FFFFFF"
@@ -290,7 +334,12 @@ export const MeditationPlayerScreen: React.FC = () => {
                 </View>
               </TouchableOpacity>
 
-              <TouchableOpacity style={styles.playPauseButton} onPress={handlePlayPause}>
+              {/* Play/Pause Button */}
+              <TouchableOpacity
+                style={[styles.playPauseButton, isLoading && styles.playPauseDisabled]}
+                onPress={handlePlayPause}
+                disabled={isLoading}
+              >
                 {isPlaying ? (
                   <PauseIcon size={32} color="#1E1E3F" />
                 ) : (
@@ -302,9 +351,10 @@ export const MeditationPlayerScreen: React.FC = () => {
                 )}
               </TouchableOpacity>
 
+              {/* Forward Button */}
               <TouchableOpacity style={styles.skipButton} onPress={handleForward}>
                 <View style={styles.skipButtonInner}>
-                  <Svg width={24} height={24} viewBox="0 0 24 24" fill="none">
+                  <Svg width={28} height={28} viewBox="0 0 24 24" fill="none">
                     <Path
                       d="M11.5 8V4L18 10l-6.5 6v-4c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6h1.5c0 4.41-3.59 8-8 8s-8-3.59-8-8 3.59-8 8-8z"
                       fill="#FFFFFF"
@@ -316,17 +366,10 @@ export const MeditationPlayerScreen: React.FC = () => {
             </View>
           </GlassCard>
 
-          {/* Edit Sounds Button - Liquid Glass */}
-          <GlassCard
-            variant="regular"
-            style={styles.editSoundsCard}
-            onPress={handleEditSounds}
-            padding={16}
-            borderRadius={28}
-            interactive
-          >
+          {/* Edit Sounds Button */}
+          <TouchableOpacity style={styles.editSoundsButton} onPress={handleEditSounds}>
             <Text style={styles.editSoundsText}>Edit Sounds</Text>
-          </GlassCard>
+          </TouchableOpacity>
         </View>
       </SafeAreaView>
     </View>
@@ -370,13 +413,12 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
     paddingHorizontal: 24,
-    justifyContent: 'space-between',
   },
 
   // Title Section
   titleSection: {
     alignItems: 'center',
-    marginBottom: 20,
+    marginBottom: 16,
   },
   category: {
     fontSize: 14,
@@ -387,7 +429,7 @@ const styles = StyleSheet.create({
     letterSpacing: 1,
   },
   title: {
-    fontSize: 28,
+    fontSize: 26,
     fontWeight: '700',
     color: '#FFFFFF',
     textAlign: 'center',
@@ -398,46 +440,42 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     flex: 1,
-    marginVertical: 20,
-  },
-  visualizationCircle: {
-    width: SCREEN_WIDTH * 0.7,
-    height: SCREEN_WIDTH * 0.7,
-    borderRadius: SCREEN_WIDTH * 0.35,
-    overflow: 'hidden',
-  },
-  visualizationGradient: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: SCREEN_WIDTH * 0.35,
-    borderWidth: 2,
-    borderColor: 'rgba(158, 181, 103, 0.4)',
+    marginVertical: 16,
   },
   visualizationImage: {
-    width: SCREEN_WIDTH * 0.5,
-    height: SCREEN_WIDTH * 0.5,
+    width: SCREEN_WIDTH * 0.6,
+    height: SCREEN_WIDTH * 0.6,
   },
   timerContainer: {
     flexDirection: 'row',
     alignItems: 'baseline',
-    marginTop: 24,
+    marginTop: 20,
   },
   currentTime: {
-    fontSize: 48,
+    fontSize: 44,
     fontWeight: '300',
     color: '#FFFFFF',
   },
   totalTime: {
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: '300',
     color: 'rgba(255, 255, 255, 0.5)',
     marginLeft: 4,
   },
+  loadingText: {
+    marginTop: 12,
+    fontSize: 14,
+    color: 'rgba(255, 255, 255, 0.6)',
+  },
+  errorText: {
+    marginTop: 12,
+    fontSize: 14,
+    color: '#FF6B6B',
+  },
 
   // Progress Bar
   progressContainer: {
-    marginBottom: 32,
+    marginBottom: 24,
   },
   progressBackground: {
     height: 4,
@@ -460,37 +498,36 @@ const styles = StyleSheet.create({
     color: 'rgba(255, 255, 255, 0.6)',
   },
 
-  // Controls - Liquid Glass
+  // Controls
   controlsCard: {
-    marginBottom: 24,
-    marginHorizontal: 24,
+    marginBottom: 16,
   },
   controlsRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 32,
   },
   skipButton: {
-    width: 60,
-    height: 60,
+    width: 64,
+    height: 64,
     alignItems: 'center',
     justifyContent: 'center',
+    marginHorizontal: 16,
   },
   skipButtonInner: {
     alignItems: 'center',
     justifyContent: 'center',
   },
   skipText: {
-    fontSize: 10,
+    fontSize: 11,
     fontWeight: '600',
     color: '#FFFFFF',
-    marginTop: -4,
+    marginTop: -2,
   },
   playPauseButton: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
+    width: 72,
+    height: 72,
+    borderRadius: 36,
     backgroundColor: '#9EB567',
     alignItems: 'center',
     justifyContent: 'center',
@@ -499,19 +536,28 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.4,
     shadowRadius: 12,
     elevation: 8,
+    marginHorizontal: 20,
+  },
+  playPauseDisabled: {
+    opacity: 0.6,
   },
   playIcon: {
-    width: 32,
-    height: 32,
+    width: 28,
+    height: 28,
     tintColor: '#1E1E3F',
-    marginLeft: 4, // Offset for visual balance
+    marginLeft: 3,
   },
 
-  // Edit Sounds Button - Liquid Glass
-  editSoundsCard: {
+  // Edit Sounds Button
+  editSoundsButton: {
     alignItems: 'center',
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    paddingVertical: 14,
+    paddingHorizontal: 24,
+    borderRadius: 24,
     marginBottom: 24,
-    marginHorizontal: 24,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.15)',
   },
   editSoundsText: {
     fontSize: 16,

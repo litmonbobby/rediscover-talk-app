@@ -1,6 +1,7 @@
 /**
  * Sleep Sounds Screen - Exact Figma Recreation
  * Matches 95-light-sleep-sounds.png design
+ * Comprehensive sleep sound library with 24 ambient sounds
  */
 
 import React, { useState } from 'react';
@@ -32,6 +33,17 @@ import {
   SoundBarsIcon,
   PlanetIcon,
   CrownIcon,
+  BirdsIcon,
+  CricketsIcon,
+  WaterfallIcon,
+  CafeIcon,
+  TrainIcon,
+  FanIcon,
+  WavesIcon,
+  HeartbeatIcon,
+  LeavesIcon,
+  BellIcon,
+  SnowflakeIcon,
 } from '../../components/icons';
 
 const { width } = Dimensions.get('window');
@@ -48,15 +60,15 @@ type NavigationProp = NativeStackNavigationProp<SleepStackParamList, 'SleepSound
 
 // Figma-extracted icons
 const assets = {
-  logo: require('../../figma-extracted/assets/components/icons/iconly-curved-bold-category.png'),
+  logo: require('../../../assets/icon.png'),
   search: require('../../figma-extracted/assets/components/icons/iconly-curved-outline-search.png'),
 };
 
-// Main tabs data
+// Main tabs data (Music and Stories hidden for now)
 const mainTabs = [
   { id: 'sounds', label: 'Sounds' },
-  { id: 'music', label: 'Music' },
-  { id: 'stories', label: 'Stories' },
+  // { id: 'music', label: 'Music' },      // Coming soon
+  // { id: 'stories', label: 'Stories' },  // Coming soon
 ];
 
 // Filter categories
@@ -64,35 +76,59 @@ const filterCategories = [
   { id: 'all', label: 'All' },
   { id: 'popular', label: 'Popular' },
   { id: 'nature', label: 'Nature' },
-  { id: 'traffic', label: 'Traffic' },
-  { id: 'space', label: 'Space' },
   { id: 'ambient', label: 'Ambient' },
+  { id: 'whitenoise', label: 'White Noise' },
+  { id: 'space', label: 'Space' },
 ];
 
 // Sound types with their corresponding icons
-type SoundIconType = 'rain' | 'dream' | 'wind' | 'fire' | 'thunder' | 'forest' | 'river' | 'melody' | 'ocean' | 'mountain' | 'soundBars' | 'planet';
+type SoundIconType =
+  | 'rain' | 'dream' | 'wind' | 'fire' | 'thunder' | 'forest'
+  | 'river' | 'melody' | 'ocean' | 'mountain' | 'soundBars' | 'planet'
+  | 'birds' | 'crickets' | 'waterfall' | 'cafe' | 'train' | 'fan'
+  | 'waves' | 'heartbeat' | 'leaves' | 'bell' | 'snowflake';
 
 interface SoundItem {
   id: string;
   name: string;
   icon: SoundIconType;
   isPremium: boolean;
+  category: string;
 }
 
-// Sound data matching Figma design
+// Complete sound library - 24 sounds
 const soundsData: SoundItem[] = [
-  { id: '1', name: 'Heavy Rain', icon: 'rain', isPremium: false },
-  { id: '2', name: 'Dream 2', icon: 'dream', isPremium: false },
-  { id: '3', name: 'Wind', icon: 'wind', isPremium: false },
-  { id: '4', name: 'Fire 3', icon: 'fire', isPremium: false },
-  { id: '5', name: 'Thunder', icon: 'thunder', isPremium: false },
-  { id: '6', name: 'Forest 2', icon: 'forest', isPremium: true },
-  { id: '7', name: 'River', icon: 'river', isPremium: true },
-  { id: '8', name: 'Melody 3', icon: 'melody', isPremium: false },
-  { id: '9', name: 'Ocean', icon: 'ocean', isPremium: true },
-  { id: '10', name: 'Mountains', icon: 'mountain', isPremium: true },
-  { id: '11', name: 'Sound Bars', icon: 'soundBars', isPremium: false },
-  { id: '12', name: 'Planet', icon: 'planet', isPremium: true },
+  // Nature Sounds
+  { id: '1', name: 'Heavy Rain', icon: 'rain', isPremium: false, category: 'nature' },
+  { id: '2', name: 'Gentle Wind', icon: 'wind', isPremium: false, category: 'nature' },
+  { id: '3', name: 'Thunder Storm', icon: 'thunder', isPremium: false, category: 'nature' },
+  { id: '4', name: 'Forest Birds', icon: 'forest', isPremium: false, category: 'nature' },
+  { id: '5', name: 'Flowing River', icon: 'river', isPremium: false, category: 'nature' },
+  { id: '6', name: 'Ocean Waves', icon: 'ocean', isPremium: false, category: 'nature' },
+  { id: '7', name: 'Mountain Wind', icon: 'mountain', isPremium: true, category: 'nature' },
+  { id: '8', name: 'Bird Song', icon: 'birds', isPremium: false, category: 'nature' },
+  { id: '9', name: 'Night Crickets', icon: 'crickets', isPremium: false, category: 'nature' },
+  { id: '10', name: 'Waterfall', icon: 'waterfall', isPremium: true, category: 'nature' },
+  { id: '11', name: 'Gentle Waves', icon: 'waves', isPremium: false, category: 'nature' },
+  { id: '12', name: 'Rustling Leaves', icon: 'leaves', isPremium: false, category: 'nature' },
+
+  // Ambient Sounds
+  { id: '13', name: 'Cozy Fireplace', icon: 'fire', isPremium: false, category: 'ambient' },
+  { id: '14', name: 'Dream Ambience', icon: 'dream', isPremium: false, category: 'ambient' },
+  { id: '15', name: 'Soft Melody', icon: 'melody', isPremium: false, category: 'ambient' },
+  { id: '16', name: 'Cafe Sounds', icon: 'cafe', isPremium: true, category: 'ambient' },
+  { id: '17', name: 'Train Journey', icon: 'train', isPremium: true, category: 'ambient' },
+  { id: '18', name: 'Wind Chimes', icon: 'bell', isPremium: false, category: 'ambient' },
+  { id: '19', name: 'Heartbeat', icon: 'heartbeat', isPremium: false, category: 'ambient' },
+  { id: '20', name: 'Winter Snow', icon: 'snowflake', isPremium: true, category: 'ambient' },
+
+  // White Noise
+  { id: '21', name: 'White Noise', icon: 'soundBars', isPremium: false, category: 'whitenoise' },
+  { id: '22', name: 'Fan Sound', icon: 'fan', isPremium: false, category: 'whitenoise' },
+
+  // Space Sounds
+  { id: '23', name: 'Cosmic Space', icon: 'planet', isPremium: true, category: 'space' },
+  { id: '24', name: 'Deep Space', icon: 'planet', isPremium: true, category: 'space' },
 ];
 
 // Icon component mapping
@@ -109,13 +145,24 @@ const IconComponents: Record<SoundIconType, React.FC<{ size?: number; color?: st
   mountain: MountainIcon,
   soundBars: SoundBarsIcon,
   planet: PlanetIcon,
+  birds: BirdsIcon,
+  crickets: CricketsIcon,
+  waterfall: WaterfallIcon,
+  cafe: CafeIcon,
+  train: TrainIcon,
+  fan: FanIcon,
+  waves: WavesIcon,
+  heartbeat: HeartbeatIcon,
+  leaves: LeavesIcon,
+  bell: BellIcon,
+  snowflake: SnowflakeIcon,
 };
 
 export const SleepSoundsScreen: React.FC = () => {
   const navigation = useNavigation<NavigationProp>();
   const { colors, isDarkMode } = useTheme();
   const [activeTab, setActiveTab] = useState('sounds');
-  const [activeFilter, setActiveFilter] = useState('popular');
+  const [activeFilter, setActiveFilter] = useState('all');
 
   const handleSoundPress = (sound: SoundItem) => {
     navigation.navigate('SoundPlayer', {
@@ -139,6 +186,13 @@ export const SleepSoundsScreen: React.FC = () => {
     return <IconComponent size={32} color="#9EB567" />;
   };
 
+  // Filter sounds based on active filter
+  const filteredSounds = activeFilter === 'all'
+    ? soundsData
+    : activeFilter === 'popular'
+      ? soundsData.filter(s => !s.isPremium).slice(0, 12) // First 12 free sounds
+      : soundsData.filter(s => s.category === activeFilter);
+
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background.primary }]}>
       <StatusBar
@@ -155,7 +209,7 @@ export const SleepSoundsScreen: React.FC = () => {
         <View style={styles.header}>
           <Image
             source={assets.logo}
-            style={[styles.headerLogo, { tintColor: '#9EB567' }]}
+            style={styles.headerLogo}
             resizeMode="contain"
           />
           <Text style={[styles.headerTitle, { color: colors.text.primary }]}>
@@ -225,9 +279,16 @@ export const SleepSoundsScreen: React.FC = () => {
           ))}
         </ScrollView>
 
+        {/* Sound Count */}
+        <View style={styles.soundCountContainer}>
+          <Text style={[styles.soundCount, { color: colors.text.secondary }]}>
+            {filteredSounds.length} sounds available
+          </Text>
+        </View>
+
         {/* Sound Grid */}
         <View style={styles.soundGrid}>
-          {soundsData.map((sound) => (
+          {filteredSounds.map((sound) => (
             <TouchableOpacity
               key={sound.id}
               style={styles.soundCard}
@@ -322,7 +383,7 @@ const styles = StyleSheet.create({
   // Filter Pills
   filterContainer: {
     paddingHorizontal: 20,
-    paddingBottom: 20,
+    paddingBottom: 16,
     gap: 8,
   },
   filterPill: {
@@ -334,6 +395,16 @@ const styles = StyleSheet.create({
   },
   filterPillText: {
     fontSize: 14,
+    fontWeight: '500',
+  },
+
+  // Sound Count
+  soundCountContainer: {
+    paddingHorizontal: 20,
+    marginBottom: 12,
+  },
+  soundCount: {
+    fontSize: 13,
     fontWeight: '500',
   },
 

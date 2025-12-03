@@ -10,8 +10,6 @@ export { MyBadgesScreen } from './MyBadgesScreen';
 export { DailyReminderScreen } from './DailyReminderScreen';
 export { PreferencesScreen } from './PreferencesScreen';
 export { AccountSecurityScreen } from './AccountSecurityScreen';
-export { BillingScreen } from './BillingScreen';
-export { LinkedAccountsScreen } from './LinkedAccountsScreen';
 export { AppAppearanceScreen } from './AppAppearanceScreen';
 export { DataAnalyticsScreen } from './DataAnalyticsScreen';
 export { AppleHealthScreen } from './AppleHealthScreen';

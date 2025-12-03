@@ -34,7 +34,7 @@ type NavigationProp = NativeStackNavigationProp<MoodHistoryStackParamList, 'Mood
 
 // Figma-extracted assets
 const assets = {
-  logo: require('../../figma-extracted/assets/components/icons/iconly-regular-bold-category.png'),
+  logo: require('../../../assets/icon.png'),
   arrowLeft: require('../../figma-extracted/assets/components/icons/iconly-regular-bold-arrow-left.png'),
   calendar: require('../../figma-extracted/assets/components/icons/iconly-regular-bold-calendar.png'),
   moodBad: require('../../figma-extracted/assets/components/mood-indicators/mood-bad-component-mood-indicator.png'),

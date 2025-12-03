@@ -1,9 +1,9 @@
 /**
- * Journal Entry Screen - Exact Figma Recreation
- * Proper React Native components with Figma-extracted assets
+ * Journal Entry Screen - Create/Edit Journal Entries
+ * Full functionality with persistence
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -17,31 +17,36 @@ import {
   Platform,
   ScrollView,
   Dimensions,
+  Alert,
 } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import Svg, { Path } from 'react-native-svg';
 import { useTheme } from '../../theme/useTheme';
+import {
+  journalStorageService,
+  JournalEntry,
+  MoodType,
+} from '../../services/JournalStorageService';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
 type JournalStackParamList = {
   JournalList: undefined;
-  JournalEntry: { entryId?: string };
+  JournalEntry: { entryId?: string; promptId?: string; prompt?: string };
 };
 
 type NavigationProp = NativeStackNavigationProp<JournalStackParamList, 'JournalEntry'>;
+type JournalEntryRouteProp = RouteProp<JournalStackParamList, 'JournalEntry'>;
 
 // Figma-extracted assets
 const assets = {
   // Icons
-  closeSquare: require('../../figma-extracted/assets/components/icons/iconly-regular-bold-close-square.png'),
   moreCircle: require('../../figma-extracted/assets/components/icons/iconly-regular-bold-more-circle.png'),
   plus: require('../../figma-extracted/assets/components/icons/iconly-regular-bold-plus.png'),
   voice: require('../../figma-extracted/assets/components/icons/iconly-regular-bold-voice.png'),
   camera: require('../../figma-extracted/assets/components/icons/iconly-regular-bold-camera.png'),
   edit: require('../../figma-extracted/assets/components/icons/iconly-regular-bold-edit.png'),
-  image: require('../../figma-extracted/assets/components/icons/iconly-regular-bold-image.png'),
 
   // Mood indicators
   moodGreat: require('../../figma-extracted/assets/components/mood-indicators/mood-great-component-mood-indicator.png'),
@@ -50,9 +55,6 @@ const assets = {
   moodNotGood: require('../../figma-extracted/assets/components/mood-indicators/mood-not-good-component-mood-indicator.png'),
   moodBad: require('../../figma-extracted/assets/components/mood-indicators/mood-bad-component-mood-indicator.png'),
 };
-
-// Mood types
-type MoodType = 'great' | 'good' | 'okay' | 'notGood' | 'bad';
 
 interface MoodOption {
   type: MoodType;
@@ -84,20 +86,89 @@ const CloseIcon: React.FC<{ size?: number; color?: string }> = ({ size = 24, col
 
 export const JournalEntryScreen: React.FC = () => {
   const navigation = useNavigation<NavigationProp>();
+  const route = useRoute<JournalEntryRouteProp>();
   const { colors, isDarkMode } = useTheme();
 
-  const [selectedMood, setSelectedMood] = useState<MoodType | null>(null);
+  const { entryId, promptId, prompt } = route.params || {};
+  const isEditing = !!entryId;
+
+  const [selectedMood, setSelectedMood] = useState<MoodType>(null);
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
+  const [isSaving, setIsSaving] = useState(false);
+  const [existingEntry, setExistingEntry] = useState<JournalEntry | null>(null);
+
+  // Load existing entry if editing
+  useEffect(() => {
+    const loadEntry = async () => {
+      if (entryId) {
+        const entry = await journalStorageService.getJournalEntry(entryId);
+        if (entry) {
+          setExistingEntry(entry);
+          setTitle(entry.title);
+          setContent(entry.content);
+          setSelectedMood(entry.mood);
+        }
+      }
+    };
+    loadEntry();
+  }, [entryId]);
 
   const handleClose = () => {
-    navigation.goBack();
+    if (title.trim() || content.trim()) {
+      Alert.alert(
+        'Discard Entry?',
+        'You have unsaved changes. Are you sure you want to discard them?',
+        [
+          { text: 'Keep Editing', style: 'cancel' },
+          { text: 'Discard', style: 'destructive', onPress: () => navigation.goBack() },
+        ]
+      );
+    } else {
+      navigation.goBack();
+    }
   };
 
-  const handleSave = () => {
-    if (title.trim() || content.trim()) {
-      console.log('Saving entry:', { title, content, mood: selectedMood });
+  const handleSave = async () => {
+    if (isSaving) return;
+
+    if (!title.trim() && !content.trim()) {
+      Alert.alert('Empty Entry', 'Please add a title or write something before saving.');
+      return;
+    }
+
+    setIsSaving(true);
+
+    try {
+      if (isEditing && existingEntry) {
+        // Update existing entry
+        await journalStorageService.updateJournalEntry(entryId!, {
+          title: title.trim(),
+          content: content.trim(),
+          mood: selectedMood,
+        });
+      } else {
+        // Create new entry
+        await journalStorageService.saveJournalEntry({
+          title: title.trim() || (prompt ? 'Prompt Response' : 'Untitled Entry'),
+          content: content.trim(),
+          mood: selectedMood,
+          promptId: promptId,
+          promptQuestion: prompt,
+        });
+
+        // If answering a prompt, also save the prompt answer
+        if (promptId && content.trim()) {
+          await journalStorageService.savePromptAnswer(promptId, content.trim());
+        }
+      }
+
       navigation.goBack();
+    } catch (error) {
+      console.error('Error saving entry:', error);
+      Alert.alert('Error', 'Failed to save your entry. Please try again.');
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -106,23 +177,23 @@ export const JournalEntryScreen: React.FC = () => {
   };
 
   const handleMoreOptions = () => {
-    console.log('More options pressed');
-  };
-
-  const handleAttachment = () => {
-    console.log('Attachment pressed');
-  };
-
-  const handleVoice = () => {
-    console.log('Voice pressed');
-  };
-
-  const handleCamera = () => {
-    console.log('Camera pressed');
-  };
-
-  const handleFormat = () => {
-    console.log('Format pressed');
+    if (isEditing) {
+      Alert.alert(
+        'Options',
+        'What would you like to do?',
+        [
+          { text: 'Cancel', style: 'cancel' },
+          {
+            text: 'Delete Entry',
+            style: 'destructive',
+            onPress: async () => {
+              await journalStorageService.deleteJournalEntry(entryId!);
+              navigation.goBack();
+            },
+          },
+        ]
+      );
+    }
   };
 
   const canSave = title.trim().length > 0 || content.trim().length > 0;
@@ -145,7 +216,7 @@ export const JournalEntryScreen: React.FC = () => {
           </TouchableOpacity>
 
           <Text style={[styles.headerTitle, { color: colors.text.primary }]}>
-            New Entry
+            {isEditing ? 'Edit Entry' : 'New Entry'}
           </Text>
 
           <View style={styles.headerRight}>
@@ -155,7 +226,7 @@ export const JournalEntryScreen: React.FC = () => {
                 { backgroundColor: canSave ? '#9EB567' : colors.background.secondary },
               ]}
               onPress={handleSave}
-              disabled={!canSave}
+              disabled={!canSave || isSaving}
             >
               <Text
                 style={[
@@ -163,16 +234,18 @@ export const JournalEntryScreen: React.FC = () => {
                   { color: canSave ? '#FFFFFF' : colors.text.tertiary },
                 ]}
               >
-                Save
+                {isSaving ? 'Saving...' : 'Save'}
               </Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.headerButton} onPress={handleMoreOptions}>
-              <Image
-                source={assets.moreCircle}
-                style={[styles.headerIcon, { tintColor: colors.text.primary }]}
-                resizeMode="contain"
-              />
-            </TouchableOpacity>
+            {isEditing && (
+              <TouchableOpacity style={styles.headerButton} onPress={handleMoreOptions}>
+                <Image
+                  source={assets.moreCircle}
+                  style={[styles.headerIcon, { tintColor: colors.text.primary }]}
+                  resizeMode="contain"
+                />
+              </TouchableOpacity>
+            )}
           </View>
         </View>
 
@@ -182,6 +255,18 @@ export const JournalEntryScreen: React.FC = () => {
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
         >
+          {/* Prompt Display */}
+          {prompt && (
+            <View style={[styles.promptBanner, { backgroundColor: colors.primary.light }]}>
+              <Text style={[styles.promptLabel, { color: colors.primary.main }]}>
+                Prompt
+              </Text>
+              <Text style={[styles.promptText, { color: colors.text.primary }]}>
+                {prompt}
+              </Text>
+            </View>
+          )}
+
           {/* Mood Selection Section */}
           <View style={styles.moodSection}>
             <Text style={[styles.sectionLabel, { color: colors.text.secondary }]}>
@@ -241,7 +326,7 @@ export const JournalEntryScreen: React.FC = () => {
           <View style={styles.contentSection}>
             <TextInput
               style={[styles.contentInput, { color: colors.text.primary }]}
-              placeholder="Write your thoughts..."
+              placeholder={prompt ? "Write your response..." : "Write your thoughts..."}
               placeholderTextColor={colors.text.tertiary}
               value={content}
               onChangeText={setContent}
@@ -261,7 +346,7 @@ export const JournalEntryScreen: React.FC = () => {
 
         {/* Bottom Toolbar */}
         <View style={[styles.toolbar, { backgroundColor: colors.background.card, borderTopColor: colors.border.light }]}>
-          <TouchableOpacity style={styles.toolbarButton} onPress={handleAttachment}>
+          <TouchableOpacity style={styles.toolbarButton} onPress={() => {}}>
             <Image
               source={assets.plus}
               style={[styles.toolbarIcon, { tintColor: colors.text.secondary }]}
@@ -269,7 +354,7 @@ export const JournalEntryScreen: React.FC = () => {
             />
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.toolbarButton} onPress={handleVoice}>
+          <TouchableOpacity style={styles.toolbarButton} onPress={() => {}}>
             <Image
               source={assets.voice}
               style={[styles.toolbarIcon, { tintColor: colors.text.secondary }]}
@@ -277,7 +362,7 @@ export const JournalEntryScreen: React.FC = () => {
             />
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.toolbarButton} onPress={handleCamera}>
+          <TouchableOpacity style={styles.toolbarButton} onPress={() => {}}>
             <Image
               source={assets.camera}
               style={[styles.toolbarIcon, { tintColor: colors.text.secondary }]}
@@ -285,7 +370,7 @@ export const JournalEntryScreen: React.FC = () => {
             />
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.toolbarButton} onPress={handleFormat}>
+          <TouchableOpacity style={styles.toolbarButton} onPress={() => {}}>
             <Image
               source={assets.edit}
               style={[styles.toolbarIcon, { tintColor: colors.text.secondary }]}
@@ -351,6 +436,26 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     paddingBottom: 24,
+  },
+
+  // Prompt Banner
+  promptBanner: {
+    marginHorizontal: 20,
+    marginTop: 16,
+    padding: 16,
+    borderRadius: 12,
+  },
+  promptLabel: {
+    fontSize: 12,
+    fontWeight: '600',
+    marginBottom: 8,
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+  },
+  promptText: {
+    fontSize: 16,
+    fontWeight: '500',
+    lineHeight: 24,
   },
 
   // Mood Section

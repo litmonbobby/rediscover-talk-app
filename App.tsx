@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { View, ActivityIndicator, StyleSheet, Text } from 'react-native';
 import * as SplashScreen from 'expo-splash-screen';
@@ -7,12 +7,31 @@ import { AppNavigator } from './src/navigation/AppNavigator';
 import { ThemeProvider } from './src/theme/ThemeContext';
 import { useFonts } from './src/hooks/useFonts';
 import { colors } from './src/constants/design-system';
+import { revenueCatService } from './src/services/RevenueCatService';
+import { logger } from './src/config/environment';
 
 // Prevent auto-hiding splash screen until fonts load
 SplashScreen.preventAutoHideAsync();
 
 export default function App() {
   const [fontsLoaded, fontError] = useFonts();
+
+  // Initialize RevenueCat on app start
+  // Note: RevenueCat requires a development build (npx expo run:ios)
+  // It won't work in Expo Go - the app will continue without it
+  useEffect(() => {
+    const initRevenueCat = async () => {
+      try {
+        await revenueCatService.initialize();
+        logger.log('RevenueCat initialized successfully');
+      } catch (error) {
+        // Expected in Expo Go - RevenueCat requires native modules
+        logger.log('RevenueCat not available (Expo Go mode) - subscriptions disabled');
+      }
+    };
+
+    initRevenueCat();
+  }, []);
 
   const onLayoutRootView = useCallback(async () => {
     if (fontsLoaded || fontError) {
@@ -32,7 +51,7 @@ export default function App() {
 
   // Show error if fonts failed to load
   if (fontError) {
-    console.error('Font loading error:', fontError);
+    logger.error('Font loading error:', fontError);
     // Continue with system fonts if custom fonts fail
   }
 
