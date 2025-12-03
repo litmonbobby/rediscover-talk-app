@@ -284,13 +284,11 @@ export const ProfileScreen: React.FC = () => {
         {/* Header */}
         <View style={styles.header}>
           <View style={styles.headerLeft}>
-            <View style={[styles.logoContainer, { backgroundColor: '#9EB567' }]}>
-              <Image
-                source={icons.logo}
-                style={styles.logoIcon}
-                resizeMode="contain"
-              />
-            </View>
+            <Image
+              source={icons.logo}
+              style={styles.headerLogoImage}
+              resizeMode="contain"
+            />
           </View>
           <Text style={[styles.headerTitle, { color: colors.text.primary }]}>
             Account
@@ -582,17 +580,9 @@ const styles = StyleSheet.create({
   headerLeft: {
     width: 44,
   },
-  logoContainer: {
-    width: 32,
-    height: 32,
-    borderRadius: 8,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  logoIcon: {
-    width: 18,
-    height: 18,
-    tintColor: '#FFFFFF',
+  headerLogoImage: {
+    width: 28,
+    height: 28,
   },
   headerTitle: {
     fontSize: 18,
