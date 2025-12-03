@@ -43,7 +43,7 @@ type NavigationProp = NativeStackNavigationProp<ProfileStackParamList, 'Profile'
 
 // Figma-extracted icon assets
 const icons = {
-  logo: require('../../../assets/icon.png'),
+  logo: require('../../../assets/images/conversation-logo.png'),
   moreCircle: require('../../figma-extracted/assets/components/icons/iconly-regular-bold-more-circle.png'),
   ticketStar: require('../../figma-extracted/assets/components/icons/iconly-regular-bold-ticket-star.png'),
   notification: require('../../figma-extracted/assets/components/icons/iconly-regular-bold-notification.png'),

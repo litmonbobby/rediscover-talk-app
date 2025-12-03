@@ -34,7 +34,7 @@ type NavigationProp = NativeStackNavigationProp<InsightsStackParamList, 'Insight
 
 // Figma-extracted assets
 const assets = {
-  logo: require('../../../assets/icon.png'),
+  logo: require('../../../assets/images/conversation-logo.png'),
   menu: require('../../figma-extracted/assets/components/icons/iconly-curved-outline-category.png'),
 
   // Mood indicators

@@ -50,7 +50,7 @@ interface PlanItem {
 // Figma-extracted assets
 const assets = {
   // Icons
-  logo: require('../../../assets/icon.png'),
+  logo: require('../../../assets/images/conversation-logo.png'),
   profile: require('../../figma-extracted/assets/components/icons/iconly-regular-bold-profile.png'),
 
   // Mood indicators (extracted from Figma)

@@ -4,6 +4,7 @@
  */
 
 export { MoonIcon } from './MoonIcon';
+export { ConversationLogo } from './ConversationLogo';
 export {
   RainIcon,
   DreamIcon,

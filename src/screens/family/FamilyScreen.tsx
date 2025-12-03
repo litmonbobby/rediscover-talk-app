@@ -39,7 +39,7 @@ type NavigationProp = NativeStackNavigationProp<FamilyStackParamList, 'Family'>;
 
 // Figma-extracted assets
 const assets = {
-  logo: require('../../../assets/icon.png'),
+  logo: require('../../../assets/images/conversation-logo.png'),
   search: require('../../figma-extracted/assets/components/icons/iconly-curved-outline-search.png'),
 };
 

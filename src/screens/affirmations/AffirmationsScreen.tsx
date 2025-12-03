@@ -34,7 +34,7 @@ type NavigationProp = NativeStackNavigationProp<AffirmationsStackParamList, 'Aff
 // Figma-extracted assets
 const assets = {
   // Header icons
-  logo: require('../../../assets/icon.png'),
+  logo: require('../../../assets/images/conversation-logo.png'),
   arrowLeft: require('../../figma-extracted/assets/components/icons/iconly-regular-bold-arrow-left.png'),
   search: require('../../figma-extracted/assets/components/icons/iconly-curved-outline-search.png'),
   heart: require('../../figma-extracted/assets/components/icons/iconly-curved-outline-heart.png'),
