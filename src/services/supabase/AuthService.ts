@@ -291,6 +291,28 @@ class AuthService {
   }
 
   /**
+   * Resend confirmation email
+   */
+  async resendConfirmationEmail(email: string): Promise<{ success: boolean; error?: string }> {
+    try {
+      const { error } = await supabase.auth.resend({
+        type: 'signup',
+        email: email,
+      });
+
+      if (error) {
+        console.error('[AuthService] Resend confirmation error:', error);
+        return { success: false, error: error.message };
+      }
+
+      return { success: true };
+    } catch (error) {
+      console.error('[AuthService] Resend confirmation exception:', error);
+      return { success: false, error: 'Failed to resend confirmation email' };
+    }
+  }
+
+  /**
    * Fetch user profile
    */
   private async fetchProfile(userId: string): Promise<void> {

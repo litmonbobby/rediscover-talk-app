@@ -141,7 +141,26 @@ export const SignInScreen: React.FC = () => {
         // Navigation will be handled by auth state listener in AppNavigator
         navigation.navigate('Main');
       } else {
-        Alert.alert('Sign In Failed', result.error || 'Please check your credentials and try again');
+        // Check for common error messages and provide helpful feedback
+        const errorMessage = result.error || '';
+
+        if (errorMessage.toLowerCase().includes('email not confirmed')) {
+          Alert.alert(
+            'Email Not Verified',
+            'Please check your inbox and click the verification link we sent you. Check your spam folder if you don\'t see it.',
+            [
+              { text: 'OK' },
+              {
+                text: 'Resend Email',
+                onPress: () => handleResendConfirmation()
+              }
+            ]
+          );
+        } else if (errorMessage.toLowerCase().includes('invalid login credentials')) {
+          Alert.alert('Sign In Failed', 'Invalid email or password. Please check your credentials and try again.');
+        } else {
+          Alert.alert('Sign In Failed', result.error || 'Please check your credentials and try again');
+        }
       }
     } catch (error) {
       Alert.alert('Error', 'An unexpected error occurred. Please try again.');
@@ -164,6 +183,27 @@ export const SignInScreen: React.FC = () => {
         Alert.alert('Check Your Email', 'We sent you a password reset link');
       } else {
         Alert.alert('Error', result.error || 'Failed to send reset email');
+      }
+    } catch (error) {
+      Alert.alert('Error', 'An unexpected error occurred');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleResendConfirmation = async () => {
+    if (!email.trim()) {
+      Alert.alert('Email Required', 'Please enter your email address');
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const result = await authService.resendConfirmationEmail(email.trim());
+      if (result.success) {
+        Alert.alert('Email Sent', 'A new verification email has been sent. Please check your inbox.');
+      } else {
+        Alert.alert('Error', result.error || 'Failed to resend confirmation email');
       }
     } catch (error) {
       Alert.alert('Error', 'An unexpected error occurred');
