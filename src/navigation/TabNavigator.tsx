@@ -5,7 +5,8 @@
  */
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { View, Image, StyleSheet, useColorScheme } from 'react-native';
+import { View, Image, StyleSheet, useColorScheme, Platform } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { lightColors, darkColors } from '../theme';
 
 // Stack navigators for each tab
@@ -75,6 +76,10 @@ const TabIcon: React.FC<TabIconProps> = ({ focused, icon }) => (
 export const TabNavigator = () => {
   const colorScheme = useColorScheme();
   const colors = colorScheme === 'dark' ? darkColors : lightColors;
+  const insets = useSafeAreaInsets();
+
+  // Calculate proper tab bar height accounting for safe area
+  const tabBarHeight = 56 + Math.max(insets.bottom, 0);
 
   return (
     <Tab.Navigator
@@ -86,9 +91,13 @@ export const TabNavigator = () => {
           backgroundColor: colors.background.card,
           borderTopWidth: 1,
           borderTopColor: colors.border.light,
-          paddingBottom: 8,
+          paddingBottom: insets.bottom > 0 ? insets.bottom : 8,
           paddingTop: 8,
-          height: 64,
+          height: tabBarHeight,
+          position: 'absolute',
+          bottom: 0,
+          left: 0,
+          right: 0,
         },
         tabBarLabelStyle: {
           fontSize: 10,
