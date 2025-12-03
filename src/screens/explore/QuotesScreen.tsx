@@ -3,7 +3,7 @@
  * Updated to use comprehensive quotes data file with 77+ quotes
  */
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import {
   View,
   Text,
@@ -16,7 +16,7 @@ import {
   Image,
   StatusBar,
 } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import Svg, { Path } from 'react-native-svg';
 import { useTheme } from '../../theme/useTheme';
 import {
@@ -27,6 +27,7 @@ import {
   getDailyQuote,
   getCategoryLabel,
 } from '../../data/quotes';
+import { favoritesService } from '../../services/FavoritesService';
 
 const { width } = Dimensions.get('window');
 
@@ -92,14 +93,51 @@ export const QuotesScreen: React.FC = () => {
 
   const dailyQuote = getDailyQuote();
 
-  const toggleFavorite = (id: string) => {
-    const newFavorites = new Set(favorites);
-    if (newFavorites.has(id)) {
-      newFavorites.delete(id);
-    } else {
-      newFavorites.add(id);
+  // Load favorites when screen comes into focus
+  useFocusEffect(
+    useCallback(() => {
+      loadFavorites();
+    }, [])
+  );
+
+  const loadFavorites = async () => {
+    try {
+      const allFavorites = await favoritesService.getAllFavorites();
+      const quoteFavorites = allFavorites
+        .filter(f => f.type === 'quote')
+        .map(f => f.id);
+      setFavorites(new Set(quoteFavorites));
+    } catch (error) {
+      console.error('Error loading favorites:', error);
     }
-    setFavorites(newFavorites);
+  };
+
+  const toggleFavorite = async (quote: Quote) => {
+    try {
+      const isFavorited = await favoritesService.toggleFavorite({
+        id: quote.id,
+        type: 'quote',
+        title: `Quote by ${quote.author}`,
+        subtitle: getCategoryLabel(quote.category),
+        metadata: {
+          message: quote.text,
+          author: quote.author,
+          category: quote.category,
+        },
+      });
+
+      setFavorites((prev) => {
+        const newFavorites = new Set(prev);
+        if (isFavorited) {
+          newFavorites.add(quote.id);
+        } else {
+          newFavorites.delete(quote.id);
+        }
+        return newFavorites;
+      });
+    } catch (error) {
+      console.error('Error toggling favorite:', error);
+    }
   };
 
   const handleShare = async (quote: Quote) => {
@@ -122,7 +160,7 @@ export const QuotesScreen: React.FC = () => {
   };
 
   const handleFavoritesView = () => {
-    console.log('View favorite quotes');
+    navigation.navigate('Favorites' as any);
   };
 
   // Filter quotes by category
@@ -149,7 +187,7 @@ export const QuotesScreen: React.FC = () => {
           — {quote.author}
         </Text>
         <View style={styles.actionButtons}>
-          <TouchableOpacity onPress={() => toggleFavorite(quote.id)} style={styles.actionButton}>
+          <TouchableOpacity onPress={() => toggleFavorite(quote)} style={styles.actionButton}>
             <HeartIcon
               size={18}
               color={favorites.has(quote.id) ? '#FF6B6B' : colors.text.tertiary}

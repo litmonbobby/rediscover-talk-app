@@ -33,3 +33,10 @@ export {
   DEFAULT_OFFERING_ID,
   type SubscriptionStatus,
 } from './RevenueCatService';
+
+// Favorites Service
+export {
+  favoritesService,
+  type FavoriteItem,
+  type FavoriteType,
+} from './FavoritesService';

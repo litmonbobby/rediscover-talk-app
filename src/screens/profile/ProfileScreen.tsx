@@ -23,6 +23,7 @@ import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useTheme } from '../../theme/useTheme';
 import { userProfileService, UserProfile } from '../../services/UserProfileService';
+import RevenueCatUI, { PAYWALL_RESULT } from 'react-native-purchases-ui';
 
 type ProfileStackParamList = {
   Profile: undefined;
@@ -130,8 +131,32 @@ export const ProfileScreen: React.FC = () => {
     }
   };
 
-  const handleUpgrade = () => {
-    navigation.navigate('Subscription');
+  const handleUpgrade = async () => {
+    try {
+      const result: PAYWALL_RESULT = await RevenueCatUI.presentPaywall();
+
+      switch (result) {
+        case PAYWALL_RESULT.PURCHASED:
+          Alert.alert('Success!', 'Thank you for subscribing to Premium!');
+          break;
+        case PAYWALL_RESULT.RESTORED:
+          Alert.alert('Restored!', 'Your purchases have been restored.');
+          break;
+        case PAYWALL_RESULT.CANCELLED:
+          console.log('User cancelled');
+          break;
+        case PAYWALL_RESULT.ERROR:
+          Alert.alert('Error', 'Something went wrong. Please try again.');
+          break;
+        case PAYWALL_RESULT.NOT_PRESENTED:
+          // User might already be subscribed
+          Alert.alert('Premium Active', 'You already have an active subscription!');
+          break;
+      }
+    } catch (error) {
+      console.error('Error presenting paywall:', error);
+      Alert.alert('Error', 'Failed to load subscription options. Please try again.');
+    }
   };
 
   const handleProfilePress = () => {

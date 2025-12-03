@@ -3,7 +3,7 @@
  * Matches 87-light-explore-affirmations.png design
  */
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import {
   View,
   Text,
@@ -16,11 +16,12 @@ import {
   Dimensions,
   Share,
 } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import Svg, { Path } from 'react-native-svg';
 import { useTheme } from '../../theme/useTheme';
 import { affirmations, Affirmation, AffirmationCategory, getAffirmationsByCategory } from '../../data/affirmations';
+import { favoritesService } from '../../services/FavoritesService';
 
 const { width } = Dimensions.get('window');
 
@@ -124,6 +125,25 @@ export const AffirmationsScreen: React.FC = () => {
   const [activeCategory, setActiveCategory] = useState<AffirmationCategory | 'all'>('all');
   const [favorites, setFavorites] = useState<Set<string>>(new Set());
 
+  // Load favorites when screen comes into focus
+  useFocusEffect(
+    useCallback(() => {
+      loadFavorites();
+    }, [])
+  );
+
+  const loadFavorites = async () => {
+    try {
+      const allFavorites = await favoritesService.getAllFavorites();
+      const affirmationFavorites = allFavorites
+        .filter(f => f.type === 'affirmation')
+        .map(f => f.id);
+      setFavorites(new Set(affirmationFavorites));
+    } catch (error) {
+      console.error('Error loading favorites:', error);
+    }
+  };
+
   const handleBack = () => {
     navigation.goBack();
   };
@@ -133,19 +153,35 @@ export const AffirmationsScreen: React.FC = () => {
   };
 
   const handleFavorites = () => {
-    console.log('View favorites');
+    // Navigate to favorites screen
+    navigation.navigate('Favorites' as any);
   };
 
-  const handleToggleFavorite = (id: string) => {
-    setFavorites((prev) => {
-      const newFavorites = new Set(prev);
-      if (newFavorites.has(id)) {
-        newFavorites.delete(id);
-      } else {
-        newFavorites.add(id);
-      }
-      return newFavorites;
-    });
+  const handleToggleFavorite = async (affirmation: Affirmation) => {
+    try {
+      const isFavorited = await favoritesService.toggleFavorite({
+        id: affirmation.id,
+        type: 'affirmation',
+        title: affirmation.title,
+        subtitle: affirmation.category,
+        metadata: {
+          message: affirmation.message,
+          category: affirmation.category,
+        },
+      });
+
+      setFavorites((prev) => {
+        const newFavorites = new Set(prev);
+        if (isFavorited) {
+          newFavorites.add(affirmation.id);
+        } else {
+          newFavorites.delete(affirmation.id);
+        }
+        return newFavorites;
+      });
+    } catch (error) {
+      console.error('Error toggling favorite:', error);
+    }
   };
 
   const handleShare = async (affirmation: Affirmation) => {
@@ -197,7 +233,7 @@ export const AffirmationsScreen: React.FC = () => {
             <View style={styles.cardActions}>
               <TouchableOpacity
                 style={styles.actionButton}
-                onPress={() => handleToggleFavorite(affirmation.id)}
+                onPress={() => handleToggleFavorite(affirmation)}
               >
                 <HeartIcon
                   size={18}
