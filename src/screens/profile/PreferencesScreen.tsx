@@ -22,11 +22,10 @@ import {
   Linking,
   Platform,
   ActivityIndicator,
+  Vibration,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import * as Haptics from 'expo-haptics';
-import * as Notifications from 'expo-notifications';
 import { useTheme } from '../../theme/useTheme';
 
 // Storage key for preferences
@@ -76,6 +75,19 @@ interface PreferenceSection {
   items: PreferenceItem[];
 }
 
+// Fallback colors in case theme colors are not available
+const FALLBACK_COLORS = {
+  primary: '#9EB567',
+  background: '#FFFFFF',
+  card: '#F5F5F5',
+  text: '#1A1A1A',
+  textSecondary: '#666666',
+  textTertiary: '#999999',
+  border: '#E0E0E0',
+  error: '#E53935',
+  warning: '#FFA726',
+};
+
 export const PreferencesScreen: React.FC = () => {
   const navigation = useNavigation();
   const { colors } = useTheme();
@@ -83,12 +95,23 @@ export const PreferencesScreen: React.FC = () => {
   const [preferences, setPreferences] = useState<PreferencesType>(DEFAULT_PREFERENCES);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
-  const [notificationPermission, setNotificationPermission] = useState<string>('undetermined');
+
+  // Safe color access with fallbacks
+  const safeColors = {
+    primary: colors?.primary?.main || FALLBACK_COLORS.primary,
+    background: colors?.background?.primary || FALLBACK_COLORS.background,
+    card: colors?.background?.card || FALLBACK_COLORS.card,
+    text: colors?.text?.primary || FALLBACK_COLORS.text,
+    textSecondary: colors?.text?.secondary || FALLBACK_COLORS.textSecondary,
+    textTertiary: colors?.text?.tertiary || FALLBACK_COLORS.textTertiary,
+    border: colors?.ui?.border || FALLBACK_COLORS.border,
+    error: colors?.feedback?.error || FALLBACK_COLORS.error,
+    warning: colors?.feedback?.warning || FALLBACK_COLORS.warning,
+  };
 
   // Load preferences on mount
   useEffect(() => {
     loadPreferences();
-    checkNotificationPermission();
   }, []);
 
   const loadPreferences = async () => {
@@ -117,38 +140,10 @@ export const PreferencesScreen: React.FC = () => {
     }
   };
 
-  const checkNotificationPermission = async () => {
-    const { status } = await Notifications.getPermissionsAsync();
-    setNotificationPermission(status);
-  };
-
-  const requestNotificationPermission = async (): Promise<boolean> => {
-    const { status: existingStatus } = await Notifications.getPermissionsAsync();
-
-    if (existingStatus === 'granted') {
-      return true;
-    }
-
-    if (existingStatus === 'denied') {
-      Alert.alert(
-        'Notifications Disabled',
-        'Please enable notifications in your device settings to receive reminders.',
-        [
-          { text: 'Cancel', style: 'cancel' },
-          { text: 'Open Settings', onPress: () => Linking.openSettings() },
-        ]
-      );
-      return false;
-    }
-
-    const { status } = await Notifications.requestPermissionsAsync();
-    setNotificationPermission(status);
-    return status === 'granted';
-  };
-
   const triggerHaptic = useCallback(() => {
     if (preferences.hapticFeedback) {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      // Use native Vibration API as fallback
+      Vibration.vibrate(10);
     }
   }, [preferences.hapticFeedback]);
 
@@ -158,9 +153,24 @@ export const PreferencesScreen: React.FC = () => {
     // Special handling for notification-related preferences
     if (key === 'pushNotifications' || key === 'dailyReminders' || key === 'weeklyProgress' || key === 'newContent') {
       if (!preferences[key]) {
-        // Turning ON - need permission
-        const hasPermission = await requestNotificationPermission();
-        if (!hasPermission) return;
+        // Show info about notifications
+        Alert.alert(
+          'Notification Permissions',
+          'To receive notifications, make sure they are enabled in your device settings.',
+          [
+            { text: 'Cancel', style: 'cancel' },
+            { text: 'Open Settings', onPress: () => Linking.openSettings() },
+            {
+              text: 'Enable Anyway',
+              onPress: async () => {
+                const newPreferences = { ...preferences, [key]: true };
+                setPreferences(newPreferences);
+                await savePreferences(newPreferences);
+              }
+            },
+          ]
+        );
+        return;
       }
     }
 
@@ -170,7 +180,7 @@ export const PreferencesScreen: React.FC = () => {
 
     // Special feedback for haptic toggle
     if (key === 'hapticFeedback' && newPreferences.hapticFeedback) {
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      Vibration.vibrate([0, 50, 50, 50]);
     }
   };
 
@@ -240,10 +250,10 @@ export const PreferencesScreen: React.FC = () => {
 
   if (isLoading) {
     return (
-      <SafeAreaView style={[styles.container, { backgroundColor: colors.background.primary }]}>
+      <SafeAreaView style={[styles.container, { backgroundColor: safeColors.background }]}>
         <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color={colors.brand.primary} />
-          <Text style={[styles.loadingText, { color: colors.text.secondary }]}>
+          <ActivityIndicator size="large" color={safeColors.primary} />
+          <Text style={[styles.loadingText, { color: safeColors.textSecondary }]}>
             Loading preferences...
           </Text>
         </View>
@@ -252,7 +262,7 @@ export const PreferencesScreen: React.FC = () => {
   }
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: colors.background.primary }]}>
+    <SafeAreaView style={[styles.container, { backgroundColor: safeColors.background }]}>
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity
@@ -262,11 +272,11 @@ export const PreferencesScreen: React.FC = () => {
           }}
           style={styles.backButton}
         >
-          <Text style={[styles.backText, { color: colors.text.primary }]}>←</Text>
+          <Text style={[styles.backText, { color: safeColors.text }]}>←</Text>
         </TouchableOpacity>
-        <Text style={[styles.headerTitle, { color: colors.text.primary }]}>Preferences</Text>
+        <Text style={[styles.headerTitle, { color: safeColors.text }]}>Preferences</Text>
         <View style={styles.placeholder}>
-          {isSaving && <ActivityIndicator size="small" color={colors.brand.primary} />}
+          {isSaving && <ActivityIndicator size="small" color={safeColors.primary} />}
         </View>
       </View>
 
@@ -275,42 +285,23 @@ export const PreferencesScreen: React.FC = () => {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
       >
-        {/* Notification Permission Banner */}
-        {notificationPermission === 'denied' && (
-          <TouchableOpacity
-            style={[styles.permissionBanner, { backgroundColor: colors.feedback.warning + '20' }]}
-            onPress={() => Linking.openSettings()}
-          >
-            <Text style={styles.permissionIcon}>⚠️</Text>
-            <View style={styles.permissionTextContainer}>
-              <Text style={[styles.permissionTitle, { color: colors.text.primary }]}>
-                Notifications Disabled
-              </Text>
-              <Text style={[styles.permissionDescription, { color: colors.text.secondary }]}>
-                Tap to open settings and enable notifications
-              </Text>
-            </View>
-            <Text style={[styles.permissionArrow, { color: colors.text.secondary }]}>→</Text>
-          </TouchableOpacity>
-        )}
-
         {/* Preference Sections */}
-        {sections.map((section, sectionIndex) => (
+        {sections.map((section) => (
           <View key={section.title} style={styles.section}>
-            <Text style={[styles.sectionTitle, { color: colors.text.secondary }]}>
+            <Text style={[styles.sectionTitle, { color: safeColors.textSecondary }]}>
               {section.title.toUpperCase()}
             </Text>
 
-            <View style={[styles.sectionCard, { backgroundColor: colors.background.card }]}>
+            <View style={[styles.sectionCard, { backgroundColor: safeColors.card }]}>
               {section.items.map((item, itemIndex) => (
                 <View key={item.key}>
                   <View style={styles.preferenceRow}>
                     <Text style={styles.preferenceIcon}>{item.icon}</Text>
                     <View style={styles.preferenceInfo}>
-                      <Text style={[styles.preferenceTitle, { color: colors.text.primary }]}>
+                      <Text style={[styles.preferenceTitle, { color: safeColors.text }]}>
                         {item.title}
                       </Text>
-                      <Text style={[styles.preferenceDescription, { color: colors.text.secondary }]}>
+                      <Text style={[styles.preferenceDescription, { color: safeColors.textSecondary }]}>
                         {item.description}
                       </Text>
                     </View>
@@ -318,15 +309,15 @@ export const PreferencesScreen: React.FC = () => {
                       value={preferences[item.key]}
                       onValueChange={() => togglePreference(item.key)}
                       trackColor={{
-                        false: colors.ui.border,
-                        true: colors.brand.primary + '60'
+                        false: safeColors.border,
+                        true: safeColors.primary + '60'
                       }}
-                      thumbColor={preferences[item.key] ? colors.brand.primary : '#f4f3f4'}
-                      ios_backgroundColor={colors.ui.border}
+                      thumbColor={preferences[item.key] ? safeColors.primary : '#f4f3f4'}
+                      ios_backgroundColor={safeColors.border}
                     />
                   </View>
                   {itemIndex < section.items.length - 1 && (
-                    <View style={[styles.divider, { backgroundColor: colors.ui.border }]} />
+                    <View style={[styles.divider, { backgroundColor: safeColors.border }]} />
                   )}
                 </View>
               ))}
@@ -336,16 +327,16 @@ export const PreferencesScreen: React.FC = () => {
 
         {/* Reset Button */}
         <TouchableOpacity
-          style={[styles.resetButton, { borderColor: colors.feedback.error }]}
+          style={[styles.resetButton, { borderColor: safeColors.error }]}
           onPress={resetToDefaults}
         >
-          <Text style={[styles.resetButtonText, { color: colors.feedback.error }]}>
+          <Text style={[styles.resetButtonText, { color: safeColors.error }]}>
             Reset to Defaults
           </Text>
         </TouchableOpacity>
 
         {/* Info Text */}
-        <Text style={[styles.infoText, { color: colors.text.tertiary }]}>
+        <Text style={[styles.infoText, { color: safeColors.textTertiary }]}>
           Your preferences are automatically saved and synced across your devices when signed in.
         </Text>
 
@@ -401,31 +392,6 @@ const styles = StyleSheet.create({
   scrollContent: {
     paddingHorizontal: 20,
     paddingTop: 16,
-  },
-  permissionBanner: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 16,
-    borderRadius: 12,
-    marginBottom: 20,
-  },
-  permissionIcon: {
-    fontSize: 24,
-    marginRight: 12,
-  },
-  permissionTextContainer: {
-    flex: 1,
-  },
-  permissionTitle: {
-    fontSize: 15,
-    fontWeight: '600',
-    marginBottom: 2,
-  },
-  permissionDescription: {
-    fontSize: 13,
-  },
-  permissionArrow: {
-    fontSize: 18,
   },
   section: {
     marginBottom: 24,
