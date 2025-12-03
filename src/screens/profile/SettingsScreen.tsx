@@ -161,6 +161,36 @@ const ChevronRightIcon: React.FC<{ size?: number; color?: string }> = ({ size = 
   </Svg>
 );
 
+// Accessibility Icon
+const AccessibilityIcon: React.FC<{ size?: number; color?: string }> = ({ size = 24, color = '#333' }) => (
+  <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+    <Path
+      d="M12 2C13.1 2 14 2.9 14 4C14 5.1 13.1 6 12 6C10.9 6 10 5.1 10 4C10 2.9 10.9 2 12 2ZM21 9H15V22H13V16H11V22H9V9H3V7H21V9Z"
+      fill={color}
+    />
+  </Svg>
+);
+
+// Document Icon for Terms of Service
+const DocumentIcon: React.FC<{ size?: number; color?: string }> = ({ size = 24, color = '#333' }) => (
+  <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+    <Path
+      d="M14 2H6C4.9 2 4 2.9 4 4V20C4 21.1 4.9 22 6 22H18C19.1 22 20 21.1 20 20V8L14 2ZM16 18H8V16H16V18ZM16 14H8V12H16V14ZM13 9V3.5L18.5 9H13Z"
+      fill={color}
+    />
+  </Svg>
+);
+
+// Shield Icon for Privacy Policy
+const ShieldIcon: React.FC<{ size?: number; color?: string }> = ({ size = 24, color = '#333' }) => (
+  <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+    <Path
+      d="M12 1L3 5V11C3 16.55 6.84 21.74 12 23C17.16 21.74 21 16.55 21 11V5L12 1ZM12 11.99H19C18.47 16.11 15.72 19.78 12 20.93V12H5V6.3L12 3.19V11.99Z"
+      fill={color}
+    />
+  </Svg>
+);
+
 interface SettingItemProps {
   icon: React.ReactNode;
   label: string;
@@ -522,6 +552,43 @@ export const SettingsScreen: React.FC = () => {
               label="Apple Health"
               subtitle="Sync wellness data with HealthKit"
               onPress={handleAppleHealth}
+              colors={colors}
+            />
+          </View>
+        </View>
+
+        {/* Accessibility Section */}
+        <View style={styles.section}>
+          <Text style={[styles.sectionTitle, { color: colors.text.secondary }]}>
+            Accessibility
+          </Text>
+          <View style={styles.sectionContent}>
+            <SettingItem
+              icon={<AccessibilityIcon size={22} color="#9EB567" />}
+              label="Accessibility"
+              subtitle="VoiceOver, text size, and more"
+              onPress={() => navigation.navigate('Accessibility' as any)}
+              colors={colors}
+            />
+          </View>
+        </View>
+
+        {/* Legal Section */}
+        <View style={styles.section}>
+          <Text style={[styles.sectionTitle, { color: colors.text.secondary }]}>Legal</Text>
+          <View style={styles.sectionContent}>
+            <SettingItem
+              icon={<DocumentIcon size={22} color="#9EB567" />}
+              label="Terms of Service"
+              subtitle="Read our terms and conditions"
+              onPress={() => navigation.navigate('TermsOfService' as any)}
+              colors={colors}
+            />
+            <SettingItem
+              icon={<ShieldIcon size={22} color="#9EB567" />}
+              label="Privacy Policy"
+              subtitle="How we protect your data"
+              onPress={() => navigation.navigate('PrivacyPolicy' as any)}
               colors={colors}
             />
           </View>

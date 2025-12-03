@@ -5,6 +5,7 @@ import * as SplashScreen from 'expo-splash-screen';
 import { useCallback } from 'react';
 import { AppNavigator } from './src/navigation/AppNavigator';
 import { ThemeProvider } from './src/theme/ThemeContext';
+import { AccessibilityProvider } from './src/theme/AccessibilityContext';
 import { useFonts } from './src/hooks/useFonts';
 import { colors } from './src/constants/design-system';
 import { revenueCatService } from './src/services/RevenueCatService';
@@ -57,10 +58,12 @@ export default function App() {
 
   return (
     <View style={styles.container} onLayout={onLayoutRootView}>
-      <ThemeProvider>
-        <AppNavigator />
-        <StatusBar style="auto" />
-      </ThemeProvider>
+      <AccessibilityProvider>
+        <ThemeProvider>
+          <AppNavigator />
+          <StatusBar style="auto" />
+        </ThemeProvider>
+      </AccessibilityProvider>
     </View>
   );
 }
