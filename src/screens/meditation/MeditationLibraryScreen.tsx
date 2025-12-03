@@ -18,6 +18,7 @@ import {
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useTheme } from '../../theme/useTheme';
+import { GlassCard } from '../../components/core/GlassCard';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const CARD_WIDTH = (SCREEN_WIDTH - 56) / 2;
@@ -165,36 +166,40 @@ export const MeditationLibraryScreen: React.FC = () => {
           </Text>
         </View>
 
-        {/* Featured Card */}
+        {/* Featured Card - Liquid Glass */}
         {featuredMeditation && (
-          <TouchableOpacity
-            style={[styles.featuredCard, { backgroundColor: colors.background.card }]}
+          <GlassCard
+            variant="regular"
+            style={styles.featuredCard}
             onPress={() => handleMeditationPress(featuredMeditation)}
-            activeOpacity={0.8}
+            padding={20}
+            borderRadius={20}
           >
-            <View style={styles.featuredContent}>
-              <Text style={[styles.featuredLabel, { color: colors.primary.main }]}>
-                Featured
-              </Text>
-              <Text style={[styles.featuredTitle, { color: colors.text.primary }]}>
-                {featuredMeditation.title}
-              </Text>
-              <Text style={[styles.featuredDuration, { color: colors.text.secondary }]}>
-                {featuredMeditation.duration}
-              </Text>
-              <TouchableOpacity
-                style={[styles.playButton, { backgroundColor: colors.primary.main }]}
-                onPress={() => handleMeditationPress(featuredMeditation)}
-              >
-                <Text style={styles.playButtonText}>Start</Text>
-              </TouchableOpacity>
+            <View style={styles.featuredInner}>
+              <View style={styles.featuredContent}>
+                <Text style={[styles.featuredLabel, { color: colors.primary.main }]}>
+                  Featured
+                </Text>
+                <Text style={[styles.featuredTitle, { color: colors.text.primary }]}>
+                  {featuredMeditation.title}
+                </Text>
+                <Text style={[styles.featuredDuration, { color: colors.text.secondary }]}>
+                  {featuredMeditation.duration}
+                </Text>
+                <TouchableOpacity
+                  style={[styles.playButton, { backgroundColor: colors.primary.main }]}
+                  onPress={() => handleMeditationPress(featuredMeditation)}
+                >
+                  <Text style={styles.playButtonText}>Start</Text>
+                </TouchableOpacity>
+              </View>
+              <Image
+                source={getIllustration(featuredMeditation.illustration)}
+                style={styles.featuredIllustration}
+                resizeMode="contain"
+              />
             </View>
-            <Image
-              source={getIllustration(featuredMeditation.illustration)}
-              style={styles.featuredIllustration}
-              resizeMode="contain"
-            />
-          </TouchableOpacity>
+          </GlassCard>
         )}
 
         {/* Category Tabs */}
@@ -248,14 +253,17 @@ export const MeditationLibraryScreen: React.FC = () => {
           </TouchableOpacity>
         </View>
 
-        {/* Meditation Grid */}
+        {/* Meditation Grid - Liquid Glass */}
         <View style={styles.meditationGrid}>
           {filteredMeditations.map((meditation) => (
-            <TouchableOpacity
+            <GlassCard
               key={meditation.id}
-              style={[styles.meditationCard, { backgroundColor: colors.background.card }]}
+              variant="regular"
+              style={styles.meditationCard}
               onPress={() => handleMeditationPress(meditation)}
-              activeOpacity={0.8}
+              padding={16}
+              borderRadius={16}
+              interactive
             >
               <Image
                 source={getIllustration(meditation.illustration)}
@@ -271,7 +279,7 @@ export const MeditationLibraryScreen: React.FC = () => {
               <Text style={[styles.cardDuration, { color: colors.text.secondary }]}>
                 {meditation.duration}
               </Text>
-            </TouchableOpacity>
+            </GlassCard>
           ))}
         </View>
       </ScrollView>
@@ -300,15 +308,10 @@ const styles = StyleSheet.create({
   },
   featuredCard: {
     marginHorizontal: 24,
-    borderRadius: 20,
-    padding: 20,
+  },
+  featuredInner: {
     flexDirection: 'row',
     alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 12,
-    elevation: 4,
   },
   featuredContent: {
     flex: 1,
@@ -384,13 +387,6 @@ const styles = StyleSheet.create({
   },
   meditationCard: {
     width: CARD_WIDTH,
-    borderRadius: 16,
-    padding: 16,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 8,
-    elevation: 2,
   },
   cardIllustration: {
     width: '100%',

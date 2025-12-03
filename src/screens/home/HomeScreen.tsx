@@ -1,6 +1,7 @@
 /**
- * Home Screen - Exact Figma Recreation
- * Matches 27-light-home.png design
+ * Home Screen - iOS 26 Liquid Glass Design
+ * Features native Liquid Glass effects on iOS 26+
+ * Graceful fallbacks for older iOS and Android
  */
 
 import React, { useState } from 'react';
@@ -14,10 +15,16 @@ import {
   SafeAreaView,
   StatusBar,
   Dimensions,
+  ImageBackground,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useTheme } from '../../theme/useTheme';
+import {
+  GlassCard,
+  GlassCardContainer,
+  isGlassEffectSupported,
+} from '../../components/core/GlassCard';
 
 const { width } = Dimensions.get('window');
 
@@ -222,8 +229,13 @@ export const HomeScreen: React.FC = () => {
           />
         </TouchableOpacity>
 
-        {/* Mood Check-in Widget */}
-        <View style={[styles.moodCard, { backgroundColor: colors.background.card }]}>
+        {/* Mood Check-in Widget - Liquid Glass */}
+        <GlassCard
+          variant="regular"
+          style={styles.moodCard}
+          padding={20}
+          borderRadius={16}
+        >
           <Text style={[styles.moodTitle, { color: colors.text.primary }]}>
             How do you feel today?
           </Text>
@@ -241,47 +253,57 @@ export const HomeScreen: React.FC = () => {
               </TouchableOpacity>
             ))}
           </View>
-        </View>
+        </GlassCard>
 
-        {/* Quick Action Cards */}
-        <View style={styles.quickActions}>
-          <TouchableOpacity
-            style={[styles.quickActionCard, { backgroundColor: colors.background.card }]}
+        {/* Quick Action Cards - Liquid Glass with Merging */}
+        <GlassCardContainer spacing={12} style={styles.quickActions}>
+          <GlassCard
+            variant="regular"
+            interactive
             onPress={() => navigation.navigate('Chat')}
+            style={styles.quickActionCard}
+            padding={16}
           >
-            <Image
-              source={assets.logo}
-              style={[styles.quickActionIcon, { tintColor: '#9EB567' }]}
-              resizeMode="contain"
-            />
-            <View>
-              <Text style={[styles.quickActionTitle, { color: colors.text.primary }]}>
-                Chat with
-              </Text>
-              <Text style={[styles.quickActionSubtitle, { color: colors.text.primary }]}>
-                Mindy
-              </Text>
+            <View style={styles.quickActionContent}>
+              <Image
+                source={assets.logo}
+                style={[styles.quickActionIcon, { tintColor: '#9EB567' }]}
+                resizeMode="contain"
+              />
+              <View>
+                <Text style={[styles.quickActionTitle, { color: colors.text.primary }]}>
+                  Chat with
+                </Text>
+                <Text style={[styles.quickActionSubtitle, { color: colors.text.primary }]}>
+                  Mindy
+                </Text>
+              </View>
             </View>
-          </TouchableOpacity>
+          </GlassCard>
 
-          <TouchableOpacity
-            style={[styles.quickActionCard, { backgroundColor: colors.background.card }]}
+          <GlassCard
+            variant="regular"
+            interactive
+            style={styles.quickActionCard}
+            padding={16}
           >
-            <Image
-              source={assets.meditation1}
-              style={styles.quickActionAvatar}
-              resizeMode="cover"
-            />
-            <View>
-              <Text style={[styles.quickActionTitle, { color: colors.text.primary }]}>
-                Talk with
-              </Text>
-              <Text style={[styles.quickActionSubtitle, { color: colors.text.primary }]}>
-                Coach
-              </Text>
+            <View style={styles.quickActionContent}>
+              <Image
+                source={assets.meditation1}
+                style={styles.quickActionAvatar}
+                resizeMode="cover"
+              />
+              <View>
+                <Text style={[styles.quickActionTitle, { color: colors.text.primary }]}>
+                  Talk with
+                </Text>
+                <Text style={[styles.quickActionSubtitle, { color: colors.text.primary }]}>
+                  Coach
+                </Text>
+              </View>
             </View>
-          </TouchableOpacity>
-        </View>
+          </GlassCard>
+        </GlassCardContainer>
 
         {/* Daily Plans Section */}
         <View style={styles.plansSection}>
@@ -314,46 +336,49 @@ export const HomeScreen: React.FC = () => {
               ))}
             </View>
 
-            {/* Plan cards */}
+            {/* Plan cards - Liquid Glass */}
             <View style={styles.plansContainer}>
               {plans.map((plan) => (
-                <TouchableOpacity
+                <GlassCard
                   key={plan.id}
+                  variant={plan.completed ? 'clear' : 'regular'}
+                  interactive={!plan.completed}
+                  onPress={() => handlePlanPress(plan)}
                   style={[
                     styles.planCard,
-                    { backgroundColor: colors.background.card },
                     plan.completed && styles.planCardCompleted,
                   ]}
-                  onPress={() => handlePlanPress(plan)}
-                  activeOpacity={0.7}
+                  padding={16}
                 >
-                  {/* Content */}
-                  <View style={styles.planContent}>
-                    <Text style={styles.categoryLabel}>
-                      {plan.category}
-                    </Text>
-                    <Text
-                      style={[
-                        styles.planTitle,
-                        { color: colors.text.primary },
-                        plan.completed && styles.planTitleCompleted,
-                      ]}
-                      numberOfLines={1}
-                    >
-                      {plan.title}
-                    </Text>
-                    <Text style={[styles.planDuration, { color: colors.text.secondary }]}>
-                      {plan.duration}
-                    </Text>
-                  </View>
+                  <View style={styles.planCardInner}>
+                    {/* Content */}
+                    <View style={styles.planContent}>
+                      <Text style={styles.categoryLabel}>
+                        {plan.category}
+                      </Text>
+                      <Text
+                        style={[
+                          styles.planTitle,
+                          { color: colors.text.primary },
+                          plan.completed && styles.planTitleCompleted,
+                        ]}
+                        numberOfLines={1}
+                      >
+                        {plan.title}
+                      </Text>
+                      <Text style={[styles.planDuration, { color: colors.text.secondary }]}>
+                        {plan.duration}
+                      </Text>
+                    </View>
 
-                  {/* Illustration */}
-                  <Image
-                    source={getIllustration(plan.illustration)}
-                    style={styles.planIllustration}
-                    resizeMode="contain"
-                  />
-                </TouchableOpacity>
+                    {/* Illustration */}
+                    <Image
+                      source={getIllustration(plan.illustration)}
+                      style={styles.planIllustration}
+                      resizeMode="contain"
+                    />
+                  </View>
+                </GlassCard>
               ))}
             </View>
           </View>
@@ -501,6 +526,11 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
   },
+  quickActionContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
 
   // Plans Section
   plansSection: {
@@ -554,6 +584,11 @@ const styles = StyleSheet.create({
   },
   planCardCompleted: {
     opacity: 0.6,
+  },
+  planCardInner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
   },
   planContent: {
     flex: 1,

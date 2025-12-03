@@ -20,6 +20,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import Svg, { Path, Circle, G, Text as SvgText } from 'react-native-svg';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTheme } from '../../theme/useTheme';
+import { GlassCard } from '../../components/core/GlassCard';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
@@ -274,49 +275,58 @@ export const MeditationPlayerScreen: React.FC = () => {
             </View>
           </View>
 
-          {/* Controls */}
-          <View style={styles.controlsContainer}>
-            <TouchableOpacity style={styles.skipButton} onPress={handleRewind}>
-              <View style={styles.skipButtonInner}>
-                <Svg width={24} height={24} viewBox="0 0 24 24" fill="none">
-                  <Path
-                    d="M12.5 8V4L6 10l6.5 6v-4c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H5c0 4.41 3.59 8 8 8s8-3.59 8-8-3.59-8-8-8z"
-                    fill="#FFFFFF"
+          {/* Controls - Liquid Glass */}
+          <GlassCard variant="clear" style={styles.controlsCard} padding={24} borderRadius={32}>
+            <View style={styles.controlsRow}>
+              <TouchableOpacity style={styles.skipButton} onPress={handleRewind}>
+                <View style={styles.skipButtonInner}>
+                  <Svg width={24} height={24} viewBox="0 0 24 24" fill="none">
+                    <Path
+                      d="M12.5 8V4L6 10l6.5 6v-4c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H5c0 4.41 3.59 8 8 8s8-3.59 8-8-3.59-8-8-8z"
+                      fill="#FFFFFF"
+                    />
+                  </Svg>
+                  <Text style={styles.skipText}>15</Text>
+                </View>
+              </TouchableOpacity>
+
+              <TouchableOpacity style={styles.playPauseButton} onPress={handlePlayPause}>
+                {isPlaying ? (
+                  <PauseIcon size={32} color="#1E1E3F" />
+                ) : (
+                  <Image
+                    source={assets.play}
+                    style={styles.playIcon}
+                    resizeMode="contain"
                   />
-                </Svg>
-                <Text style={styles.skipText}>15</Text>
-              </View>
-            </TouchableOpacity>
+                )}
+              </TouchableOpacity>
 
-            <TouchableOpacity style={styles.playPauseButton} onPress={handlePlayPause}>
-              {isPlaying ? (
-                <PauseIcon size={32} color="#1E1E3F" />
-              ) : (
-                <Image
-                  source={assets.play}
-                  style={styles.playIcon}
-                  resizeMode="contain"
-                />
-              )}
-            </TouchableOpacity>
+              <TouchableOpacity style={styles.skipButton} onPress={handleForward}>
+                <View style={styles.skipButtonInner}>
+                  <Svg width={24} height={24} viewBox="0 0 24 24" fill="none">
+                    <Path
+                      d="M11.5 8V4L18 10l-6.5 6v-4c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6h1.5c0 4.41-3.59 8-8 8s-8-3.59-8-8 3.59-8 8-8z"
+                      fill="#FFFFFF"
+                    />
+                  </Svg>
+                  <Text style={styles.skipText}>15</Text>
+                </View>
+              </TouchableOpacity>
+            </View>
+          </GlassCard>
 
-            <TouchableOpacity style={styles.skipButton} onPress={handleForward}>
-              <View style={styles.skipButtonInner}>
-                <Svg width={24} height={24} viewBox="0 0 24 24" fill="none">
-                  <Path
-                    d="M11.5 8V4L18 10l-6.5 6v-4c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6h1.5c0 4.41-3.59 8-8 8s-8-3.59-8-8 3.59-8 8-8z"
-                    fill="#FFFFFF"
-                  />
-                </Svg>
-                <Text style={styles.skipText}>15</Text>
-              </View>
-            </TouchableOpacity>
-          </View>
-
-          {/* Edit Sounds Button */}
-          <TouchableOpacity style={styles.editSoundsButton} onPress={handleEditSounds}>
+          {/* Edit Sounds Button - Liquid Glass */}
+          <GlassCard
+            variant="regular"
+            style={styles.editSoundsCard}
+            onPress={handleEditSounds}
+            padding={16}
+            borderRadius={28}
+            interactive
+          >
             <Text style={styles.editSoundsText}>Edit Sounds</Text>
-          </TouchableOpacity>
+          </GlassCard>
         </View>
       </SafeAreaView>
     </View>
@@ -450,12 +460,15 @@ const styles = StyleSheet.create({
     color: 'rgba(255, 255, 255, 0.6)',
   },
 
-  // Controls
-  controlsContainer: {
+  // Controls - Liquid Glass
+  controlsCard: {
+    marginBottom: 24,
+    marginHorizontal: 24,
+  },
+  controlsRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 32,
     gap: 32,
   },
   skipButton: {
@@ -494,16 +507,11 @@ const styles = StyleSheet.create({
     marginLeft: 4, // Offset for visual balance
   },
 
-  // Edit Sounds Button
-  editSoundsButton: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    paddingVertical: 16,
-    paddingHorizontal: 24,
-    borderRadius: 28,
+  // Edit Sounds Button - Liquid Glass
+  editSoundsCard: {
     alignItems: 'center',
     marginBottom: 24,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.2)',
+    marginHorizontal: 24,
   },
   editSoundsText: {
     fontSize: 16,

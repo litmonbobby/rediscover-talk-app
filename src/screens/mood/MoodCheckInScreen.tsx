@@ -19,6 +19,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import Svg, { Path, Circle } from 'react-native-svg';
 import { useTheme } from '../../theme/useTheme';
 import { useMoodStore, MoodLevel, MoodName } from '../../store/moodStore';
+import { GlassCard } from '../../components/core/GlassCard';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -162,29 +163,31 @@ export const MoodCheckInScreen: React.FC = () => {
           )}
         </View>
 
-        {/* Mood Selector Row */}
-        <View style={styles.moodRow}>
-          {moods.map((mood) => (
-            <TouchableOpacity
-              key={mood.id}
-              style={[
-                styles.moodButton,
-                selectedMood === mood.id && styles.moodButtonSelected,
-                selectedMood === mood.id && { borderColor: mood.color },
-              ]}
-              onPress={() => handleMoodSelect(mood.id)}
-              activeOpacity={0.7}
-            >
-              <Image source={mood.image} style={styles.moodImage} resizeMode="contain" />
-            </TouchableOpacity>
-          ))}
-        </View>
+        {/* Mood Selector Row - Liquid Glass */}
+        <GlassCard variant="regular" style={styles.moodSelectorCard} padding={20} borderRadius={24}>
+          <View style={styles.moodRow}>
+            {moods.map((mood) => (
+              <TouchableOpacity
+                key={mood.id}
+                style={[
+                  styles.moodButton,
+                  selectedMood === mood.id && styles.moodButtonSelected,
+                  selectedMood === mood.id && { borderColor: mood.color },
+                ]}
+                onPress={() => handleMoodSelect(mood.id)}
+                activeOpacity={0.7}
+              >
+                <Image source={mood.image} style={styles.moodImage} resizeMode="contain" />
+              </TouchableOpacity>
+            ))}
+          </View>
 
-        {/* Mood Labels */}
-        <View style={styles.moodLabelsRow}>
-          <Text style={[styles.moodLabel, { color: colors.text.secondary }]}>Bad</Text>
-          <Text style={[styles.moodLabel, { color: colors.text.secondary }]}>Great</Text>
-        </View>
+          {/* Mood Labels */}
+          <View style={styles.moodLabelsRow}>
+            <Text style={[styles.moodLabel, { color: colors.text.secondary }]}>Bad</Text>
+            <Text style={[styles.moodLabel, { color: colors.text.secondary }]}>Great</Text>
+          </View>
+        </GlassCard>
       </View>
 
       {/* Bottom Section */}
@@ -271,11 +274,14 @@ const styles = StyleSheet.create({
     fontSize: 14,
     textAlign: 'center',
   },
+  moodSelectorCard: {
+    marginHorizontal: 16,
+    width: SCREEN_WIDTH - 48,
+  },
   moodRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     width: '100%',
-    paddingHorizontal: 8,
     marginBottom: 12,
   },
   moodButton: {

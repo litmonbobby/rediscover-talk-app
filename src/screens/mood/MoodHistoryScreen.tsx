@@ -20,6 +20,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import Svg, { Path, Rect, Line, G, Text as SvgText } from 'react-native-svg';
 import { useTheme } from '../../theme/useTheme';
 import { useMoodStore, MoodEntry as StoreMoodEntry, MoodName } from '../../store/moodStore';
+import { GlassCard, GlassCardContainer } from '../../components/core/GlassCard';
 
 const { width } = Dimensions.get('window');
 
@@ -274,34 +275,39 @@ export const MoodHistoryScreen: React.FC = () => {
   };
 
   const renderMoodEntry = (entry: DisplayEntry) => (
-    <View
+    <GlassCard
       key={entry.id}
-      style={[styles.moodEntryCard, { backgroundColor: colors.background.card }]}
+      variant="regular"
+      style={styles.moodEntryCard}
+      padding={16}
+      borderRadius={16}
     >
-      <View style={styles.moodEntryLeft}>
-        <Image source={moodImages[entry.mood]} style={styles.moodImage} resizeMode="contain" />
-      </View>
-      <View style={styles.moodEntryContent}>
-        <View style={styles.moodEntryHeader}>
-          <Text style={[styles.moodLabel, { color: moodColors[entry.mood] }]}>
-            {entry.moodLabel}
-          </Text>
-          <Text style={[styles.moodTime, { color: colors.text.secondary }]}>
-            {entry.date} • {entry.time}
-          </Text>
+      <View style={styles.moodEntryInner}>
+        <View style={styles.moodEntryLeft}>
+          <Image source={moodImages[entry.mood]} style={styles.moodImage} resizeMode="contain" />
         </View>
-        <View style={styles.tagsContainer}>
-          {entry.tags.map((tag, index) => (
-            <View
-              key={index}
-              style={[styles.tag, { backgroundColor: 'rgba(158, 181, 103, 0.15)' }]}
-            >
-              <Text style={styles.tagText}>{tag}</Text>
-            </View>
-          ))}
+        <View style={styles.moodEntryContent}>
+          <View style={styles.moodEntryHeader}>
+            <Text style={[styles.moodLabel, { color: moodColors[entry.mood] }]}>
+              {entry.moodLabel}
+            </Text>
+            <Text style={[styles.moodTime, { color: colors.text.secondary }]}>
+              {entry.date} • {entry.time}
+            </Text>
+          </View>
+          <View style={styles.tagsContainer}>
+            {entry.tags.map((tag, index) => (
+              <View
+                key={index}
+                style={[styles.tag, { backgroundColor: 'rgba(158, 181, 103, 0.15)' }]}
+              >
+                <Text style={styles.tagText}>{tag}</Text>
+              </View>
+            ))}
+          </View>
         </View>
       </View>
-    </View>
+    </GlassCard>
   );
 
   return (
@@ -363,7 +369,7 @@ export const MoodHistoryScreen: React.FC = () => {
               Mood Trends
             </Text>
           </View>
-          <View style={[styles.chartCard, { backgroundColor: colors.background.card }]}>
+          <GlassCard variant="regular" style={styles.chartCard} padding={16} borderRadius={16}>
             {chartData.length > 0 ? (
               <MiniAreaChart data={chartData} />
             ) : (
@@ -376,26 +382,26 @@ export const MoodHistoryScreen: React.FC = () => {
                 </Text>
               </View>
             )}
-          </View>
+          </GlassCard>
         </View>
 
-        {/* Average Mood Stats */}
-        <View style={styles.statsRow}>
-          <View style={[styles.statCard, { backgroundColor: colors.background.card }]}>
+        {/* Average Mood Stats - Liquid Glass */}
+        <GlassCardContainer spacing={12} style={styles.statsRow}>
+          <GlassCard variant="regular" style={styles.statCard} padding={16} borderRadius={12}>
             <Text style={[styles.statValue, { color: '#9EB567' }]}>
               {stats.averageMood ? stats.averageMood.toFixed(1) : '--'}
             </Text>
             <Text style={[styles.statLabel, { color: colors.text.secondary }]}>Average Mood</Text>
-          </View>
-          <View style={[styles.statCard, { backgroundColor: colors.background.card }]}>
+          </GlassCard>
+          <GlassCard variant="regular" style={styles.statCard} padding={16} borderRadius={12}>
             <Text style={[styles.statValue, { color: '#9EB567' }]}>{stats.totalEntries}</Text>
             <Text style={[styles.statLabel, { color: colors.text.secondary }]}>Total Entries</Text>
-          </View>
-          <View style={[styles.statCard, { backgroundColor: colors.background.card }]}>
+          </GlassCard>
+          <GlassCard variant="regular" style={styles.statCard} padding={16} borderRadius={12}>
             <Text style={[styles.statValue, { color: '#9EB567' }]}>{stats.currentStreak}</Text>
             <Text style={[styles.statLabel, { color: colors.text.secondary }]}>Day Streak</Text>
-          </View>
-        </View>
+          </GlassCard>
+        </GlassCardContainer>
 
         {/* Mood Entries List */}
         <View style={styles.section}>
@@ -561,14 +567,10 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   moodEntryCard: {
+    marginBottom: 12,
+  },
+  moodEntryInner: {
     flexDirection: 'row',
-    padding: 16,
-    borderRadius: 16,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 8,
-    elevation: 2,
   },
   moodEntryLeft: {
     marginRight: 14,
