@@ -271,16 +271,24 @@ export const ArticlesListScreen: React.FC = () => {
               activeOpacity={0.8}
             >
               <View style={styles.articleContent}>
-                <View
-                  style={[
-                    styles.categoryBadge,
-                    { backgroundColor: colors.primary.main + '20' },
-                  ]}
-                >
-                  <Text style={[styles.categoryBadgeText, { color: colors.primary.main }]}>
-                    {article.category}
-                  </Text>
+                {/* Top row: Category badge + Bookmark */}
+                <View style={styles.articleTopRow}>
+                  <View
+                    style={[
+                      styles.categoryBadge,
+                      { backgroundColor: colors.primary.main + '20' },
+                    ]}
+                  >
+                    <Text style={[styles.categoryBadgeText, { color: colors.primary.main }]}>
+                      {article.category}
+                    </Text>
+                  </View>
+                  <TouchableOpacity style={styles.bookmarkButton}>
+                    <BookmarkIcon color={colors.text.tertiary} />
+                  </TouchableOpacity>
                 </View>
+
+                {/* Title */}
                 <Text
                   style={[
                     styles.articleTitle,
@@ -293,6 +301,8 @@ export const ArticlesListScreen: React.FC = () => {
                 >
                   {article.title}
                 </Text>
+
+                {/* Bottom row: Author + Read time */}
                 <View style={styles.articleMeta}>
                   <Text style={[styles.articleAuthor, { color: colors.text.secondary }]}>
                     {article.author}
@@ -305,9 +315,6 @@ export const ArticlesListScreen: React.FC = () => {
                   </View>
                 </View>
               </View>
-              <TouchableOpacity style={styles.bookmarkButton}>
-                <BookmarkIcon color={colors.text.tertiary} />
-              </TouchableOpacity>
             </TouchableOpacity>
           ))}
 
@@ -411,7 +418,6 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   articleCard: {
-    flexDirection: 'row',
     borderRadius: 16,
     padding: 16,
     marginBottom: 12,
@@ -420,12 +426,16 @@ const styles = StyleSheet.create({
   articleContent: {
     flex: 1,
   },
+  articleTopRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 8,
+  },
   categoryBadge: {
-    alignSelf: 'flex-start',
     paddingHorizontal: 10,
     paddingVertical: 4,
     borderRadius: 8,
-    marginBottom: 8,
   },
   categoryBadgeText: {
     fontSize: 11,
@@ -449,7 +459,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
   },
   bookmarkButton: {
-    padding: 8,
+    padding: 4,
   },
 });
 
