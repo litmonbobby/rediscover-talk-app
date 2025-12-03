@@ -1,133 +1,385 @@
-import React from 'react';
-import { View, Text, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
-import { colors } from '../../constants/colors';
-import { typography } from '../../constants/typography';
-import { spacing } from '../../constants/spacing';
+/**
+ * Subscription Screen - Matches Figma design
+ * Premium subscription plans and features
+ * Supports both light and dark themes
+ */
+
+import React, { useState } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity,
+  StatusBar,
+} from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { useNavigation } from '@react-navigation/native';
 import { useTheme } from '../../theme/useTheme';
+import Svg, { Path, Circle } from 'react-native-svg';
 
-export const SubscriptionScreen = ({ navigation }: any) => {
-  const { colors: themeColors } = useTheme();
-  const plans = [
-    {
-      id: 'monthly',
-      name: 'Monthly',
-      price: '$4.99',
-      period: '/month',
-      features: [
-        'Unlimited AI coaching sessions',
-        'Access to all meditations',
-        'Advanced analytics & insights',
-        'Priority support',
-        'Offline mode',
-      ],
-      popular: false,
-    },
-    {
-      id: 'yearly',
-      name: 'Yearly',
-      price: '$49.99',
-      period: '/year',
-      savings: 'Save 16%',
-      features: [
-        'All Monthly features',
-        '2 months free',
-        'Exclusive content library',
-        'Family sharing (up to 5)',
-        'Early access to new features',
-      ],
-      popular: true,
-    },
-  ];
+// Back Arrow Icon
+const BackArrowIcon = ({ color = '#212121' }: { color?: string }) => (
+  <Svg width={24} height={24} viewBox="0 0 24 24" fill="none">
+    <Path
+      d="M19 12H5M12 19L5 12L12 5"
+      stroke={color}
+      strokeWidth={2}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </Svg>
+);
 
-  const freeFeatures = [
-    '3 AI coaching messages/day',
-    '5 guided meditations',
-    'Basic mood tracking',
-    'Limited insights',
-  ];
+// Check Icon
+const CheckIcon = ({ color = '#27AE60' }: { color?: string }) => (
+  <Svg width={20} height={20} viewBox="0 0 24 24" fill="none">
+    <Path
+      d="M20 6L9 17L4 12"
+      stroke={color}
+      strokeWidth={2}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </Svg>
+);
+
+// Crown Icon
+const CrownIcon = ({ color = '#FFD700' }: { color?: string }) => (
+  <Svg width={32} height={32} viewBox="0 0 24 24" fill="none">
+    <Path
+      d="M2 17L4 7L9 11L12 4L15 11L20 7L22 17H2Z"
+      stroke={color}
+      strokeWidth={2}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      fill={color}
+    />
+  </Svg>
+);
+
+// X Icon
+const XIcon = ({ color = '#E74C3C' }: { color?: string }) => (
+  <Svg width={20} height={20} viewBox="0 0 24 24" fill="none">
+    <Path
+      d="M18 6L6 18M6 6l12 12"
+      stroke={color}
+      strokeWidth={2}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </Svg>
+);
+
+interface Plan {
+  id: string;
+  name: string;
+  price: string;
+  period: string;
+  savings?: string;
+  popular?: boolean;
+}
+
+const plans: Plan[] = [
+  {
+    id: 'monthly',
+    name: 'Monthly',
+    price: '$9.99',
+    period: '/month',
+  },
+  {
+    id: 'yearly',
+    name: 'Yearly',
+    price: '$59.99',
+    period: '/year',
+    savings: 'Save 50%',
+    popular: true,
+  },
+  {
+    id: 'lifetime',
+    name: 'Lifetime',
+    price: '$149.99',
+    period: 'one-time',
+  },
+];
+
+interface Feature {
+  name: string;
+  free: boolean;
+  premium: boolean;
+}
+
+const features: Feature[] = [
+  { name: 'Basic mood tracking', free: true, premium: true },
+  { name: 'Limited meditations (10)', free: true, premium: true },
+  { name: 'Daily journal entries', free: true, premium: true },
+  { name: 'Unlimited meditations', free: false, premium: true },
+  { name: 'Advanced mood analytics', free: false, premium: true },
+  { name: 'Personalized insights', free: false, premium: true },
+  { name: 'Sleep sounds library', free: false, premium: true },
+  { name: 'Exclusive content', free: false, premium: true },
+  { name: 'Priority support', free: false, premium: true },
+  { name: 'Offline access', free: false, premium: true },
+];
+
+export const SubscriptionScreen: React.FC = () => {
+  const navigation = useNavigation();
+  const { colors, typography, isDarkMode } = useTheme();
+  const [selectedPlan, setSelectedPlan] = useState('yearly');
 
   return (
-    <View style={[styles.container, { backgroundColor: themeColors.background.primary }]}>
-      <ScrollView style={styles.scrollView}>
+    <>
+      <StatusBar
+        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
+        backgroundColor={colors.background.primary}
+      />
+      <SafeAreaView
+        style={[styles.container, { backgroundColor: colors.background.primary }]}
+        edges={['top', 'bottom']}
+      >
+        {/* Header */}
         <View style={styles.header}>
-          <TouchableOpacity onPress={() => navigation.goBack()}>
-            <Text style={styles.backText}>✕</Text>
+          <TouchableOpacity
+            style={styles.backButton}
+            onPress={() => navigation.goBack()}
+          >
+            <BackArrowIcon color={colors.text.primary} />
           </TouchableOpacity>
-          <Text style={styles.title}>Upgrade to Premium</Text>
-          <Text style={styles.subtitle}>Unlock your full potential</Text>
+          <Text
+            style={[
+              styles.headerTitle,
+              {
+                color: colors.text.primary,
+                fontFamily: typography.fontFamily.primary,
+              },
+            ]}
+          >
+            Premium
+          </Text>
+          <View style={styles.headerRight} />
         </View>
 
-        {/* Premium Plans */}
-        <View style={styles.plansContainer}>
-          {plans.map((plan) => (
-            <View key={plan.id} style={[styles.planCard, plan.popular && styles.planCardPopular]}>
-              {plan.popular && (
-                <View style={styles.popularBadge}>
-                  <LinearGradient
-                    colors={[colors.accent.lime, colors.accent.brightLime]}
-                    style={styles.popularGradient}
+        <ScrollView
+          contentContainerStyle={styles.scrollContent}
+          showsVerticalScrollIndicator={false}
+        >
+          {/* Hero Section */}
+          <View style={styles.heroSection}>
+            <View
+              style={[styles.crownContainer, { backgroundColor: colors.primary.main + '20' }]}
+            >
+              <CrownIcon color={colors.primary.main} />
+            </View>
+            <Text
+              style={[
+                styles.heroTitle,
+                {
+                  color: colors.text.primary,
+                  fontFamily: typography.fontFamily.primary,
+                },
+              ]}
+            >
+              Unlock Premium
+            </Text>
+            <Text style={[styles.heroSubtitle, { color: colors.text.secondary }]}>
+              Get unlimited access to all features and take your mental wellness
+              journey to the next level.
+            </Text>
+          </View>
+
+          {/* Plans */}
+          <View style={styles.plansContainer}>
+            {plans.map((plan) => (
+              <TouchableOpacity
+                key={plan.id}
+                style={[
+                  styles.planCard,
+                  {
+                    backgroundColor:
+                      selectedPlan === plan.id
+                        ? colors.primary.main
+                        : colors.background.card,
+                    borderColor:
+                      selectedPlan === plan.id
+                        ? colors.primary.main
+                        : colors.border.light,
+                  },
+                ]}
+                onPress={() => setSelectedPlan(plan.id)}
+                activeOpacity={0.8}
+              >
+                {plan.popular && (
+                  <View style={styles.popularBadge}>
+                    <Text style={styles.popularBadgeText}>BEST VALUE</Text>
+                  </View>
+                )}
+                <Text
+                  style={[
+                    styles.planName,
+                    {
+                      color: selectedPlan === plan.id ? '#FFFFFF' : colors.text.primary,
+                    },
+                  ]}
+                >
+                  {plan.name}
+                </Text>
+                <View style={styles.planPriceContainer}>
+                  <Text
+                    style={[
+                      styles.planPrice,
+                      {
+                        color: selectedPlan === plan.id ? '#FFFFFF' : colors.text.primary,
+                      },
+                    ]}
                   >
-                    <Text style={styles.popularText}>⭐ MOST POPULAR</Text>
-                  </LinearGradient>
-                </View>
-              )}
-              <View style={styles.planHeader}>
-                <Text style={styles.planName}>{plan.name}</Text>
-                <View style={styles.priceRow}>
-                  <Text style={styles.planPrice}>{plan.price}</Text>
-                  <Text style={styles.planPeriod}>{plan.period}</Text>
+                    {plan.price}
+                  </Text>
+                  <Text
+                    style={[
+                      styles.planPeriod,
+                      {
+                        color:
+                          selectedPlan === plan.id
+                            ? 'rgba(255,255,255,0.8)'
+                            : colors.text.tertiary,
+                      },
+                    ]}
+                  >
+                    {plan.period}
+                  </Text>
                 </View>
                 {plan.savings && (
-                  <Text style={styles.savings}>{plan.savings}</Text>
-                )}
-              </View>
-              <View style={styles.planFeatures}>
-                {plan.features.map((feature, index) => (
-                  <View key={index} style={styles.featureRow}>
-                    <Text style={styles.checkmark}>✓</Text>
-                    <Text style={styles.featureText}>{feature}</Text>
+                  <View
+                    style={[
+                      styles.savingsBadge,
+                      {
+                        backgroundColor:
+                          selectedPlan === plan.id
+                            ? 'rgba(255,255,255,0.2)'
+                            : colors.status.success + '20',
+                      },
+                    ]}
+                  >
+                    <Text
+                      style={[
+                        styles.savingsText,
+                        {
+                          color:
+                            selectedPlan === plan.id ? '#FFFFFF' : colors.status.success,
+                        },
+                      ]}
+                    >
+                      {plan.savings}
+                    </Text>
                   </View>
-                ))}
-              </View>
-              <TouchableOpacity style={styles.selectButton}>
-                <LinearGradient
-                  colors={plan.popular ? [colors.accent.lime, colors.accent.brightLime] : ['rgba(255, 255, 255, 0.1)', 'rgba(255, 255, 255, 0.1)']}
-                  style={styles.selectGradient}
-                >
-                  <Text style={[styles.selectButtonText, plan.popular && styles.selectButtonTextDark]}>
-                    Select {plan.name}
-                  </Text>
-                </LinearGradient>
+                )}
               </TouchableOpacity>
-            </View>
-          ))}
-        </View>
+            ))}
+          </View>
 
-        {/* Free Plan */}
-        <View style={styles.freePlanCard}>
-          <Text style={styles.freePlanTitle}>Continue with Free</Text>
-          <View style={styles.freeFeatures}>
-            {freeFeatures.map((feature, index) => (
-              <View key={index} style={styles.featureRow}>
-                <Text style={styles.checkmarkGray}>✓</Text>
-                <Text style={styles.freeFeatureText}>{feature}</Text>
+          {/* Features Comparison */}
+          <Text
+            style={[
+              styles.sectionTitle,
+              {
+                color: colors.text.primary,
+                fontFamily: typography.fontFamily.primary,
+              },
+            ]}
+          >
+            What's Included
+          </Text>
+
+          <View
+            style={[
+              styles.featuresContainer,
+              { backgroundColor: colors.background.card, borderColor: colors.border.light },
+            ]}
+          >
+            {/* Header Row */}
+            <View style={[styles.featureRow, styles.featureHeaderRow]}>
+              <Text style={[styles.featureHeaderText, { color: colors.text.primary }]}>
+                Feature
+              </Text>
+              <View style={styles.featureCompare}>
+                <Text style={[styles.featureHeaderText, { color: colors.text.tertiary }]}>
+                  Free
+                </Text>
+                <Text style={[styles.featureHeaderText, { color: colors.primary.main }]}>
+                  Premium
+                </Text>
+              </View>
+            </View>
+
+            {/* Feature Rows */}
+            {features.map((feature, index) => (
+              <View
+                key={feature.name}
+                style={[
+                  styles.featureRow,
+                  index !== features.length - 1 && {
+                    borderBottomColor: colors.border.light,
+                    borderBottomWidth: 1,
+                  },
+                ]}
+              >
+                <Text
+                  style={[styles.featureName, { color: colors.text.secondary }]}
+                  numberOfLines={1}
+                >
+                  {feature.name}
+                </Text>
+                <View style={styles.featureCompare}>
+                  <View style={styles.featureIcon}>
+                    {feature.free ? (
+                      <CheckIcon color={colors.status.success} />
+                    ) : (
+                      <XIcon color={colors.status.error} />
+                    )}
+                  </View>
+                  <View style={styles.featureIcon}>
+                    {feature.premium ? (
+                      <CheckIcon color={colors.status.success} />
+                    ) : (
+                      <XIcon color={colors.status.error} />
+                    )}
+                  </View>
+                </View>
               </View>
             ))}
           </View>
-        </View>
 
-        {/* Footer */}
-        <View style={styles.footer}>
-          <Text style={styles.footerText}>
-            7-day free trial • Cancel anytime
+          {/* Terms */}
+          <Text style={[styles.terms, { color: colors.text.tertiary }]}>
+            Cancel anytime. Subscription automatically renews unless canceled at
+            least 24 hours before the end of the current period.
           </Text>
-          <Text style={styles.termsText}>
-            By continuing, you agree to our Terms of Service and Privacy Policy
-          </Text>
+
+          {/* Bottom spacing */}
+          <View style={{ height: 100 }} />
+        </ScrollView>
+
+        {/* Subscribe Button */}
+        <View
+          style={[
+            styles.subscribeContainer,
+            { backgroundColor: colors.background.primary, borderTopColor: colors.border.light },
+          ]}
+        >
+          <TouchableOpacity
+            style={[styles.subscribeButton, { backgroundColor: colors.primary.main }]}
+            activeOpacity={0.9}
+          >
+            <Text style={styles.subscribeButtonText}>Subscribe Now</Text>
+          </TouchableOpacity>
+          <TouchableOpacity>
+            <Text style={[styles.restoreText, { color: colors.primary.main }]}>
+              Restore Purchases
+            </Text>
+          </TouchableOpacity>
         </View>
-      </ScrollView>
-    </View>
+      </SafeAreaView>
+    </>
   );
 };
 
@@ -135,160 +387,171 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  scrollView: {
-    flex: 1,
-  },
   header: {
-    padding: spacing.xl,
-    paddingTop: spacing['4xl'],
+    flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
   },
-  backText: {
-    ...typography.h2,
-    color: colors.text.primary,
-    alignSelf: 'flex-start',
-    marginBottom: spacing.md,
+  backButton: {
+    padding: 8,
   },
-  title: {
-    ...typography.h1,
-    color: colors.text.primary,
-    marginBottom: spacing.xs,
+  headerTitle: {
+    fontSize: 18,
+    fontWeight: '600',
   },
-  subtitle: {
-    ...typography.body,
-    color: colors.text.secondary,
+  headerRight: {
+    width: 40,
+  },
+  scrollContent: {
+    paddingHorizontal: 24,
+  },
+  heroSection: {
+    alignItems: 'center',
+    paddingVertical: 24,
+  },
+  crownContainer: {
+    width: 72,
+    height: 72,
+    borderRadius: 36,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  heroTitle: {
+    fontSize: 28,
+    fontWeight: '700',
+    marginBottom: 12,
+  },
+  heroSubtitle: {
+    fontSize: 15,
+    textAlign: 'center',
+    lineHeight: 22,
   },
   plansContainer: {
-    padding: spacing.md,
-    gap: spacing.md,
+    flexDirection: 'row',
+    gap: 12,
+    marginBottom: 32,
   },
   planCard: {
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderRadius: spacing.borderRadius.lg,
-    padding: spacing.lg,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
-    position: 'relative',
-  },
-  planCardPopular: {
-    borderColor: colors.accent.lime,
+    flex: 1,
+    borderRadius: 16,
+    padding: 16,
+    alignItems: 'center',
     borderWidth: 2,
+    position: 'relative',
   },
   popularBadge: {
     position: 'absolute',
     top: -12,
-    left: '50%',
-    transform: [{ translateX: -60 }],
-    borderRadius: spacing.borderRadius.full,
-    overflow: 'hidden',
+    backgroundColor: '#FFD700',
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 10,
   },
-  popularGradient: {
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.xs,
-  },
-  popularText: {
-    ...typography.caption,
-    fontWeight: 'bold',
-    color: colors.primary.darkBlue,
-  },
-  planHeader: {
-    marginBottom: spacing.lg,
+  popularBadgeText: {
+    color: '#000000',
+    fontSize: 10,
+    fontWeight: '700',
   },
   planName: {
-    ...typography.h2,
-    color: colors.text.primary,
-    marginBottom: spacing.sm,
+    fontSize: 14,
+    fontWeight: '600',
+    marginBottom: 8,
+    marginTop: 4,
   },
-  priceRow: {
-    flexDirection: 'row',
-    alignItems: 'baseline',
+  planPriceContainer: {
+    alignItems: 'center',
   },
   planPrice: {
-    ...typography.h1,
-    fontSize: 36,
-    color: colors.accent.lime,
+    fontSize: 20,
+    fontWeight: '700',
   },
   planPeriod: {
-    ...typography.body,
-    color: colors.text.secondary,
-    marginLeft: spacing.xs,
+    fontSize: 12,
   },
-  savings: {
-    ...typography.bodyBold,
-    color: colors.accent.lime,
-    marginTop: spacing.xs,
+  savingsBadge: {
+    marginTop: 8,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 8,
   },
-  planFeatures: {
-    marginBottom: spacing.lg,
-    gap: spacing.sm,
+  savingsText: {
+    fontSize: 11,
+    fontWeight: '600',
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    marginBottom: 16,
+  },
+  featuresContainer: {
+    borderRadius: 16,
+    overflow: 'hidden',
+    borderWidth: 1,
+    marginBottom: 16,
   },
   featureRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: spacing.sm,
+    justifyContent: 'space-between',
+    paddingVertical: 12,
+    paddingHorizontal: 16,
   },
-  checkmark: {
-    color: colors.accent.lime,
-    fontSize: 18,
+  featureHeaderRow: {
+    paddingVertical: 16,
   },
-  checkmarkGray: {
-    color: colors.text.tertiary,
-    fontSize: 18,
+  featureHeaderText: {
+    fontSize: 13,
+    fontWeight: '600',
   },
-  featureText: {
-    ...typography.body,
-    color: colors.text.primary,
+  featureName: {
+    fontSize: 14,
     flex: 1,
   },
-  freeFeatureText: {
-    ...typography.body,
-    color: colors.text.secondary,
-    flex: 1,
+  featureCompare: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    width: 120,
+    justifyContent: 'space-around',
   },
-  selectButton: {
-    borderRadius: spacing.borderRadius.lg,
-    overflow: 'hidden',
-  },
-  selectGradient: {
-    paddingVertical: spacing.md,
+  featureIcon: {
+    width: 40,
     alignItems: 'center',
   },
-  selectButtonText: {
-    ...typography.h3,
-    color: colors.text.primary,
+  terms: {
+    fontSize: 12,
+    textAlign: 'center',
+    lineHeight: 18,
+    marginBottom: 24,
   },
-  selectButtonTextDark: {
-    color: colors.primary.darkBlue,
-  },
-  freePlanCard: {
-    backgroundColor: 'rgba(255, 255, 255, 0.03)',
-    margin: spacing.md,
-    padding: spacing.lg,
-    borderRadius: spacing.borderRadius.lg,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.05)',
-  },
-  freePlanTitle: {
-    ...typography.h3,
-    color: colors.text.secondary,
-    marginBottom: spacing.md,
-  },
-  freeFeatures: {
-    gap: spacing.sm,
-  },
-  footer: {
-    padding: spacing.xl,
+  subscribeContainer: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    padding: 24,
+    paddingBottom: 32,
+    borderTopWidth: 1,
     alignItems: 'center',
-    gap: spacing.sm,
   },
-  footerText: {
-    ...typography.body,
-    color: colors.text.secondary,
-    textAlign: 'center',
+  subscribeButton: {
+    width: '100%',
+    paddingVertical: 16,
+    borderRadius: 28,
+    alignItems: 'center',
+    marginBottom: 12,
   },
-  termsText: {
-    ...typography.caption,
-    color: colors.text.tertiary,
-    textAlign: 'center',
+  subscribeButtonText: {
+    color: '#FFFFFF',
+    fontSize: 17,
+    fontWeight: '600',
+  },
+  restoreText: {
+    fontSize: 14,
+    fontWeight: '500',
   },
 });
+
+export default SubscriptionScreen;

@@ -1,6 +1,10 @@
+/**
+ * Auth Screens - Barrel export file
+ * Exports all authentication-related screens
+ */
+
 export { SplashScreen } from './SplashScreen';
 export { OnboardingScreen } from './OnboardingScreen';
 export { WelcomeScreen } from './WelcomeScreen';
 export { SignUpScreen } from './SignUpScreen';
-export { LoginScreen } from './LoginScreen';
-export { GoalSelectionScreen } from './GoalSelectionScreen';
+export { SignInScreen } from './SignInScreen';

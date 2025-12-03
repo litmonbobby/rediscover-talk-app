@@ -1,231 +1,106 @@
-import React from 'react';
+/**
+ * Preferences Screen - App preferences
+ */
+
+import React, { useState } from 'react';
 import {
   View,
-  StyleSheet,
-  Dimensions,
-  TouchableOpacity,
-  Image,
-  SafeAreaView,
-  ScrollView,
   Text,
+  StyleSheet,
+  SafeAreaView,
+  TouchableOpacity,
+  Switch,
+  ScrollView,
 } from 'react-native';
-import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { useNavigation } from '@react-navigation/native';
 import { useTheme } from '../../theme/useTheme';
-import { getThemedScreenImage } from '../../theme/getThemeImage';
-import { colors } from '../../constants';
 
-const { width, height } = Dimensions.get('window');
+export const PreferencesScreen: React.FC = () => {
+  const navigation = useNavigation();
+  const { colors } = useTheme();
 
-type Props = NativeStackScreenProps<any, 'Preferences'>;
+  const [preferences, setPreferences] = useState({
+    notifications: true,
+    sounds: true,
+    haptics: true,
+    autoPlay: false,
+    showTips: true,
+  });
 
-interface PreferenceItem {
-  id: string;
-  icon: string;
-  title: string;
-  subtitle?: string;
-  navigateTo: string;
-}
-
-const PREFERENCE_ITEMS: PreferenceItem[] = [
-  {
-    id: 'p1',
-    icon: '📱',
-    title: 'App Appearance',
-    subtitle: 'Customize theme and display settings',
-    navigateTo: 'AppAppearance',
-  },
-  {
-    id: 'p2',
-    icon: '🌐',
-    title: 'Language',
-    subtitle: 'Change app language',
-    navigateTo: 'AppLanguage',
-  },
-  {
-    id: 'p3',
-    icon: '🔔',
-    title: 'Daily Reminder',
-    subtitle: 'Set your daily check-in time',
-    navigateTo: 'DailyReminder',
-  },
-  {
-    id: 'p4',
-    icon: '🎨',
-    title: 'App Theme',
-    subtitle: 'Light or dark mode',
-    navigateTo: 'AppTheme',
-  },
-];
-
-export const PreferencesScreen: React.FC<Props> = ({ navigation }) => {
-  const { colors, isDarkMode } = useTheme();
-
-  const handleBack = () => {
-    navigation.goBack();
+  const togglePreference = (key: keyof typeof preferences) => {
+    setPreferences(prev => ({ ...prev, [key]: !prev[key] }));
   };
 
-  const handleNavigate = (screen: string) => {
-    navigation.navigate(screen);
-  };
+  const preferenceItems = [
+    { key: 'notifications' as const, title: 'Push Notifications', description: 'Receive reminders and updates' },
+    { key: 'sounds' as const, title: 'In-App Sounds', description: 'Play sounds during exercises' },
+    { key: 'haptics' as const, title: 'Haptic Feedback', description: 'Vibration on interactions' },
+    { key: 'autoPlay' as const, title: 'Auto-play Content', description: 'Automatically play meditations' },
+    { key: 'showTips' as const, title: 'Show Tips', description: 'Display helpful tips in the app' },
+  ];
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background.primary }]}>
-      <Image
-        source={getThemedScreenImage('Preferences', isDarkMode)}
-        style={styles.backgroundImage}
-        resizeMode="cover"
-      />
-
-      {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity
-          style={styles.backButton}
-          onPress={handleBack}
-          activeOpacity={0.7}
-        >
-          <Text style={styles.backButtonText}>←</Text>
+        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+          <Text style={[styles.backText, { color: colors.text.primary }]}>←</Text>
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Preferences</Text>
-        <View style={styles.headerSpacer} />
+        <Text style={[styles.headerTitle, { color: colors.text.primary }]}>Preferences</Text>
+        <View style={styles.placeholder} />
       </View>
 
-      <ScrollView
-        style={styles.scrollView}
-        contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={false}
-      >
-        <Text style={styles.title}>App Preferences</Text>
-        <Text style={styles.subtitle}>
-          Customize your app experience
-        </Text>
-
-        {/* Preference Menu Items */}
-        <View style={styles.menuContainer}>
-          {PREFERENCE_ITEMS.map((item) => (
-            <TouchableOpacity
-              key={item.id}
-              style={styles.menuItem}
-              onPress={() => handleNavigate(item.navigateTo)}
-              activeOpacity={0.7}
-            >
-              <Text style={styles.menuIcon}>{item.icon}</Text>
-              <View style={styles.menuContent}>
-                <Text style={styles.menuTitle}>{item.title}</Text>
-                {item.subtitle && (
-                  <Text style={styles.menuSubtitle}>{item.subtitle}</Text>
-                )}
-              </View>
-              <Text style={styles.menuArrow}>→</Text>
-            </TouchableOpacity>
-          ))}
-        </View>
+      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+        {preferenceItems.map((item) => (
+          <View
+            key={item.key}
+            style={[styles.preferenceCard, { backgroundColor: colors.background.card }]}
+          >
+            <View style={styles.preferenceInfo}>
+              <Text style={[styles.preferenceTitle, { color: colors.text.primary }]}>
+                {item.title}
+              </Text>
+              <Text style={[styles.preferenceDescription, { color: colors.text.secondary }]}>
+                {item.description}
+              </Text>
+            </View>
+            <Switch
+              value={preferences[item.key]}
+              onValueChange={() => togglePreference(item.key)}
+              trackColor={{ false: '#E0E0E0', true: 'rgba(158,181,103,0.4)' }}
+              thumbColor={preferences[item.key] ? '#9EB567' : '#f4f3f4'}
+            />
+          </View>
+        ))}
       </ScrollView>
     </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#FFFFFF',
-  },
-  backgroundImage: {
-    width,
-    height,
-    position: 'absolute',
-    opacity: 0.1,
-  },
+  container: { flex: 1 },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingTop: 60,
-    paddingBottom: 16,
     paddingHorizontal: 20,
-    backgroundColor: 'rgba(255, 255, 255, 0.98)',
-    borderBottomWidth: 1,
-    borderBottomColor: '#E0E0E0',
+    paddingVertical: 16,
   },
-  backButton: {
-    width: 40,
-    height: 40,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: 20,
-    backgroundColor: '#F5F5F5',
-  },
-  backButtonText: {
-    fontSize: 24,
-    color: colors.primary.DEFAULT,
-  },
-  headerTitle: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: '#1A1A1A',
-    flex: 1,
-    textAlign: 'center',
-  },
-  headerSpacer: {
-    width: 40,
-  },
-  scrollView: {
-    flex: 1,
-  },
-  scrollContent: {
-    padding: 20,
-    paddingBottom: 40,
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: '700',
-    color: '#1A1A1A',
-    marginBottom: 8,
-    textAlign: 'center',
-  },
-  subtitle: {
-    fontSize: 16,
-    color: '#666',
-    marginBottom: 32,
-    textAlign: 'center',
-    lineHeight: 24,
-  },
-  menuContainer: {
-    gap: 12,
-  },
-  menuItem: {
+  backButton: { width: 40 },
+  backText: { fontSize: 24 },
+  headerTitle: { fontSize: 18, fontWeight: '600' },
+  placeholder: { width: 40 },
+  content: { flex: 1, paddingHorizontal: 20 },
+  preferenceCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(255, 255, 255, 0.98)',
-    borderRadius: 16,
-    padding: 20,
-    borderWidth: 1,
-    borderColor: '#E0E0E0',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    justifyContent: 'space-between',
+    padding: 16,
+    borderRadius: 12,
+    marginBottom: 10,
   },
-  menuIcon: {
-    fontSize: 32,
-    marginRight: 16,
-  },
-  menuContent: {
-    flex: 1,
-  },
-  menuTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#1A1A1A',
-    marginBottom: 4,
-  },
-  menuSubtitle: {
-    fontSize: 14,
-    color: '#666',
-    lineHeight: 20,
-  },
-  menuArrow: {
-    fontSize: 24,
-    color: colors.primary.DEFAULT,
-  },
+  preferenceInfo: { flex: 1, marginRight: 16 },
+  preferenceTitle: { fontSize: 16, fontWeight: '600', marginBottom: 4 },
+  preferenceDescription: { fontSize: 13 },
 });
+
+export default PreferencesScreen;

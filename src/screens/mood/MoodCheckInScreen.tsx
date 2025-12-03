@@ -1,156 +1,219 @@
-import React, { useState } from 'react';
+/**
+ * Mood Check-In Screen - Exact Figma Recreation
+ * Matches 28-light-how-do-you-feel-today-not-good.png and 29-light-how-do-you-feel-today-good.png
+ */
+
+import React, { useState, useEffect } from 'react';
 import {
   View,
+  Text,
   StyleSheet,
   TouchableOpacity,
-  SafeAreaView,
   Image,
+  SafeAreaView,
+  StatusBar,
   Dimensions,
-  Text,
-  TextInput,
-  ScrollView,
-  KeyboardAvoidingView,
-  Platform,
-  ImageSourcePropType,
 } from 'react-native';
-import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { Button } from '../../components/core/Button';
-import { colors } from '../../constants';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import Svg, { Path, Circle } from 'react-native-svg';
 import { useTheme } from '../../theme/useTheme';
-import { getThemedScreenImage } from '../../theme/getThemeImage';
-import { moodIcons, MoodKey, moodColors } from '../../assets/moodIcons';
+import { useMoodStore, MoodLevel, MoodName } from '../../store/moodStore';
 
-const { width, height } = Dimensions.get('window');
+const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
-type Props = NativeStackScreenProps<any, 'MoodCheckIn'>;
+type MoodStackParamList = {
+  MoodCheckIn: undefined;
+  MoodReason: undefined;
+  MoodFeeling: undefined;
+  MoodNotes: undefined;
+  Home: undefined;
+};
 
-interface Mood {
-  icon: ImageSourcePropType;
-  label: string;
-  value: MoodKey;
+type NavigationProp = NativeStackNavigationProp<MoodStackParamList, 'MoodCheckIn'>;
+
+// Mood indicator assets
+const moodAssets = {
+  bad: require('../../figma-extracted/assets/components/mood-indicators/mood-bad-component-mood-indicator.png'),
+  notGood: require('../../figma-extracted/assets/components/mood-indicators/mood-not-good-component-mood-indicator.png'),
+  okay: require('../../figma-extracted/assets/components/mood-indicators/mood-okay-component-mood-indicator.png'),
+  good: require('../../figma-extracted/assets/components/mood-indicators/mood-good-component-mood-indicator.png'),
+  great: require('../../figma-extracted/assets/components/mood-indicators/mood-great-component-mood-indicator.png'),
+};
+
+// Mood data matching Figma design
+interface MoodItem {
+  id: number;
+  name: string;
+  image: any;
   color: string;
 }
 
-export const MoodCheckInScreen: React.FC<Props> = ({ navigation }) => {
-  const { colors: themeColors, isDarkMode } = useTheme();
-  const [selectedMood, setSelectedMood] = useState<MoodKey | null>(null);
-  const [note, setNote] = useState('');
-  const [loading, setLoading] = useState(false);
+const moods: MoodItem[] = [
+  { id: 1, name: 'Bad', image: moodAssets.bad, color: '#FF6B6B' },
+  { id: 2, name: 'Not Good', image: moodAssets.notGood, color: '#FFA06B' },
+  { id: 3, name: 'Okay', image: moodAssets.okay, color: '#FFD36B' },
+  { id: 4, name: 'Good', image: moodAssets.good, color: '#9EB567' },
+  { id: 5, name: 'Great', image: moodAssets.great, color: '#6BCB77' },
+];
 
-  // Real Figma mood icons
-  const moods: Mood[] = [
-    { icon: moodIcons.great, label: 'Great', value: 'great', color: moodColors.great },
-    { icon: moodIcons.good, label: 'Good', value: 'good', color: moodColors.good },
-    { icon: moodIcons.okay, label: 'Okay', value: 'okay', color: moodColors.okay },
-    { icon: moodIcons.notGood, label: 'Not Good', value: 'notGood', color: moodColors.notGood },
-    { icon: moodIcons.bad, label: 'Bad', value: 'bad', color: moodColors.bad },
-  ];
+// Close Icon
+const CloseIcon: React.FC<{ size?: number; color?: string }> = ({ size = 24, color = '#333' }) => (
+  <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+    <Path
+      d="M18 6L6 18M6 6L18 18"
+      stroke={color}
+      strokeWidth={2}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </Svg>
+);
 
-  const handleSaveMood = async () => {
-    if (!selectedMood) return;
+export const MoodCheckInScreen: React.FC = () => {
+  const navigation = useNavigation<NavigationProp>();
+  const { colors, isDarkMode } = useTheme();
+  const [selectedMood, setSelectedMood] = useState<number | null>(null);
 
-    setLoading(true);
+  // Get moodStore actions
+  const { setMoodLevel, resetCurrentCheckIn, initialize, isInitialized } = useMoodStore();
 
-    // Simulate API call to save mood
-    setTimeout(() => {
-      setLoading(false);
-      console.log('Saved mood:', selectedMood, 'Note:', note);
-      navigation.goBack();
-    }, 1500);
-  };
+  // Initialize moodStore on mount
+  useEffect(() => {
+    if (!isInitialized) {
+      initialize();
+    }
+    // Reset current check-in when screen mounts
+    resetCurrentCheckIn();
+  }, []);
 
-  const handleBack = () => {
+  const handleClose = () => {
+    resetCurrentCheckIn();
     navigation.goBack();
   };
 
+  const handleMoodSelect = (moodId: number) => {
+    setSelectedMood(moodId);
+    // Map mood id to level and name
+    const moodMap: Record<number, { level: MoodLevel; name: MoodName }> = {
+      1: { level: 1, name: 'Bad' },
+      2: { level: 2, name: 'Not Good' },
+      3: { level: 3, name: 'Okay' },
+      4: { level: 4, name: 'Good' },
+      5: { level: 5, name: 'Great' },
+    };
+    const mood = moodMap[moodId];
+    if (mood) {
+      setMoodLevel(mood.level, mood.name);
+    }
+  };
+
+  const handleContinue = () => {
+    if (selectedMood) {
+      navigation.navigate('MoodReason');
+    }
+  };
+
+  const handleSkip = () => {
+    resetCurrentCheckIn();
+    navigation.goBack();
+  };
+
+  const selectedMoodData = moods.find((m) => m.id === selectedMood);
+
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: themeColors.background.primary }]}>
-      <Image
-        source={getThemedScreenImage('MoodCheckInBad', isDarkMode)}
-        style={styles.backgroundImage}
-        resizeMode="cover"
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background.primary }]}>
+      <StatusBar
+        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
+        backgroundColor={colors.background.primary}
       />
 
-      {/* Back Button */}
-      <TouchableOpacity
-        style={styles.backButton}
-        onPress={handleBack}
-        activeOpacity={0.7}
-      >
-        <Text style={styles.backButtonText}>←</Text>
+      {/* Close Button */}
+      <TouchableOpacity style={styles.closeButton} onPress={handleClose}>
+        <CloseIcon size={24} color={colors.text.primary} />
       </TouchableOpacity>
 
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        style={styles.keyboardView}
-      >
-        <ScrollView
-          style={styles.scrollView}
-          contentContainerStyle={styles.scrollContent}
-          keyboardShouldPersistTaps="handled"
-        >
-          <View style={styles.formContainer}>
-            <Text style={styles.titleText}>How do you feel today?</Text>
-            <Text style={styles.subtitleText}>Select your current mood</Text>
+      {/* Main Content */}
+      <View style={styles.content}>
+        {/* Title */}
+        <Text style={[styles.title, { color: colors.text.primary }]}>
+          How do you feel today?
+        </Text>
 
-            {/* Mood Selector Grid - Real Figma Icons */}
-            <View style={styles.moodContainer}>
-              {moods.map((mood) => (
-                <TouchableOpacity
-                  key={mood.value}
-                  style={[
-                    styles.moodButton,
-                    selectedMood === mood.value && {
-                      backgroundColor: mood.color + '20',
-                      borderColor: mood.color,
-                      borderWidth: 2,
-                    },
-                  ]}
-                  onPress={() => setSelectedMood(mood.value)}
-                  activeOpacity={0.7}
-                >
-                  <Image
-                    source={mood.icon}
-                    style={styles.moodIcon}
-                    resizeMode="contain"
-                  />
-                  <Text style={[
-                    styles.moodLabel,
-                    selectedMood === mood.value && { color: mood.color, fontWeight: '700' }
-                  ]}>
-                    {mood.label}
-                  </Text>
-                </TouchableOpacity>
-              ))}
+        {/* Selected Mood Display */}
+        <View style={styles.selectedMoodContainer}>
+          {selectedMood ? (
+            <>
+              <Image
+                source={selectedMoodData?.image}
+                style={styles.selectedMoodImage}
+                resizeMode="contain"
+              />
+              <Text style={[styles.selectedMoodText, { color: selectedMoodData?.color }]}>
+                {selectedMoodData?.name}
+              </Text>
+            </>
+          ) : (
+            <View style={styles.placeholderCircle}>
+              <Text style={[styles.placeholderText, { color: colors.text.secondary }]}>
+                Select a mood
+              </Text>
             </View>
+          )}
+        </View>
 
-            {/* Optional Note Input */}
-            <Text style={styles.noteLabel}>Add a note (optional)</Text>
-            <TextInput
-              style={styles.noteInput}
-              value={note}
-              onChangeText={setNote}
-              placeholder="How are you feeling? What's on your mind?"
-              placeholderTextColor="#999"
-              multiline
-              numberOfLines={4}
-              textAlignVertical="top"
-            />
+        {/* Mood Selector Row */}
+        <View style={styles.moodRow}>
+          {moods.map((mood) => (
+            <TouchableOpacity
+              key={mood.id}
+              style={[
+                styles.moodButton,
+                selectedMood === mood.id && styles.moodButtonSelected,
+                selectedMood === mood.id && { borderColor: mood.color },
+              ]}
+              onPress={() => handleMoodSelect(mood.id)}
+              activeOpacity={0.7}
+            >
+              <Image source={mood.image} style={styles.moodImage} resizeMode="contain" />
+            </TouchableOpacity>
+          ))}
+        </View>
 
-            {/* Save Button */}
-            <Button
-              title="Save Mood"
-              onPress={handleSaveMood}
-              variant="primary"
-              size="large"
-              fullWidth
-              loading={loading}
-              disabled={!selectedMood}
-              style={styles.saveButton}
-            />
-          </View>
-        </ScrollView>
-      </KeyboardAvoidingView>
+        {/* Mood Labels */}
+        <View style={styles.moodLabelsRow}>
+          <Text style={[styles.moodLabel, { color: colors.text.secondary }]}>Bad</Text>
+          <Text style={[styles.moodLabel, { color: colors.text.secondary }]}>Great</Text>
+        </View>
+      </View>
+
+      {/* Bottom Section */}
+      <View style={styles.bottomSection}>
+        {/* Skip Button */}
+        <TouchableOpacity onPress={handleSkip}>
+          <Text style={[styles.skipText, { color: colors.text.secondary }]}>Skip</Text>
+        </TouchableOpacity>
+
+        {/* Continue Button */}
+        <TouchableOpacity
+          style={[
+            styles.continueButton,
+            { backgroundColor: selectedMood ? '#9EB567' : colors.background.secondary },
+          ]}
+          onPress={handleContinue}
+          disabled={!selectedMood}
+          activeOpacity={0.8}
+        >
+          <Text
+            style={[
+              styles.continueButtonText,
+              { color: selectedMood ? '#FFFFFF' : colors.text.secondary },
+            ]}
+          >
+            Continue
+          </Text>
+        </TouchableOpacity>
+      </View>
     </SafeAreaView>
   );
 };
@@ -158,105 +221,110 @@ export const MoodCheckInScreen: React.FC<Props> = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
   },
-  backgroundImage: {
-    width,
-    height,
-    position: 'absolute',
-    opacity: 0.15,
-  },
-  backButton: {
+  closeButton: {
     position: 'absolute',
     top: 60,
     left: 20,
-    width: 50,
-    height: 50,
-    justifyContent: 'center',
+    width: 44,
+    height: 44,
     alignItems: 'center',
-    borderRadius: 25,
-    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+    justifyContent: 'center',
     zIndex: 10,
   },
-  backButtonText: {
-    fontSize: 24,
-    color: colors.primary.DEFAULT,
-  },
-  keyboardView: {
+  content: {
     flex: 1,
-  },
-  scrollView: {
-    flex: 1,
-  },
-  scrollContent: {
-    flexGrow: 1,
-    justifyContent: 'center',
     paddingHorizontal: 24,
-    paddingVertical: 40,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
-  formContainer: {
-    backgroundColor: 'rgba(255, 255, 255, 0.98)',
-    borderRadius: 24,
-    padding: 32,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.12,
-    shadowRadius: 16,
-    elevation: 8,
-  },
-  titleText: {
+  title: {
     fontSize: 28,
     fontWeight: '700',
-    color: '#1A1A1A',
-    marginBottom: 8,
     textAlign: 'center',
+    marginBottom: 48,
   },
-  subtitleText: {
-    fontSize: 16,
-    color: '#666',
-    marginBottom: 24,
-    textAlign: 'center',
-  },
-  moodContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 24,
-  },
-  moodButton: {
+  selectedMoodContainer: {
     alignItems: 'center',
     justifyContent: 'center',
-    padding: 12,
-    borderRadius: 12,
-    backgroundColor: '#F5F5F5',
-    flex: 1,
-    marginHorizontal: 4,
+    height: 180,
+    marginBottom: 48,
   },
-  moodIcon: {
-    width: 40,
-    height: 40,
-    marginBottom: 4,
+  selectedMoodImage: {
+    width: 120,
+    height: 120,
+    marginBottom: 16,
+  },
+  selectedMoodText: {
+    fontSize: 24,
+    fontWeight: '600',
+  },
+  placeholderCircle: {
+    width: 120,
+    height: 120,
+    borderRadius: 60,
+    backgroundColor: '#F5F5F5',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  placeholderText: {
+    fontSize: 14,
+    textAlign: 'center',
+  },
+  moodRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%',
+    paddingHorizontal: 8,
+    marginBottom: 12,
+  },
+  moodButton: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 3,
+    borderColor: 'transparent',
+  },
+  moodButtonSelected: {
+    borderWidth: 3,
+  },
+  moodImage: {
+    width: 48,
+    height: 48,
+  },
+  moodLabelsRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%',
+    paddingHorizontal: 16,
   },
   moodLabel: {
-    fontSize: 12,
-    color: '#666',
+    fontSize: 13,
     fontWeight: '500',
   },
-  noteLabel: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#333',
-    marginBottom: 8,
+  bottomSection: {
+    paddingHorizontal: 24,
+    paddingBottom: 40,
+    alignItems: 'center',
   },
-  noteInput: {
-    backgroundColor: '#F5F5F5',
-    borderRadius: 12,
-    padding: 16,
+  skipText: {
     fontSize: 16,
-    color: '#333',
-    minHeight: 100,
-    marginBottom: 24,
+    fontWeight: '500',
+    marginBottom: 16,
   },
-  saveButton: {
-    marginTop: 8,
+  continueButton: {
+    width: '100%',
+    height: 56,
+    borderRadius: 28,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  continueButtonText: {
+    fontSize: 18,
+    fontWeight: '600',
   },
 });
+
+export default MoodCheckInScreen;

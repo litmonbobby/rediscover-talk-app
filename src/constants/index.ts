@@ -31,8 +31,8 @@ export { figmaColors } from './figma-colors';
 export { colors as Colors } from './colors';
 export { typography as Typography } from './typography';
 export { spacing as Spacing } from './spacing';
-export { BorderRadius } from './spacing';
-export { Shadows } from './spacing';
+export { borderRadius as BorderRadius } from './design-system';
+export { shadows as Shadows } from './design-system';
 
 export const Layout = {
   window: {

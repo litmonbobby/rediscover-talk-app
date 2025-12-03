@@ -1,6 +1,20 @@
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { ProfileScreen, SettingsScreen, HelpScreen, AboutScreen } from '../../screens/profile';
+import {
+  ProfileScreen,
+  SettingsScreen,
+  HelpScreen,
+  AboutScreen,
+  MyBadgesScreen,
+  DailyReminderScreen,
+  PreferencesScreen,
+  AccountSecurityScreen,
+  BillingScreen,
+  LinkedAccountsScreen,
+  AppAppearanceScreen,
+  DataAnalyticsScreen,
+  AppleHealthScreen,
+} from '../../screens/profile';
 import { SubscriptionScreen, PaymentMethodsScreen } from '../../screens/subscription';
 
 export type ProfileStackParamList = {
@@ -10,6 +24,15 @@ export type ProfileStackParamList = {
   About: undefined;
   Subscription: undefined;
   PaymentMethods: undefined;
+  MyBadges: undefined;
+  DailyReminder: undefined;
+  Preferences: undefined;
+  AccountSecurity: undefined;
+  Billing: undefined;
+  LinkedAccounts: undefined;
+  AppAppearance: undefined;
+  DataAnalytics: undefined;
+  AppleHealth: undefined;
 };
 
 const Stack = createNativeStackNavigator<ProfileStackParamList>();
@@ -28,6 +51,15 @@ export const ProfileStackNavigator = () => {
       <Stack.Screen name="About" component={AboutScreen} />
       <Stack.Screen name="Subscription" component={SubscriptionScreen} />
       <Stack.Screen name="PaymentMethods" component={PaymentMethodsScreen} />
+      <Stack.Screen name="MyBadges" component={MyBadgesScreen} />
+      <Stack.Screen name="DailyReminder" component={DailyReminderScreen} />
+      <Stack.Screen name="Preferences" component={PreferencesScreen} />
+      <Stack.Screen name="AccountSecurity" component={AccountSecurityScreen} />
+      <Stack.Screen name="Billing" component={BillingScreen} />
+      <Stack.Screen name="LinkedAccounts" component={LinkedAccountsScreen} />
+      <Stack.Screen name="AppAppearance" component={AppAppearanceScreen} />
+      <Stack.Screen name="DataAnalytics" component={DataAnalyticsScreen} />
+      <Stack.Screen name="AppleHealth" component={AppleHealthScreen} />
     </Stack.Navigator>
   );
 };

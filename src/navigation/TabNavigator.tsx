@@ -1,38 +1,83 @@
+/**
+ * Tab Navigator - Exact Figma Menu Bar Recreation
+ * 5 tabs: Home, Explore, Sleep, Insights, Account
+ * Uses Figma-extracted Iconly icons
+ */
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { View, StyleSheet, useColorScheme } from 'react-native';
+import { View, Image, StyleSheet, useColorScheme } from 'react-native';
 import { lightColors, darkColors } from '../theme';
 
 // Stack navigators for each tab
 import { HomeStackNavigator } from './stacks/HomeStack';
-import { MeditationStackNavigator } from './stacks/MeditationStack';
-import { JournalStackNavigator } from './stacks/JournalStack';
+import { ExploreStackNavigator } from './stacks/ExploreStack';
+import { SleepStackNavigator } from './stacks/SleepStack';
+import { InsightsStackNavigator } from './stacks/InsightsStack';
 import { ProfileStackNavigator } from './stacks/ProfileStack';
+
+// Moon icon SVG for Sleep tab (not in Iconly set)
+import { MoonIcon } from '../components/icons/MoonIcon';
 
 export type TabParamList = {
   HomeTab: undefined;
-  MeditationTab: undefined;
-  JournalTab: undefined;
-  ProfileTab: undefined;
+  ExploreTab: undefined;
+  SleepTab: undefined;
+  InsightsTab: undefined;
+  AccountTab: undefined;
 };
 
 const Tab = createBottomTabNavigator<TabParamList>();
 
-// Tab icons (placeholder - replace with actual icons)
-const HomeIcon = ({ color, size }: { color: string; size: number }) => (
-  <View style={[styles.icon, { backgroundColor: color, width: size, height: size }]} />
+// Figma color scheme from menu bar design
+const TAB_COLORS = {
+  active: '#9EB567', // Olive green from Figma
+  inactive: '#9E9E9E', // Gray from Figma
+};
+
+// Icon paths - Iconly Curved icons from Figma extraction
+const icons = {
+  home: {
+    outline: require('../figma-extracted/assets/components/icons/iconly-curved-outline-home.png'),
+    bold: require('../figma-extracted/assets/components/icons/iconly-curved-bold-home.png'),
+  },
+  explore: {
+    outline: require('../figma-extracted/assets/components/icons/iconly-curved-outline-discovery.png'),
+    bold: require('../figma-extracted/assets/components/icons/iconly-curved-bold-discovery.png'),
+  },
+  insights: {
+    outline: require('../figma-extracted/assets/components/icons/iconly-curved-outline-activity.png'),
+    bold: require('../figma-extracted/assets/components/icons/iconly-curved-bold-activity.png'),
+  },
+  account: {
+    outline: require('../figma-extracted/assets/components/icons/iconly-curved-outline-profile.png'),
+    bold: require('../figma-extracted/assets/components/icons/iconly-curved-bold-profile.png'),
+  },
+};
+
+// Tab icon component for PNG icons
+interface TabIconProps {
+  focused: boolean;
+  icon: { outline: any; bold: any };
+}
+
+const TabIcon: React.FC<TabIconProps> = ({ focused, icon }) => (
+  <Image
+    source={focused ? icon.bold : icon.outline}
+    style={[
+      styles.icon,
+      { tintColor: focused ? TAB_COLORS.active : TAB_COLORS.inactive },
+    ]}
+    resizeMode="contain"
+  />
 );
 
-const MeditationIcon = ({ color, size }: { color: string; size: number }) => (
-  <View style={[styles.icon, { backgroundColor: color, width: size, height: size }]} />
-);
-
-const JournalIcon = ({ color, size }: { color: string; size: number }) => (
-  <View style={[styles.icon, { backgroundColor: color, width: size, height: size }]} />
-);
-
-const ProfileIcon = ({ color, size }: { color: string; size: number }) => (
-  <View style={[styles.icon, { backgroundColor: color, width: size, height: size }]} />
+// Sleep tab icon using SVG moon
+const SleepTabIcon: React.FC<{ focused: boolean }> = ({ focused }) => (
+  <MoonIcon
+    size={24}
+    color={focused ? TAB_COLORS.active : TAB_COLORS.inactive}
+    filled={focused}
+  />
 );
 
 export const TabNavigator = () => {
@@ -43,8 +88,8 @@ export const TabNavigator = () => {
     <Tab.Navigator
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: colors.primary.main,
-        tabBarInactiveTintColor: colors.text.tertiary,
+        tabBarActiveTintColor: TAB_COLORS.active,
+        tabBarInactiveTintColor: TAB_COLORS.inactive,
         tabBarStyle: {
           backgroundColor: colors.background.card,
           borderTopWidth: 1,
@@ -54,8 +99,9 @@ export const TabNavigator = () => {
           height: 64,
         },
         tabBarLabelStyle: {
-          fontSize: 12,
-          fontWeight: '600',
+          fontSize: 10,
+          fontWeight: '500',
+          marginTop: 2,
         },
       }}
     >
@@ -64,31 +110,47 @@ export const TabNavigator = () => {
         component={HomeStackNavigator}
         options={{
           tabBarLabel: 'Home',
-          tabBarIcon: ({ color, size }) => <HomeIcon color={color} size={size} />,
+          tabBarIcon: ({ focused }) => (
+            <TabIcon focused={focused} icon={icons.home} />
+          ),
         }}
       />
       <Tab.Screen
-        name="MeditationTab"
-        component={MeditationStackNavigator}
+        name="ExploreTab"
+        component={ExploreStackNavigator}
         options={{
-          tabBarLabel: 'Meditate',
-          tabBarIcon: ({ color, size }) => <MeditationIcon color={color} size={size} />,
+          tabBarLabel: 'Explore',
+          tabBarIcon: ({ focused }) => (
+            <TabIcon focused={focused} icon={icons.explore} />
+          ),
         }}
       />
       <Tab.Screen
-        name="JournalTab"
-        component={JournalStackNavigator}
+        name="SleepTab"
+        component={SleepStackNavigator}
         options={{
-          tabBarLabel: 'Journal',
-          tabBarIcon: ({ color, size }) => <JournalIcon color={color} size={size} />,
+          tabBarLabel: 'Sleep',
+          tabBarIcon: ({ focused }) => <SleepTabIcon focused={focused} />,
         }}
       />
       <Tab.Screen
-        name="ProfileTab"
+        name="InsightsTab"
+        component={InsightsStackNavigator}
+        options={{
+          tabBarLabel: 'Insights',
+          tabBarIcon: ({ focused }) => (
+            <TabIcon focused={focused} icon={icons.insights} />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="AccountTab"
         component={ProfileStackNavigator}
         options={{
-          tabBarLabel: 'Profile',
-          tabBarIcon: ({ color, size }) => <ProfileIcon color={color} size={size} />,
+          tabBarLabel: 'Account',
+          tabBarIcon: ({ focused }) => (
+            <TabIcon focused={focused} icon={icons.account} />
+          ),
         }}
       />
     </Tab.Navigator>
@@ -97,6 +159,7 @@ export const TabNavigator = () => {
 
 const styles = StyleSheet.create({
   icon: {
-    borderRadius: 4,
+    width: 24,
+    height: 24,
   },
 });

@@ -1,78 +1,70 @@
+/**
+ * App Appearance Screen - Theme and visual settings
+ */
+
 import React, { useState } from 'react';
 import {
   View,
+  Text,
   StyleSheet,
-  Dimensions,
-  TouchableOpacity,
-  Image,
   SafeAreaView,
+  TouchableOpacity,
   ScrollView,
 } from 'react-native';
-import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { useNavigation } from '@react-navigation/native';
 import { useTheme } from '../../theme/useTheme';
-import { getThemedScreenImage } from '../../theme/getThemeImage';
 
-const { width, height } = Dimensions.get('window');
+type ThemeOption = 'light' | 'dark' | 'system';
 
-type Props = NativeStackScreenProps<any, 'AppAppearance'>;
+export const AppAppearanceScreen: React.FC = () => {
+  const navigation = useNavigation();
+  const { colors, isDarkMode } = useTheme();
+  const [selectedTheme, setSelectedTheme] = useState<ThemeOption>('system');
 
-export const AppAppearanceScreen: React.FC<Props> = ({ navigation }) => {
-  const { colors: themeColors, isDarkMode } = useTheme();
-  const [isLocalDarkMode, setIsLocalDarkMode] = useState(false);
-
-  const handleBack = () => {
-    navigation.goBack();
-  };
-
-  const handleThemeToggle = () => {
-    setIsLocalDarkMode(!isLocalDarkMode);
-  };
-
-  const handleLanguage = () => {
-    navigation.navigate('AppLanguage');
-  };
-
-  const handleTextSize = () => {
-    console.log('Adjust text size');
-  };
+  const themeOptions: { id: ThemeOption; label: string; emoji: string }[] = [
+    { id: 'light', label: 'Light', emoji: '☀️' },
+    { id: 'dark', label: 'Dark', emoji: '🌙' },
+    { id: 'system', label: 'System', emoji: '📱' },
+  ];
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: themeColors.background.primary }]}>
-      <ScrollView style={styles.scrollView}>
-        <View style={styles.content}>
-          <Image
-            source={getThemedScreenImage('AppAppearance', isDarkMode)}
-            style={styles.fullScreenImage}
-            resizeMode="cover"
-          />
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background.primary }]}>
+      <View style={styles.header}>
+        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+          <Text style={[styles.backText, { color: colors.text.primary }]}>←</Text>
+        </TouchableOpacity>
+        <Text style={[styles.headerTitle, { color: colors.text.primary }]}>App Appearance</Text>
+        <View style={styles.placeholder} />
+      </View>
 
-          {/* Back button */}
-          <TouchableOpacity
-            style={styles.backButton}
-            onPress={handleBack}
-            activeOpacity={1}
-          />
+      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+        <Text style={[styles.sectionTitle, { color: colors.text.secondary }]}>Theme</Text>
 
-          {/* Dark mode toggle */}
+        {themeOptions.map((option) => (
           <TouchableOpacity
-            style={styles.darkModeToggle}
-            onPress={handleThemeToggle}
-            activeOpacity={1}
-          />
+            key={option.id}
+            style={[
+              styles.optionCard,
+              { backgroundColor: colors.background.card },
+              selectedTheme === option.id && styles.selectedOption,
+            ]}
+            onPress={() => setSelectedTheme(option.id)}
+          >
+            <Text style={styles.optionEmoji}>{option.emoji}</Text>
+            <Text style={[styles.optionLabel, { color: colors.text.primary }]}>
+              {option.label}
+            </Text>
+            {selectedTheme === option.id && (
+              <Text style={styles.checkmark}>✓</Text>
+            )}
+          </TouchableOpacity>
+        ))}
 
-          {/* Language option */}
-          <TouchableOpacity
-            style={styles.languageButton}
-            onPress={handleLanguage}
-            activeOpacity={1}
-          />
-
-          {/* Text size option */}
-          <TouchableOpacity
-            style={styles.textSizeButton}
-            onPress={handleTextSize}
-            activeOpacity={1}
-          />
+        <View style={[styles.previewCard, { backgroundColor: colors.background.card }]}>
+          <Text style={[styles.previewTitle, { color: colors.text.primary }]}>Preview</Text>
+          <Text style={[styles.previewText, { color: colors.text.secondary }]}>
+            Currently using {isDarkMode ? 'dark' : 'light'} mode
+          </Text>
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -80,51 +72,42 @@ export const AppAppearanceScreen: React.FC<Props> = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#FFFFFF',
+  container: { flex: 1 },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 20,
+    paddingVertical: 16,
   },
-  scrollView: {
-    flex: 1,
+  backButton: { width: 40 },
+  backText: { fontSize: 24 },
+  headerTitle: { fontSize: 18, fontWeight: '600' },
+  placeholder: { width: 40 },
+  content: { flex: 1, paddingHorizontal: 20 },
+  sectionTitle: { fontSize: 14, fontWeight: '600', marginBottom: 12, textTransform: 'uppercase' },
+  optionCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 16,
+    borderRadius: 12,
+    marginBottom: 10,
   },
-  content: {
-    width,
-    minHeight: height,
+  selectedOption: {
+    borderWidth: 2,
+    borderColor: '#9EB567',
   },
-  fullScreenImage: {
-    width,
-    height: height * 1.2,
+  optionEmoji: { fontSize: 24, marginRight: 12 },
+  optionLabel: { flex: 1, fontSize: 16, fontWeight: '600' },
+  checkmark: { fontSize: 18, color: '#9EB567', fontWeight: '700' },
+  previewCard: {
+    padding: 20,
+    borderRadius: 12,
+    marginTop: 24,
+    alignItems: 'center',
   },
-  backButton: {
-    position: 'absolute',
-    top: 50,
-    left: 20,
-    width: 50,
-    height: 50,
-    zIndex: 10,
-  },
-  darkModeToggle: {
-    position: 'absolute',
-    top: 180,
-    left: 20,
-    right: 20,
-    height: 70,
-    zIndex: 10,
-  },
-  languageButton: {
-    position: 'absolute',
-    top: 270,
-    left: 20,
-    right: 20,
-    height: 70,
-    zIndex: 10,
-  },
-  textSizeButton: {
-    position: 'absolute',
-    top: 360,
-    left: 20,
-    right: 20,
-    height: 70,
-    zIndex: 10,
-  },
+  previewTitle: { fontSize: 16, fontWeight: '600', marginBottom: 8 },
+  previewText: { fontSize: 14 },
 });
+
+export default AppAppearanceScreen;

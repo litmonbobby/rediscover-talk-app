@@ -1,121 +1,355 @@
+/**
+ * About Screen - Matches Figma design
+ * App information and legal links
+ * Supports both light and dark themes
+ */
+
 import React from 'react';
-import { View, Text, TouchableOpacity, ScrollView, StyleSheet, Linking } from 'react-native';
-import { colors } from '../../constants/colors';
-import { typography } from '../../constants/typography';
-import { spacing } from '../../constants/spacing';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity,
+  StatusBar,
+  Linking,
+} from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { useNavigation } from '@react-navigation/native';
 import { useTheme } from '../../theme/useTheme';
+import Svg, { Path, Circle } from 'react-native-svg';
 
-export const AboutScreen = ({ navigation }: any) => {
-  const { colors: themeColors } = useTheme();
-  const appVersion = '1.0.0';
-  const buildNumber = '100';
+// Back Arrow Icon
+const BackArrowIcon = ({ color = '#212121' }: { color?: string }) => (
+  <Svg width={24} height={24} viewBox="0 0 24 24" fill="none">
+    <Path
+      d="M19 12H5M12 19L5 12L12 5"
+      stroke={color}
+      strokeWidth={2}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </Svg>
+);
 
-  const openURL = (url: string) => {
-    Linking.openURL(url).catch((err) => console.error('Failed to open URL:', err));
+// Chevron Right Icon
+const ChevronRightIcon = ({ color = '#212121' }: { color?: string }) => (
+  <Svg width={20} height={20} viewBox="0 0 24 24" fill="none">
+    <Path
+      d="M9 18L15 12L9 6"
+      stroke={color}
+      strokeWidth={2}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </Svg>
+);
+
+// External Link Icon
+const ExternalLinkIcon = ({ color = '#212121' }: { color?: string }) => (
+  <Svg width={20} height={20} viewBox="0 0 24 24" fill="none">
+    <Path
+      d="M18 13V19C18 19.5304 17.7893 20.0391 17.4142 20.4142C17.0391 20.7893 16.5304 21 16 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V8C3 7.46957 3.21071 6.96086 3.58579 6.58579C3.96086 6.21071 4.46957 6 5 6H11M15 3H21M21 3V9M21 3L10 14"
+      stroke={color}
+      strokeWidth={2}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </Svg>
+);
+
+// Document Icon
+const DocumentIcon = ({ color = '#212121' }: { color?: string }) => (
+  <Svg width={24} height={24} viewBox="0 0 24 24" fill="none">
+    <Path
+      d="M14 2H6C5.46957 2 4.96086 2.21071 4.58579 2.58579C4.21071 2.96086 4 3.46957 4 4V20C4 20.5304 4.21071 21.0391 4.58579 21.4142C4.96086 21.7893 5.46957 22 6 22H18C18.5304 22 19.0391 21.7893 19.4142 21.4142C19.7893 21.0391 20 20.5304 20 20V8L14 2Z"
+      stroke={color}
+      strokeWidth={2}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <Path
+      d="M14 2V8H20M16 13H8M16 17H8M10 9H8"
+      stroke={color}
+      strokeWidth={2}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </Svg>
+);
+
+// Shield Icon
+const ShieldIcon = ({ color = '#212121' }: { color?: string }) => (
+  <Svg width={24} height={24} viewBox="0 0 24 24" fill="none">
+    <Path
+      d="M12 22C12 22 20 18 20 12V5L12 2L4 5V12C4 18 12 22 12 22Z"
+      stroke={color}
+      strokeWidth={2}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </Svg>
+);
+
+// Star Icon
+const StarIcon = ({ color = '#212121' }: { color?: string }) => (
+  <Svg width={24} height={24} viewBox="0 0 24 24" fill="none">
+    <Path
+      d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"
+      stroke={color}
+      strokeWidth={2}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </Svg>
+);
+
+// Heart Icon
+const HeartIcon = ({ color = '#212121' }: { color?: string }) => (
+  <Svg width={24} height={24} viewBox="0 0 24 24" fill="none">
+    <Path
+      d="M20.84 4.61C20.3292 4.099 19.7228 3.69365 19.0554 3.41708C18.3879 3.14052 17.6725 2.99817 16.95 2.99817C16.2275 2.99817 15.5121 3.14052 14.8446 3.41708C14.1772 3.69365 13.5708 4.099 13.06 4.61L12 5.67L10.94 4.61C9.9083 3.57831 8.50903 2.99871 7.05 2.99871C5.59096 2.99871 4.19169 3.57831 3.16 4.61C2.1283 5.64169 1.54871 7.04097 1.54871 8.5C1.54871 9.95903 2.1283 11.3583 3.16 12.39L4.22 13.45L12 21.23L19.78 13.45L20.84 12.39C21.351 11.8792 21.7563 11.2728 22.0329 10.6054C22.3095 9.93789 22.4518 9.22249 22.4518 8.5C22.4518 7.77751 22.3095 7.0621 22.0329 6.39464C21.7563 5.72718 21.351 5.12075 20.84 4.61Z"
+      stroke={color}
+      strokeWidth={2}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </Svg>
+);
+
+interface LinkItemProps {
+  icon: React.ReactNode;
+  title: string;
+  subtitle?: string;
+  onPress: () => void;
+  colors: any;
+  isLast?: boolean;
+  isExternal?: boolean;
+}
+
+const LinkItem: React.FC<LinkItemProps> = ({
+  icon,
+  title,
+  subtitle,
+  onPress,
+  colors,
+  isLast,
+  isExternal,
+}) => (
+  <TouchableOpacity
+    style={[
+      styles.linkItem,
+      !isLast && { borderBottomColor: colors.border.light, borderBottomWidth: 1 },
+    ]}
+    onPress={onPress}
+    activeOpacity={0.7}
+  >
+    <View style={styles.linkItemLeft}>
+      <View
+        style={[
+          styles.linkIconContainer,
+          { backgroundColor: colors.background.secondary },
+        ]}
+      >
+        {icon}
+      </View>
+      <View>
+        <Text style={[styles.linkTitle, { color: colors.text.primary }]}>{title}</Text>
+        {subtitle && (
+          <Text style={[styles.linkSubtitle, { color: colors.text.tertiary }]}>
+            {subtitle}
+          </Text>
+        )}
+      </View>
+    </View>
+    {isExternal ? (
+      <ExternalLinkIcon color={colors.text.tertiary} />
+    ) : (
+      <ChevronRightIcon color={colors.text.tertiary} />
+    )}
+  </TouchableOpacity>
+);
+
+export const AboutScreen: React.FC = () => {
+  const navigation = useNavigation();
+  const { colors, typography, isDarkMode } = useTheme();
+
+  const handleOpenLink = (url: string) => {
+    Linking.openURL(url);
   };
 
   return (
-    <View style={[styles.container, { backgroundColor: themeColors.background.primary }]}>
-      <ScrollView style={styles.scrollView}>
+    <>
+      <StatusBar
+        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
+        backgroundColor={colors.background.primary}
+      />
+      <SafeAreaView
+        style={[styles.container, { backgroundColor: colors.background.primary }]}
+        edges={['top', 'bottom']}
+      >
+        {/* Header */}
         <View style={styles.header}>
-          <TouchableOpacity onPress={() => navigation.goBack()}>
-            <Text style={styles.backText}>← Back</Text>
+          <TouchableOpacity
+            style={styles.backButton}
+            onPress={() => navigation.goBack()}
+          >
+            <BackArrowIcon color={colors.text.primary} />
           </TouchableOpacity>
+          <Text
+            style={[
+              styles.headerTitle,
+              {
+                color: colors.text.primary,
+                fontFamily: typography.fontFamily.primary,
+              },
+            ]}
+          >
+            About
+          </Text>
+          <View style={styles.headerRight} />
         </View>
 
-        {/* App Logo/Icon */}
-        <View style={styles.logoSection}>
-          <View style={styles.logoCircle}>
-            <Text style={styles.logoEmoji}>🧠</Text>
+        <ScrollView
+          contentContainerStyle={styles.scrollContent}
+          showsVerticalScrollIndicator={false}
+        >
+          {/* App Logo and Info */}
+          <View style={styles.appInfoContainer}>
+            <View
+              style={[styles.appLogo, { backgroundColor: colors.primary.main }]}
+            >
+              <Text style={styles.appLogoText}>M</Text>
+            </View>
+            <Text
+              style={[
+                styles.appName,
+                {
+                  color: colors.text.primary,
+                  fontFamily: typography.fontFamily.primary,
+                },
+              ]}
+            >
+              Mindify
+            </Text>
+            <Text style={[styles.appTagline, { color: colors.text.secondary }]}>
+              Your mental wellness companion
+            </Text>
+            <Text style={[styles.appVersion, { color: colors.text.tertiary }]}>
+              Version 1.0.0 (Build 1)
+            </Text>
           </View>
-          <Text style={styles.appName}>Rediscover Talk</Text>
-          <Text style={styles.tagline}>Mental Wellness Companion</Text>
-          <Text style={styles.versionText}>Version {appVersion} ({buildNumber})</Text>
-        </View>
 
-        {/* Mission Statement */}
-        <View style={styles.missionCard}>
-          <Text style={styles.missionTitle}>Our Mission</Text>
-          <Text style={styles.missionText}>
-            Rediscover Talk is dedicated to making mental wellness accessible to everyone.
-            We combine evidence-based practices with modern technology to help you understand
-            and improve your mental health journey.
+          {/* Legal Links */}
+          <Text
+            style={[
+              styles.sectionTitle,
+              {
+                color: colors.text.secondary,
+                fontFamily: typography.fontFamily.primary,
+              },
+            ]}
+          >
+            LEGAL
           </Text>
-        </View>
-
-        {/* Features Highlights */}
-        <View style={styles.featuresSection}>
-          <Text style={styles.sectionTitle}>What We Offer</Text>
-          <View style={styles.featuresList}>
-            <View style={styles.featureItem}>
-              <Text style={styles.featureEmoji}>💬</Text>
-              <Text style={styles.featureText}>24/7 AI Mental Health Coach</Text>
-            </View>
-            <View style={styles.featureItem}>
-              <Text style={styles.featureEmoji}>📊</Text>
-              <Text style={styles.featureText}>Advanced Mood Analytics</Text>
-            </View>
-            <View style={styles.featureItem}>
-              <Text style={styles.featureEmoji}>🧘</Text>
-              <Text style={styles.featureText}>Guided Meditation Library</Text>
-            </View>
-            <View style={styles.featureItem}>
-              <Text style={styles.featureEmoji}>📝</Text>
-              <Text style={styles.featureText}>Therapeutic Journaling</Text>
-            </View>
-            <View style={styles.featureItem}>
-              <Text style={styles.featureEmoji}>🔒</Text>
-              <Text style={styles.featureText}>HIPAA-Compliant Privacy</Text>
-            </View>
+          <View
+            style={[
+              styles.linksContainer,
+              { backgroundColor: colors.background.card, borderColor: colors.border.light },
+            ]}
+          >
+            <LinkItem
+              icon={<DocumentIcon color={colors.primary.main} />}
+              title="Terms of Service"
+              onPress={() => handleOpenLink('https://example.com/terms')}
+              colors={colors}
+              isExternal
+            />
+            <LinkItem
+              icon={<ShieldIcon color={colors.primary.main} />}
+              title="Privacy Policy"
+              onPress={() => handleOpenLink('https://example.com/privacy')}
+              colors={colors}
+              isExternal
+            />
+            <LinkItem
+              icon={<DocumentIcon color={colors.primary.main} />}
+              title="Open Source Licenses"
+              onPress={() => {}}
+              colors={colors}
+              isLast
+            />
           </View>
-        </View>
 
-        {/* Links */}
-        <View style={styles.linksSection}>
-          <TouchableOpacity
-            style={styles.linkButton}
-            onPress={() => openURL('https://example.com/privacy')}
+          {/* Support the App */}
+          <Text
+            style={[
+              styles.sectionTitle,
+              {
+                color: colors.text.secondary,
+                fontFamily: typography.fontFamily.primary,
+              },
+            ]}
           >
-            <Text style={styles.linkText}>Privacy Policy</Text>
-            <Text style={styles.linkArrow}>→</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.linkButton}
-            onPress={() => openURL('https://example.com/terms')}
+            SUPPORT THE APP
+          </Text>
+          <View
+            style={[
+              styles.linksContainer,
+              { backgroundColor: colors.background.card, borderColor: colors.border.light },
+            ]}
           >
-            <Text style={styles.linkText}>Terms of Service</Text>
-            <Text style={styles.linkArrow}>→</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.linkButton}
-            onPress={() => openURL('https://example.com/licenses')}
-          >
-            <Text style={styles.linkText}>Open Source Licenses</Text>
-            <Text style={styles.linkArrow}>→</Text>
-          </TouchableOpacity>
-        </View>
+            <LinkItem
+              icon={<StarIcon color={colors.primary.main} />}
+              title="Rate Us"
+              subtitle="Share your experience on the App Store"
+              onPress={() => {}}
+              colors={colors}
+            />
+            <LinkItem
+              icon={<HeartIcon color={colors.primary.main} />}
+              title="Share with Friends"
+              subtitle="Help others discover Mindify"
+              onPress={() => {}}
+              colors={colors}
+              isLast
+            />
+          </View>
 
-        {/* Credits */}
-        <View style={styles.creditsSection}>
-          <Text style={styles.creditsTitle}>Credits</Text>
-          <Text style={styles.creditsText}>
-            Built with React Native & Expo{'\n'}
-            Designed with care for mental wellness{'\n'}
-            Powered by evidence-based practices
-          </Text>
-        </View>
+          {/* Credits */}
+          <View
+            style={[
+              styles.creditsContainer,
+              { backgroundColor: colors.background.card, borderColor: colors.border.light },
+            ]}
+          >
+            <Text
+              style={[
+                styles.creditsTitle,
+                {
+                  color: colors.text.primary,
+                  fontFamily: typography.fontFamily.primary,
+                },
+              ]}
+            >
+              Made with love
+            </Text>
+            <Text style={[styles.creditsText, { color: colors.text.secondary }]}>
+              Designed and developed to help you on your mental wellness journey.
+              Thank you for being part of our community.
+            </Text>
+          </View>
 
-        {/* Copyright */}
-        <View style={styles.footer}>
-          <Text style={styles.copyrightText}>
-            © 2025 Rediscover Talk. All rights reserved.
+          {/* Copyright */}
+          <Text style={[styles.copyright, { color: colors.text.tertiary }]}>
+            © 2024 Mindify. All rights reserved.
           </Text>
-          <Text style={styles.footerText}>
-            Made with 💚 for mental wellness
-          </Text>
-        </View>
-      </ScrollView>
-    </View>
+
+          {/* Bottom spacing */}
+          <View style={{ height: 40 }} />
+        </ScrollView>
+      </SafeAreaView>
+    </>
   );
 };
 
@@ -123,139 +357,118 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  scrollView: {
-    flex: 1,
-  },
   header: {
-    padding: spacing.lg,
-    paddingTop: spacing['4xl'],
-  },
-  backText: {
-    ...typography.bodyBold,
-    color: colors.accent.lime,
-  },
-  logoSection: {
+    flexDirection: 'row',
     alignItems: 'center',
-    padding: spacing.xl,
+    justifyContent: 'space-between',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
   },
-  logoCircle: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    backgroundColor: 'rgba(199, 246, 0, 0.1)',
+  backButton: {
+    padding: 8,
+  },
+  headerTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+  },
+  headerRight: {
+    width: 40,
+  },
+  scrollContent: {
+    paddingHorizontal: 24,
+  },
+  appInfoContainer: {
     alignItems: 'center',
+    paddingVertical: 32,
+  },
+  appLogo: {
+    width: 80,
+    height: 80,
+    borderRadius: 20,
     justifyContent: 'center',
-    marginBottom: spacing.lg,
-    borderWidth: 2,
-    borderColor: colors.accent.lime,
+    alignItems: 'center',
+    marginBottom: 16,
   },
-  logoEmoji: {
-    fontSize: 48,
+  appLogoText: {
+    color: '#FFFFFF',
+    fontSize: 36,
+    fontWeight: '700',
   },
   appName: {
-    ...typography.h1,
-    color: colors.text.primary,
-    marginBottom: spacing.xs,
+    fontSize: 28,
+    fontWeight: '700',
+    marginBottom: 4,
   },
-  tagline: {
-    ...typography.body,
-    color: colors.text.secondary,
-    marginBottom: spacing.sm,
+  appTagline: {
+    fontSize: 15,
+    marginBottom: 8,
   },
-  versionText: {
-    ...typography.caption,
-    color: colors.text.tertiary,
-  },
-  missionCard: {
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    margin: spacing.xl,
-    padding: spacing.lg,
-    borderRadius: spacing.borderRadius.lg,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
-  },
-  missionTitle: {
-    ...typography.h2,
-    color: colors.accent.lime,
-    marginBottom: spacing.md,
-  },
-  missionText: {
-    ...typography.body,
-    color: colors.text.secondary,
-    lineHeight: 24,
-  },
-  featuresSection: {
-    padding: spacing.xl,
+  appVersion: {
+    fontSize: 13,
   },
   sectionTitle: {
-    ...typography.h2,
-    color: colors.text.primary,
-    marginBottom: spacing.md,
+    fontSize: 12,
+    fontWeight: '600',
+    letterSpacing: 1,
+    marginTop: 8,
+    marginBottom: 12,
+    marginLeft: 4,
   },
-  featuresList: {
-    gap: spacing.md,
-  },
-  featureItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.md,
-  },
-  featureEmoji: {
-    fontSize: 24,
-  },
-  featureText: {
-    ...typography.body,
-    color: colors.text.primary,
-  },
-  linksSection: {
-    padding: spacing.xl,
-    gap: spacing.sm,
-  },
-  linkButton: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    padding: spacing.md,
-    borderRadius: spacing.borderRadius.md,
+  linksContainer: {
+    borderRadius: 16,
+    overflow: 'hidden',
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
+    marginBottom: 8,
   },
-  linkText: {
-    ...typography.bodyBold,
-    color: colors.text.primary,
-  },
-  linkArrow: {
-    ...typography.h3,
-    color: colors.accent.lime,
-  },
-  creditsSection: {
-    padding: spacing.xl,
+  linkItem: {
+    flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: 16,
+  },
+  linkItemLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+  },
+  linkIconContainer: {
+    width: 40,
+    height: 40,
+    borderRadius: 12,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 12,
+  },
+  linkTitle: {
+    fontSize: 15,
+    fontWeight: '500',
+    marginBottom: 2,
+  },
+  linkSubtitle: {
+    fontSize: 12,
+  },
+  creditsContainer: {
+    borderRadius: 16,
+    padding: 24,
+    alignItems: 'center',
+    marginTop: 16,
+    borderWidth: 1,
   },
   creditsTitle: {
-    ...typography.h3,
-    color: colors.text.primary,
-    marginBottom: spacing.sm,
+    fontSize: 18,
+    fontWeight: '700',
+    marginBottom: 8,
   },
   creditsText: {
-    ...typography.body,
-    color: colors.text.tertiary,
+    fontSize: 14,
     textAlign: 'center',
     lineHeight: 22,
   },
-  footer: {
-    padding: spacing.xl,
-    paddingBottom: spacing['4xl'],
-    alignItems: 'center',
-    gap: spacing.sm,
-  },
-  copyrightText: {
-    ...typography.caption,
-    color: colors.text.tertiary,
-  },
-  footerText: {
-    ...typography.body,
-    color: colors.text.secondary,
+  copyright: {
+    textAlign: 'center',
+    fontSize: 12,
+    marginTop: 24,
   },
 });
+
+export default AboutScreen;

@@ -1,129 +1,127 @@
-import React from 'react';
+/**
+ * Linked Accounts Screen - Connected services
+ */
+
+import React, { useState } from 'react';
 import {
   View,
+  Text,
   StyleSheet,
-  Dimensions,
-  TouchableOpacity,
-  Image,
   SafeAreaView,
+  TouchableOpacity,
   ScrollView,
 } from 'react-native';
-import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { useNavigation } from '@react-navigation/native';
 import { useTheme } from '../../theme/useTheme';
-import { getThemedScreenImage } from '../../theme/getThemeImage';
 
-const { width, height } = Dimensions.get('window');
+interface LinkedAccount {
+  id: string;
+  name: string;
+  emoji: string;
+  connected: boolean;
+}
 
-type Props = NativeStackScreenProps<any, 'LinkedAccounts'>;
+export const LinkedAccountsScreen: React.FC = () => {
+  const navigation = useNavigation();
+  const { colors } = useTheme();
 
-export const LinkedAccountsScreen: React.FC<Props> = ({ navigation }) => {
-  const { colors: themeColors, isDarkMode } = useTheme();
+  const [accounts, setAccounts] = useState<LinkedAccount[]>([
+    { id: '1', name: 'Apple Health', emoji: '🍎', connected: true },
+    { id: '2', name: 'Google Fit', emoji: '🏃', connected: false },
+    { id: '3', name: 'Fitbit', emoji: '⌚', connected: false },
+    { id: '4', name: 'Spotify', emoji: '🎵', connected: true },
+  ]);
 
-  const handleBack = () => {
-    navigation.goBack();
-  };
-
-  const handleConnectGoogle = () => {
-    console.log('Connect Google account');
-  };
-
-  const handleConnectApple = () => {
-    console.log('Connect Apple account');
-  };
-
-  const handleConnectFacebook = () => {
-    console.log('Connect Facebook account');
+  const toggleConnection = (id: string) => {
+    setAccounts(prev =>
+      prev.map(a => (a.id === id ? { ...a, connected: !a.connected } : a))
+    );
   };
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: themeColors.background.primary }]}>
-      <ScrollView style={styles.scrollView}>
-        <View style={styles.content}>
-          <Image
-            source={getThemedScreenImage('LinkedAccounts', isDarkMode)}
-            style={styles.fullScreenImage}
-            resizeMode="cover"
-          />
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background.primary }]}>
+      <View style={styles.header}>
+        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+          <Text style={[styles.backText, { color: colors.text.primary }]}>←</Text>
+        </TouchableOpacity>
+        <Text style={[styles.headerTitle, { color: colors.text.primary }]}>Linked Accounts</Text>
+        <View style={styles.placeholder} />
+      </View>
 
-          {/* Back button */}
-          <TouchableOpacity
-            style={styles.backButton}
-            onPress={handleBack}
-            activeOpacity={1}
-          />
+      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+        <Text style={[styles.description, { color: colors.text.secondary }]}>
+          Connect your accounts to sync data and enhance your experience.
+        </Text>
 
-          {/* Google account option */}
-          <TouchableOpacity
-            style={styles.googleButton}
-            onPress={handleConnectGoogle}
-            activeOpacity={1}
-          />
-
-          {/* Apple account option */}
-          <TouchableOpacity
-            style={styles.appleButton}
-            onPress={handleConnectApple}
-            activeOpacity={1}
-          />
-
-          {/* Facebook account option */}
-          <TouchableOpacity
-            style={styles.facebookButton}
-            onPress={handleConnectFacebook}
-            activeOpacity={1}
-          />
-        </View>
+        {accounts.map((account) => (
+          <View
+            key={account.id}
+            style={[styles.accountCard, { backgroundColor: colors.background.card }]}
+          >
+            <Text style={styles.accountEmoji}>{account.emoji}</Text>
+            <Text style={[styles.accountName, { color: colors.text.primary }]}>
+              {account.name}
+            </Text>
+            <TouchableOpacity
+              style={[
+                styles.connectButton,
+                account.connected && styles.connectedButton,
+              ]}
+              onPress={() => toggleConnection(account.id)}
+            >
+              <Text
+                style={[
+                  styles.connectText,
+                  account.connected && styles.connectedText,
+                ]}
+              >
+                {account.connected ? 'Connected' : 'Connect'}
+              </Text>
+            </TouchableOpacity>
+          </View>
+        ))}
       </ScrollView>
     </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#FFFFFF',
+  container: { flex: 1 },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 20,
+    paddingVertical: 16,
   },
-  scrollView: {
-    flex: 1,
+  backButton: { width: 40 },
+  backText: { fontSize: 24 },
+  headerTitle: { fontSize: 18, fontWeight: '600' },
+  placeholder: { width: 40 },
+  content: { flex: 1, paddingHorizontal: 20 },
+  description: { fontSize: 14, lineHeight: 20, marginBottom: 24 },
+  accountCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 16,
+    borderRadius: 12,
+    marginBottom: 10,
   },
-  content: {
-    width,
-    minHeight: height,
+  accountEmoji: { fontSize: 28, marginRight: 12 },
+  accountName: { flex: 1, fontSize: 16, fontWeight: '600' },
+  connectButton: {
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: '#9EB567',
   },
-  fullScreenImage: {
-    width,
-    height: height * 1.2,
+  connectedButton: {
+    backgroundColor: '#9EB567',
+    borderColor: '#9EB567',
   },
-  backButton: {
-    position: 'absolute',
-    top: 50,
-    left: 20,
-    width: 50,
-    height: 50,
-    zIndex: 10,
-  },
-  googleButton: {
-    position: 'absolute',
-    top: 180,
-    left: 20,
-    right: 20,
-    height: 70,
-    zIndex: 10,
-  },
-  appleButton: {
-    position: 'absolute',
-    top: 270,
-    left: 20,
-    right: 20,
-    height: 70,
-    zIndex: 10,
-  },
-  facebookButton: {
-    position: 'absolute',
-    top: 360,
-    left: 20,
-    right: 20,
-    height: 70,
-    zIndex: 10,
-  },
+  connectText: { fontSize: 13, fontWeight: '600', color: '#9EB567' },
+  connectedText: { color: '#fff' },
 });
+
+export default LinkedAccountsScreen;

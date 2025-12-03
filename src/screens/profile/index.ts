@@ -1,25 +1,17 @@
+/**
+ * Profile Screens - Barrel export file
+ */
+
 export { ProfileScreen } from './ProfileScreen';
 export { SettingsScreen } from './SettingsScreen';
 export { HelpScreen } from './HelpScreen';
 export { AboutScreen } from './AboutScreen';
-export { AccountScreen } from './AccountScreen';
 export { MyBadgesScreen } from './MyBadgesScreen';
-export { ShareBadgeScreen } from './ShareBadgeScreen';
 export { DailyReminderScreen } from './DailyReminderScreen';
 export { PreferencesScreen } from './PreferencesScreen';
-export { PersonalInfoScreen } from './PersonalInfoScreen';
 export { AccountSecurityScreen } from './AccountSecurityScreen';
+export { BillingScreen } from './BillingScreen';
 export { LinkedAccountsScreen } from './LinkedAccountsScreen';
-export { BillingSubscriptionsScreen } from './BillingSubscriptionsScreen';
-export { PaymentMethodsSettingsScreen } from './PaymentMethodsSettingsScreen';
-export { AddNewPaymentScreen } from './AddNewPaymentScreen';
-export { NewPaymentAddedScreen } from './NewPaymentAddedScreen';
 export { AppAppearanceScreen } from './AppAppearanceScreen';
-export { AppThemeScreen } from './AppThemeScreen';
-export { AppLanguageScreen } from './AppLanguageScreen';
-export { HelpSupportScreen } from './HelpSupportScreen';
-export { FAQScreen } from './FAQScreen';
-export { ContactSupportScreen } from './ContactSupportScreen';
-export { PrivacyPolicyScreen } from './PrivacyPolicyScreen';
-export { TermsOfServiceScreen } from './TermsOfServiceScreen';
-export { LogoutScreen } from './LogoutScreen';
+export { DataAnalyticsScreen } from './DataAnalyticsScreen';
+export { AppleHealthScreen } from './AppleHealthScreen';

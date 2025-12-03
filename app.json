@@ -53,7 +53,8 @@
           "microphonePermission": "Allow Rediscover Talk to access your microphone for meditation recordings."
         }
       ],
-      "expo-asset"
+      "expo-asset",
+      "expo-secure-store"
     ],
     "extra": {
       "eas": {

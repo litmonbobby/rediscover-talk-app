@@ -1,215 +1,456 @@
-import React from 'react';
+/**
+ * Articles List Screen - Matches Figma design
+ * Browse wellness and mental health articles
+ * Supports both light and dark themes
+ */
+
+import React, { useState } from 'react';
 import {
   View,
-  StyleSheet,
-  TouchableOpacity,
-  SafeAreaView,
-  Image,
-  Dimensions,
   Text,
-  FlatList,
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity,
+  StatusBar,
+  Image,
 } from 'react-native';
-import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { colors } from '../../constants';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useTheme } from '../../theme/useTheme';
-import { getThemedScreenImage } from '../../theme/getThemeImage';
+import Svg, { Path } from 'react-native-svg';
 
-const { width, height } = Dimensions.get('window');
+type ArticlesStackParamList = {
+  ArticlesList: undefined;
+  ArticleDetail: { article: Article };
+};
 
-type Props = NativeStackScreenProps<any, 'ArticlesList'>;
+type NavigationProp = NativeStackNavigationProp<ArticlesStackParamList, 'ArticlesList'>;
 
-type Article = {
-  id: string;
+interface Article {
+  id: number;
   title: string;
   excerpt: string;
   category: string;
   readTime: string;
   image: string;
-};
+  author: string;
+}
 
-export const ArticlesListScreen: React.FC<Props> = ({ navigation }) => {
-  const { colors: themeColors, isDarkMode } = useTheme();
-  const articles: Article[] = [
-    {
-      id: '1',
-      title: 'Understanding Anxiety: A Comprehensive Guide',
-      excerpt: 'Learn about the science behind anxiety and practical strategies to manage it effectively.',
-      category: 'Mental Health',
-      readTime: '5 min read',
-      image: '📚',
-    },
-    {
-      id: '2',
-      title: 'The Power of Mindfulness Meditation',
-      excerpt: 'Discover how mindfulness can transform your daily life and reduce stress.',
-      category: 'Mindfulness',
-      readTime: '7 min read',
-      image: '🧘',
-    },
-    {
-      id: '3',
-      title: 'Building Healthy Sleep Habits',
-      excerpt: 'Expert tips for improving your sleep quality and establishing a bedtime routine.',
-      category: 'Sleep',
-      readTime: '6 min read',
-      image: '😴',
-    },
-  ];
+// Mock articles data
+const articles: Article[] = [
+  {
+    id: 1,
+    title: '5 Ways to Practice Mindfulness Daily',
+    excerpt: 'Simple techniques to bring mindfulness into your everyday routine...',
+    category: 'Mindfulness',
+    readTime: '5 min read',
+    image: 'mindfulness',
+    author: 'Dr. Sarah Chen',
+  },
+  {
+    id: 2,
+    title: 'Understanding Anxiety and How to Manage It',
+    excerpt: 'Learn about the science behind anxiety and effective coping strategies...',
+    category: 'Mental Health',
+    readTime: '8 min read',
+    image: 'anxiety',
+    author: 'Dr. Michael Torres',
+  },
+  {
+    id: 3,
+    title: 'The Power of Gratitude Journaling',
+    excerpt: 'Discover how writing down what you are grateful for can transform your mindset...',
+    category: 'Wellness',
+    readTime: '4 min read',
+    image: 'gratitude',
+    author: 'Emma Williams',
+  },
+  {
+    id: 4,
+    title: 'Better Sleep: A Complete Guide',
+    excerpt: 'Everything you need to know about improving your sleep quality...',
+    category: 'Sleep',
+    readTime: '10 min read',
+    image: 'sleep',
+    author: 'Dr. James Park',
+  },
+  {
+    id: 5,
+    title: 'Building Healthy Habits That Stick',
+    excerpt: 'The science-backed approach to creating lasting positive changes...',
+    category: 'Habits',
+    readTime: '6 min read',
+    image: 'habits',
+    author: 'Lisa Johnson',
+  },
+];
+
+const categories = ['All', 'Mindfulness', 'Mental Health', 'Wellness', 'Sleep', 'Habits'];
+
+// Search Icon
+const SearchIcon = ({ color = '#212121' }: { color?: string }) => (
+  <Svg width={24} height={24} viewBox="0 0 24 24" fill="none">
+    <Path
+      d="M21 21L16.65 16.65M19 11C19 15.4183 15.4183 19 11 19C6.58172 19 3 15.4183 3 11C3 6.58172 6.58172 3 11 3C15.4183 3 19 6.58172 19 11Z"
+      stroke={color}
+      strokeWidth={2}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </Svg>
+);
+
+// Bookmark Icon
+const BookmarkIcon = ({ color = '#212121' }: { color?: string }) => (
+  <Svg width={20} height={20} viewBox="0 0 24 24" fill="none">
+    <Path
+      d="M19 21L12 16L5 21V5C5 4.46957 5.21071 3.96086 5.58579 3.58579C5.96086 3.21071 6.46957 3 7 3H17C17.5304 3 18.0391 3.21071 18.4142 3.58579C18.7893 3.96086 19 4.46957 19 5V21Z"
+      stroke={color}
+      strokeWidth={2}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </Svg>
+);
+
+// Clock Icon
+const ClockIcon = ({ color = '#212121' }: { color?: string }) => (
+  <Svg width={14} height={14} viewBox="0 0 24 24" fill="none">
+    <Path
+      d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z"
+      stroke={color}
+      strokeWidth={2}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <Path
+      d="M12 6V12L16 14"
+      stroke={color}
+      strokeWidth={2}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </Svg>
+);
+
+export const ArticlesListScreen: React.FC = () => {
+  const navigation = useNavigation<NavigationProp>();
+  const { colors, typography, isDarkMode } = useTheme();
+  const [selectedCategory, setSelectedCategory] = useState('All');
+
+  const filteredArticles = selectedCategory === 'All'
+    ? articles
+    : articles.filter(a => a.category === selectedCategory);
 
   const handleArticlePress = (article: Article) => {
     navigation.navigate('ArticleDetail', { article });
   };
 
-  const handleBack = () => {
-    navigation.goBack();
-  };
-
-  const renderArticleCard = ({ item }: { item: Article }) => (
-    <TouchableOpacity
-      style={styles.articleCard}
-      onPress={() => handleArticlePress(item)}
-      activeOpacity={0.7}
-    >
-      <Text style={styles.articleEmoji}>{item.image}</Text>
-      <View style={styles.articleInfo}>
-        <Text style={styles.articleTitle}>{item.title}</Text>
-        <Text style={styles.articleExcerpt}>{item.excerpt}</Text>
-        <View style={styles.articleMeta}>
-          <Text style={styles.categoryText}>{item.category}</Text>
-          <Text style={styles.readTimeText}>• {item.readTime}</Text>
-        </View>
-      </View>
-    </TouchableOpacity>
-  );
-
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: themeColors.background.primary }]}>
-      <Image
-        source={getThemedScreenImage('ExploreArticles', isDarkMode)}
-        style={styles.backgroundImage}
-        resizeMode="cover"
+    <>
+      <StatusBar
+        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
+        backgroundColor={colors.background.primary}
       />
+      <SafeAreaView
+        style={[styles.container, { backgroundColor: colors.background.primary }]}
+        edges={['top']}
+      >
+        {/* Header */}
+        <View style={styles.header}>
+          <Text
+            style={[
+              styles.headerTitle,
+              {
+                color: colors.text.primary,
+                fontFamily: typography.fontFamily.primary,
+                fontSize: typography.fontSize['2xl'],
+              },
+            ]}
+          >
+            Articles
+          </Text>
+          <TouchableOpacity style={styles.headerButton}>
+            <SearchIcon color={colors.text.primary} />
+          </TouchableOpacity>
+        </View>
 
-      {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity
-          style={styles.backButton}
-          onPress={handleBack}
-          activeOpacity={0.7}
+        {/* Categories */}
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.categoriesContainer}
         >
-          <Text style={styles.backButtonText}>←</Text>
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>Articles</Text>
-        <View style={styles.headerSpacer} />
-      </View>
+          {categories.map((category) => (
+            <TouchableOpacity
+              key={category}
+              style={[
+                styles.categoryChip,
+                {
+                  backgroundColor:
+                    selectedCategory === category
+                      ? colors.primary.main
+                      : colors.background.secondary,
+                },
+              ]}
+              onPress={() => setSelectedCategory(category)}
+            >
+              <Text
+                style={[
+                  styles.categoryText,
+                  {
+                    color:
+                      selectedCategory === category
+                        ? '#FFFFFF'
+                        : colors.text.secondary,
+                  },
+                ]}
+              >
+                {category}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
 
-      {/* Articles List */}
-      <FlatList
-        data={articles}
-        renderItem={renderArticleCard}
-        keyExtractor={(item) => item.id}
-        contentContainerStyle={styles.articlesList}
-      />
-    </SafeAreaView>
+        <ScrollView
+          contentContainerStyle={styles.scrollContent}
+          showsVerticalScrollIndicator={false}
+        >
+          {/* Featured Article */}
+          {filteredArticles.length > 0 && (
+            <TouchableOpacity
+              style={[
+                styles.featuredCard,
+                { backgroundColor: colors.primary.main },
+              ]}
+              onPress={() => handleArticlePress(filteredArticles[0])}
+              activeOpacity={0.9}
+            >
+              <View style={styles.featuredBadge}>
+                <Text style={styles.featuredBadgeText}>FEATURED</Text>
+              </View>
+              <Text style={styles.featuredTitle}>{filteredArticles[0].title}</Text>
+              <Text style={styles.featuredExcerpt}>{filteredArticles[0].excerpt}</Text>
+              <View style={styles.featuredMeta}>
+                <Text style={styles.featuredAuthor}>{filteredArticles[0].author}</Text>
+                <View style={styles.readTimeContainer}>
+                  <ClockIcon color="rgba(255,255,255,0.8)" />
+                  <Text style={styles.featuredReadTime}>
+                    {filteredArticles[0].readTime}
+                  </Text>
+                </View>
+              </View>
+            </TouchableOpacity>
+          )}
+
+          {/* Article List */}
+          <Text
+            style={[
+              styles.sectionTitle,
+              {
+                color: colors.text.primary,
+                fontFamily: typography.fontFamily.primary,
+              },
+            ]}
+          >
+            Latest Articles
+          </Text>
+
+          {filteredArticles.slice(1).map((article) => (
+            <TouchableOpacity
+              key={article.id}
+              style={[
+                styles.articleCard,
+                {
+                  backgroundColor: colors.background.card,
+                  borderColor: colors.border.light,
+                },
+              ]}
+              onPress={() => handleArticlePress(article)}
+              activeOpacity={0.8}
+            >
+              <View style={styles.articleContent}>
+                <View
+                  style={[
+                    styles.categoryBadge,
+                    { backgroundColor: colors.primary.main + '20' },
+                  ]}
+                >
+                  <Text style={[styles.categoryBadgeText, { color: colors.primary.main }]}>
+                    {article.category}
+                  </Text>
+                </View>
+                <Text
+                  style={[
+                    styles.articleTitle,
+                    {
+                      color: colors.text.primary,
+                      fontFamily: typography.fontFamily.primary,
+                    },
+                  ]}
+                  numberOfLines={2}
+                >
+                  {article.title}
+                </Text>
+                <View style={styles.articleMeta}>
+                  <Text style={[styles.articleAuthor, { color: colors.text.secondary }]}>
+                    {article.author}
+                  </Text>
+                  <View style={styles.readTimeContainer}>
+                    <ClockIcon color={colors.text.tertiary} />
+                    <Text style={[styles.articleReadTime, { color: colors.text.tertiary }]}>
+                      {article.readTime}
+                    </Text>
+                  </View>
+                </View>
+              </View>
+              <TouchableOpacity style={styles.bookmarkButton}>
+                <BookmarkIcon color={colors.text.tertiary} />
+              </TouchableOpacity>
+            </TouchableOpacity>
+          ))}
+
+          {/* Bottom spacing */}
+          <View style={{ height: 100 }} />
+        </ScrollView>
+      </SafeAreaView>
+    </>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
-  },
-  backgroundImage: {
-    width,
-    height,
-    position: 'absolute',
-    opacity: 0.15,
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingTop: 60,
-    paddingBottom: 16,
-    paddingHorizontal: 20,
-    backgroundColor: 'rgba(255, 255, 255, 0.98)',
-    borderBottomWidth: 1,
-    borderBottomColor: '#E0E0E0',
-  },
-  backButton: {
-    width: 40,
-    height: 40,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: 20,
-    backgroundColor: '#F5F5F5',
-  },
-  backButtonText: {
-    fontSize: 24,
-    color: colors.primary.DEFAULT,
+    paddingHorizontal: 24,
+    paddingVertical: 16,
   },
   headerTitle: {
-    fontSize: 20,
     fontWeight: '700',
-    color: '#1A1A1A',
-    flex: 1,
-    textAlign: 'center',
   },
-  headerSpacer: {
-    width: 40,
+  headerButton: {
+    padding: 8,
   },
-  articlesList: {
-    padding: 20,
-    paddingBottom: 100,
+  categoriesContainer: {
+    paddingHorizontal: 24,
+    paddingBottom: 16,
+    gap: 8,
+  },
+  categoryChip: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 20,
+    marginRight: 8,
+  },
+  categoryText: {
+    fontSize: 14,
+    fontWeight: '500',
+  },
+  scrollContent: {
+    paddingHorizontal: 24,
+  },
+  featuredCard: {
+    borderRadius: 20,
+    padding: 24,
+    marginBottom: 24,
+  },
+  featuredBadge: {
+    alignSelf: 'flex-start',
+    backgroundColor: 'rgba(255,255,255,0.2)',
+    paddingHorizontal: 12,
+    paddingVertical: 4,
+    borderRadius: 12,
+    marginBottom: 16,
+  },
+  featuredBadgeText: {
+    color: '#FFFFFF',
+    fontSize: 11,
+    fontWeight: '700',
+    letterSpacing: 1,
+  },
+  featuredTitle: {
+    color: '#FFFFFF',
+    fontSize: 22,
+    fontWeight: '700',
+    marginBottom: 12,
+    lineHeight: 30,
+  },
+  featuredExcerpt: {
+    color: 'rgba(255,255,255,0.8)',
+    fontSize: 14,
+    lineHeight: 22,
+    marginBottom: 16,
+  },
+  featuredMeta: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  featuredAuthor: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  readTimeContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+  featuredReadTime: {
+    color: 'rgba(255,255,255,0.8)',
+    fontSize: 12,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    marginBottom: 16,
   },
   articleCard: {
     flexDirection: 'row',
-    backgroundColor: 'rgba(255, 255, 255, 0.98)',
     borderRadius: 16,
     padding: 16,
-    marginBottom: 16,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    marginBottom: 12,
+    borderWidth: 1,
   },
-  articleEmoji: {
-    fontSize: 40,
-    marginRight: 16,
-  },
-  articleInfo: {
+  articleContent: {
     flex: 1,
   },
-  articleTitle: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: '#1A1A1A',
+  categoryBadge: {
+    alignSelf: 'flex-start',
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 8,
     marginBottom: 8,
-    lineHeight: 24,
   },
-  articleExcerpt: {
-    fontSize: 14,
-    color: '#666',
+  categoryBadgeText: {
+    fontSize: 11,
+    fontWeight: '600',
+  },
+  articleTitle: {
+    fontSize: 16,
+    fontWeight: '600',
     marginBottom: 12,
-    lineHeight: 20,
+    lineHeight: 22,
   },
   articleMeta: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'space-between',
   },
-  categoryText: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: colors.primary.DEFAULT,
-    backgroundColor: colors.primary.DEFAULT + '20',
-    paddingHorizontal: 12,
-    paddingVertical: 4,
-    borderRadius: 12,
+  articleAuthor: {
+    fontSize: 13,
   },
-  readTimeText: {
+  articleReadTime: {
     fontSize: 12,
-    color: '#999',
-    marginLeft: 8,
+  },
+  bookmarkButton: {
+    padding: 8,
   },
 });
+
+export default ArticlesListScreen;

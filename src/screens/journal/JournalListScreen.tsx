@@ -1,127 +1,215 @@
-import React from 'react';
+/**
+ * Journal List Screen - Smart Journal
+ * Functional React Native components matching Figma design
+ */
+
+import React, { useState } from 'react';
 import {
   View,
-  StyleSheet,
-  TouchableOpacity,
-  SafeAreaView,
-  Image,
-  Dimensions,
   Text,
-  FlatList,
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity,
+  Image,
+  SafeAreaView,
+  StatusBar,
+  TextInput,
 } from 'react-native';
-import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { colors } from '../../constants';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useTheme } from '../../theme/useTheme';
-import { getThemedScreenImage } from '../../theme/getThemeImage';
 
-const { width, height } = Dimensions.get('window');
+type RootStackParamList = {
+  JournalList: undefined;
+  JournalEntry: { promptId?: string; prompt?: string };
+};
 
-type Props = NativeStackScreenProps<any, 'JournalList'>;
+type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'JournalList'>;
 
-interface JournalEntry {
+// Journal prompt structure
+interface JournalPrompt {
   id: string;
-  date: string;
-  title: string;
-  preview: string;
-  mood: string;
+  question: string;
+  answered: boolean;
+  answer?: string;
 }
 
-// Mock data - will be replaced with Supabase data
-const mockEntries: JournalEntry[] = [
+// Sample prompts
+const journalPrompts: JournalPrompt[] = [
   {
     id: '1',
-    date: '2025-01-15',
-    title: 'Grateful for today',
-    preview: "Had a wonderful meditation session this morning. Feeling peaceful and centered...",
-    mood: '😊',
+    question: 'What activities usually make you feel better when you\'re feeling down?',
+    answered: false,
   },
   {
     id: '2',
-    date: '2025-01-14',
-    title: 'Reflecting on progress',
-    preview: "It's been two weeks since I started my mindfulness journey. I've noticed...",
-    mood: '😄',
+    question: 'If you could travel anywhere, where would you go and why?',
+    answered: true,
+    answer: 'I\'d love to visit Japan because I\'m fascinated by its culture and history.',
   },
   {
     id: '3',
-    date: '2025-01-13',
-    title: 'Dealing with stress',
-    preview: "Work was challenging today, but the breathing exercises helped me stay calm...",
-    mood: '😐',
+    question: 'What are three things you\'re grateful for today?',
+    answered: false,
+  },
+  {
+    id: '4',
+    question: 'Describe a moment recently when you felt truly happy.',
+    answered: false,
   },
 ];
 
-export const JournalListScreen: React.FC<Props> = ({ navigation }) => {
-  const { colors: themeColors, isDarkMode } = useTheme();
+// Illustrations
+const illustrations = {
+  journal: require('../../figma-extracted/assets/components/illustrations/illustration-illustration-14-component-illustrations-set.png'),
+};
+
+export const JournalListScreen: React.FC = () => {
+  const navigation = useNavigation<NavigationProp>();
+  const { colors, isDarkMode } = useTheme();
+  const [prompts, setPrompts] = useState<JournalPrompt[]>(journalPrompts);
+  const [currentAnswer, setCurrentAnswer] = useState('');
+  const [activePromptId, setActivePromptId] = useState<string | null>(prompts[0]?.id || null);
+
+  const activePrompt = prompts.find(p => p.id === activePromptId);
+  const unansweredPrompts = prompts.filter(p => !p.answered);
+  const answeredPrompts = prompts.filter(p => p.answered);
+
+  const handleAnswer = () => {
+    if (currentAnswer.trim() && activePromptId) {
+      setPrompts(prev =>
+        prev.map(p =>
+          p.id === activePromptId
+            ? { ...p, answered: true, answer: currentAnswer.trim() }
+            : p
+        )
+      );
+      setCurrentAnswer('');
+      // Move to next unanswered prompt
+      const nextUnanswered = prompts.find(p => !p.answered && p.id !== activePromptId);
+      if (nextUnanswered) {
+        setActivePromptId(nextUnanswered.id);
+      }
+    }
+  };
+
+  const handlePromptPress = (prompt: JournalPrompt) => {
+    setActivePromptId(prompt.id);
+    setCurrentAnswer('');
+  };
 
   const handleNewEntry = () => {
-    navigation.navigate('JournalEntry');
+    navigation.navigate('JournalEntry', {});
   };
-
-  const handleEntryPress = (entry: JournalEntry) => {
-    // TODO: Navigate to entry detail/edit screen with entry data
-    console.log('Entry pressed:', entry.title);
-  };
-
-  const handleBack = () => {
-    navigation.goBack();
-  };
-
-  const renderJournalEntry = ({ item }: { item: JournalEntry }) => (
-    <TouchableOpacity
-      style={styles.journalCard}
-      onPress={() => handleEntryPress(item)}
-      activeOpacity={0.7}
-    >
-      <View style={styles.cardHeader}>
-        <Text style={styles.moodEmoji}>{item.mood}</Text>
-        <Text style={styles.dateText}>{new Date(item.date).toLocaleDateString()}</Text>
-      </View>
-      <Text style={styles.titleText}>{item.title}</Text>
-      <Text style={styles.previewText} numberOfLines={2}>
-        {item.preview}
-      </Text>
-    </TouchableOpacity>
-  );
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: themeColors.background.primary }]}>
-      <Image
-        source={getThemedScreenImage('ExploreSmartJournal', isDarkMode)}
-        style={styles.backgroundImage}
-        resizeMode="cover"
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background.primary }]}>
+      <StatusBar
+        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
+        backgroundColor={colors.background.primary}
       />
 
-      {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity
-          style={styles.backButton}
-          onPress={handleBack}
-          activeOpacity={0.7}
-        >
-          <Text style={styles.backButtonText}>←</Text>
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>Smart Journal</Text>
-        <View style={styles.headerSpacer} />
-      </View>
-
-      {/* Journal Entries List */}
-      <FlatList
-        data={mockEntries}
-        renderItem={renderJournalEntry}
-        keyExtractor={(item) => item.id}
-        contentContainerStyle={styles.listContent}
+      <ScrollView
+        style={styles.scrollView}
+        contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
-      />
-
-      {/* Floating New Entry Button */}
-      <TouchableOpacity
-        style={styles.newEntryButton}
-        onPress={handleNewEntry}
-        activeOpacity={0.7}
+        keyboardShouldPersistTaps="handled"
       >
-        <Text style={styles.newEntryButtonText}>+</Text>
-      </TouchableOpacity>
+        {/* Header */}
+        <View style={styles.header}>
+          <View style={[styles.toggleContainer, { backgroundColor: colors.background.card }]}>
+            <View style={[styles.toggleActive, { backgroundColor: colors.primary.main }]} />
+          </View>
+          <Text style={[styles.headerTitle, { color: colors.text.primary }]}>
+            Smart Journal
+          </Text>
+        </View>
+
+        {/* Current Question Card */}
+        {activePrompt && !activePrompt.answered && (
+          <View style={[styles.questionCard, { backgroundColor: colors.background.primary }]}>
+            <Text style={[styles.questionLabel, { color: colors.text.secondary }]}>
+              Question
+            </Text>
+            <Text style={[styles.questionText, { color: colors.text.primary }]}>
+              {activePrompt.question}
+            </Text>
+
+            {/* Answer Button */}
+            <TouchableOpacity
+              style={[styles.answerButton, { backgroundColor: colors.primary.main }]}
+              onPress={handleAnswer}
+            >
+              <Text style={styles.answerButtonText}>Answer</Text>
+            </TouchableOpacity>
+          </View>
+        )}
+
+        {/* Answered Entry Example */}
+        {answeredPrompts.length > 0 && (
+          <View style={styles.answeredSection}>
+            <Text style={[styles.sectionTitle, { color: colors.text.secondary }]}>
+              Previous Entries
+            </Text>
+            {answeredPrompts.map((prompt) => (
+              <TouchableOpacity
+                key={prompt.id}
+                style={[styles.answeredCard, { backgroundColor: colors.background.card }]}
+                onPress={() => handlePromptPress(prompt)}
+              >
+                <Text style={[styles.answeredQuestion, { color: colors.text.primary }]} numberOfLines={2}>
+                  {prompt.question}
+                </Text>
+                <Text style={[styles.answeredAnswer, { color: colors.text.secondary }]} numberOfLines={3}>
+                  {prompt.answer}
+                </Text>
+                <View style={styles.answeredMeta}>
+                  <Image
+                    source={illustrations.journal}
+                    style={styles.miniIllustration}
+                    resizeMode="contain"
+                  />
+                </View>
+              </TouchableOpacity>
+            ))}
+          </View>
+        )}
+
+        {/* Unanswered Prompts */}
+        {unansweredPrompts.length > 1 && (
+          <View style={styles.promptsSection}>
+            <Text style={[styles.sectionTitle, { color: colors.text.secondary }]}>
+              More Prompts
+            </Text>
+            {unansweredPrompts
+              .filter(p => p.id !== activePromptId)
+              .map((prompt) => (
+                <TouchableOpacity
+                  key={prompt.id}
+                  style={[styles.promptCard, { backgroundColor: colors.background.card }]}
+                  onPress={() => handlePromptPress(prompt)}
+                >
+                  <Text style={[styles.promptQuestion, { color: colors.text.primary }]} numberOfLines={2}>
+                    {prompt.question}
+                  </Text>
+                  <View style={[styles.promptArrow, { backgroundColor: colors.primary.light }]}>
+                    <Text style={{ color: colors.primary.main }}>→</Text>
+                  </View>
+                </TouchableOpacity>
+              ))}
+          </View>
+        )}
+
+        {/* New Entry Button */}
+        <TouchableOpacity
+          style={[styles.newEntryButton, { borderColor: colors.primary.main }]}
+          onPress={handleNewEntry}
+        >
+          <Text style={[styles.newEntryText, { color: colors.primary.main }]}>
+            + Write Free Entry
+          </Text>
+        </TouchableOpacity>
+      </ScrollView>
     </SafeAreaView>
   );
 };
@@ -129,107 +217,134 @@ export const JournalListScreen: React.FC<Props> = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
   },
-  backgroundImage: {
-    width,
-    height,
-    position: 'absolute',
-    opacity: 0.15,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingTop: 60,
-    paddingBottom: 16,
-    paddingHorizontal: 20,
-    backgroundColor: 'rgba(255, 255, 255, 0.98)',
-    borderBottomWidth: 1,
-    borderBottomColor: '#E0E0E0',
-    zIndex: 10,
-  },
-  backButton: {
-    width: 40,
-    height: 40,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: 20,
-    backgroundColor: '#F5F5F5',
-  },
-  backButtonText: {
-    fontSize: 24,
-    color: colors.primary.DEFAULT,
-  },
-  headerTitle: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: '#1A1A1A',
+  scrollView: {
     flex: 1,
-    textAlign: 'center',
   },
-  headerSpacer: {
-    width: 40,
-  },
-  listContent: {
-    padding: 20,
+  scrollContent: {
     paddingBottom: 100,
   },
-  journalCard: {
-    backgroundColor: 'rgba(255, 255, 255, 0.98)',
-    borderRadius: 16,
-    padding: 16,
-    marginBottom: 16,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  cardHeader: {
+  header: {
+    paddingHorizontal: 24,
+    paddingTop: 16,
+    paddingBottom: 24,
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
+    gap: 12,
+  },
+  toggleContainer: {
+    width: 50,
+    height: 28,
+    borderRadius: 14,
+    justifyContent: 'center',
+    paddingHorizontal: 3,
+  },
+  toggleActive: {
+    width: 22,
+    height: 22,
+    borderRadius: 11,
+  },
+  headerTitle: {
+    fontSize: 28,
+    fontWeight: '700',
+  },
+  questionCard: {
+    marginHorizontal: 24,
+    marginBottom: 24,
+  },
+  questionLabel: {
+    fontSize: 12,
+    fontWeight: '500',
+    marginBottom: 8,
+    textTransform: 'uppercase',
+    letterSpacing: 1,
+  },
+  questionText: {
+    fontSize: 22,
+    fontWeight: '600',
+    lineHeight: 30,
+    marginBottom: 24,
+  },
+  answerButton: {
+    paddingVertical: 16,
+    borderRadius: 28,
+    alignItems: 'center',
+  },
+  answerButtonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  answeredSection: {
+    marginTop: 8,
+    paddingHorizontal: 24,
+  },
+  sectionTitle: {
+    fontSize: 14,
+    fontWeight: '600',
+    marginBottom: 12,
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+  },
+  answeredCard: {
+    padding: 16,
+    borderRadius: 16,
     marginBottom: 12,
   },
-  moodEmoji: {
-    fontSize: 32,
-  },
-  dateText: {
-    fontSize: 14,
-    color: '#666',
-    fontWeight: '500',
-  },
-  titleText: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: '#1A1A1A',
+  answeredQuestion: {
+    fontSize: 16,
+    fontWeight: '600',
     marginBottom: 8,
   },
-  previewText: {
+  answeredAnswer: {
     fontSize: 14,
-    color: '#666',
     lineHeight: 20,
   },
-  newEntryButton: {
-    position: 'absolute',
-    bottom: 30,
-    right: 20,
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    backgroundColor: colors.primary.DEFAULT,
+  answeredMeta: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    marginTop: 12,
+  },
+  miniIllustration: {
+    width: 50,
+    height: 50,
+  },
+  promptsSection: {
+    marginTop: 24,
+    paddingHorizontal: 24,
+  },
+  promptCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 16,
+    borderRadius: 16,
+    marginBottom: 12,
+  },
+  promptQuestion: {
+    flex: 1,
+    fontSize: 15,
+    fontWeight: '500',
+    marginRight: 12,
+  },
+  promptArrow: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
     justifyContent: 'center',
     alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 6,
   },
-  newEntryButtonText: {
-    fontSize: 32,
-    color: '#FFFFFF',
-    fontWeight: '300',
+  newEntryButton: {
+    marginHorizontal: 24,
+    marginTop: 24,
+    paddingVertical: 16,
+    borderRadius: 28,
+    borderWidth: 2,
+    alignItems: 'center',
+  },
+  newEntryText: {
+    fontSize: 16,
+    fontWeight: '600',
   },
 });
+
+export default JournalListScreen;

@@ -10,6 +10,9 @@ import { figmaColors } from './figma-colors';
 import { typography } from './typography';
 import { FontFamily } from '../hooks/useFonts';
 
+// Re-export typography for external use
+export { typography };
+
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
 // ============================================================================
@@ -112,8 +115,16 @@ export const colors = {
   white: '#FFFFFF',
   black: '#000000',
 
-  // Import Figma extracted colors
-  ...figmaColors,
+  // Status colors (for backwards compatibility)
+  status: {
+    success: '#27AE60',
+    warning: '#F39C12',
+    error: '#E74C3C',
+    info: '#3498DB',
+  },
+
+  // Figma extracted colors (namespaced to avoid conflicts)
+  figma: figmaColors,
 } as const;
 
 // ============================================================================
