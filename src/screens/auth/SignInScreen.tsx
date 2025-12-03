@@ -17,11 +17,14 @@ import {
   Platform,
   ScrollView,
   Dimensions,
+  Alert,
+  ActivityIndicator,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import Svg, { Path, Rect } from 'react-native-svg';
 import { useTheme } from '../../theme/useTheme';
+import { authService } from '../../services/supabase';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -118,18 +121,55 @@ export const SignInScreen: React.FC = () => {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleBack = () => {
     navigation.goBack();
   };
 
-  const handleSignIn = () => {
-    console.log('Sign in with:', email, password);
-    navigation.navigate('Main');
+  const handleSignIn = async () => {
+    if (!email.trim() || !password.trim()) {
+      Alert.alert('Error', 'Please enter your email and password');
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const result = await authService.signIn({ email: email.trim(), password });
+
+      if (result.success) {
+        // Navigation will be handled by auth state listener in AppNavigator
+        navigation.navigate('Main');
+      } else {
+        Alert.alert('Sign In Failed', result.error || 'Please check your credentials and try again');
+      }
+    } catch (error) {
+      Alert.alert('Error', 'An unexpected error occurred. Please try again.');
+      console.error('Sign in error:', error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const handleForgotPassword = () => {
-    console.log('Forgot password');
+  const handleForgotPassword = async () => {
+    if (!email.trim()) {
+      Alert.alert('Email Required', 'Please enter your email address first');
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const result = await authService.resetPassword(email.trim());
+      if (result.success) {
+        Alert.alert('Check Your Email', 'We sent you a password reset link');
+      } else {
+        Alert.alert('Error', result.error || 'Failed to send reset email');
+      }
+    } catch (error) {
+      Alert.alert('Error', 'An unexpected error occurred');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleSignUp = () => {
@@ -248,20 +288,24 @@ export const SignInScreen: React.FC = () => {
           <TouchableOpacity
             style={[
               styles.signInButton,
-              { backgroundColor: isFormValid ? '#9EB567' : colors.background.secondary },
+              { backgroundColor: isFormValid && !isLoading ? '#9EB567' : colors.background.secondary },
             ]}
             onPress={handleSignIn}
-            disabled={!isFormValid}
+            disabled={!isFormValid || isLoading}
             activeOpacity={0.8}
           >
-            <Text
-              style={[
-                styles.signInButtonText,
-                { color: isFormValid ? '#FFFFFF' : colors.text.tertiary },
-              ]}
-            >
-              Sign In
-            </Text>
+            {isLoading ? (
+              <ActivityIndicator color="#FFFFFF" />
+            ) : (
+              <Text
+                style={[
+                  styles.signInButtonText,
+                  { color: isFormValid ? '#FFFFFF' : colors.text.tertiary },
+                ]}
+              >
+                Sign In
+              </Text>
+            )}
           </TouchableOpacity>
 
           {/* Social Login - Hidden for future implementation */}

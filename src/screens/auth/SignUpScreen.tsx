@@ -17,11 +17,14 @@ import {
   Platform,
   ScrollView,
   Dimensions,
+  Alert,
+  ActivityIndicator,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import Svg, { Path, Rect } from 'react-native-svg';
 import { useTheme } from '../../theme/useTheme';
+import { authService } from '../../services/supabase';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -118,22 +121,87 @@ export const SignUpScreen: React.FC = () => {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [agreeTerms, setAgreeTerms] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleBack = () => {
     navigation.goBack();
   };
 
-  const handleSignUp = () => {
-    console.log('Sign up with:', email, password);
-    navigation.navigate('Main');
+  const handleSignUp = async () => {
+    if (!email.trim() || !password.trim()) {
+      Alert.alert('Error', 'Please enter your email and password');
+      return;
+    }
+
+    if (password.length < 6) {
+      Alert.alert('Error', 'Password must be at least 6 characters');
+      return;
+    }
+
+    if (!agreeTerms) {
+      Alert.alert('Error', 'Please agree to the Terms of Service and Privacy Policy');
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const result = await authService.signUp({
+        email: email.trim(),
+        password,
+      });
+
+      if (result.success) {
+        Alert.alert(
+          'Account Created',
+          'Please check your email to verify your account before signing in.',
+          [
+            {
+              text: 'OK',
+              onPress: () => navigation.navigate('SignIn'),
+            },
+          ]
+        );
+      } else {
+        Alert.alert('Sign Up Failed', result.error || 'Unable to create account. Please try again.');
+      }
+    } catch (error) {
+      Alert.alert('Error', 'An unexpected error occurred. Please try again.');
+      console.error('Sign up error:', error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleSignIn = () => {
     navigation.navigate('SignIn');
   };
 
-  const handleSocialLogin = (provider: string) => {
-    console.log(`Sign up with ${provider}`);
+  const handleSocialLogin = async (provider: string) => {
+    setIsLoading(true);
+    try {
+      let result;
+
+      if (provider === 'Apple') {
+        result = await authService.signInWithApple();
+      } else if (provider === 'Google') {
+        result = await authService.signInWithGoogle();
+      } else {
+        Alert.alert('Coming Soon', `${provider} sign-in is coming soon!`);
+        setIsLoading(false);
+        return;
+      }
+
+      if (result.success) {
+        navigation.navigate('Main');
+      } else {
+        Alert.alert('Sign In Failed', result.error || 'Unable to sign in. Please try again.');
+      }
+    } catch (error) {
+      Alert.alert('Error', 'An unexpected error occurred. Please try again.');
+      console.error(`${provider} sign in error:`, error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleTermsPress = () => {
@@ -253,20 +321,24 @@ export const SignUpScreen: React.FC = () => {
           <TouchableOpacity
             style={[
               styles.signUpButton,
-              { backgroundColor: isFormValid ? '#9EB567' : colors.background.secondary },
+              { backgroundColor: isFormValid && !isLoading ? '#9EB567' : colors.background.secondary },
             ]}
             onPress={handleSignUp}
-            disabled={!isFormValid}
+            disabled={!isFormValid || isLoading}
             activeOpacity={0.8}
           >
-            <Text
-              style={[
-                styles.signUpButtonText,
-                { color: isFormValid ? '#FFFFFF' : colors.text.tertiary },
-              ]}
-            >
-              Create Account
-            </Text>
+            {isLoading ? (
+              <ActivityIndicator color="#FFFFFF" />
+            ) : (
+              <Text
+                style={[
+                  styles.signUpButtonText,
+                  { color: isFormValid ? '#FFFFFF' : colors.text.tertiary },
+                ]}
+              >
+                Create Account
+              </Text>
+            )}
           </TouchableOpacity>
 
           {/* Divider */}
