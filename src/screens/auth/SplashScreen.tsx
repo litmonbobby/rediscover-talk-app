@@ -1,7 +1,7 @@
 /**
- * Splash Screen - Exact Figma Design Recreation
- * Uses full-screen Figma image directly - no additional UI layers
- * The Figma image IS the complete screen design
+ * Splash Screen - RediscoverTalk Branding
+ * Blue gradient with face profiles logo and lime green text
+ * "EMPOWERING MINDS THROUGH CONVERSATIONS"
  */
 
 import React, { useEffect } from 'react';
@@ -18,7 +18,6 @@ import Animated, {
   useSharedValue,
   useAnimatedStyle,
   withTiming,
-  withDelay,
 } from 'react-native-reanimated';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
@@ -30,8 +29,8 @@ type RootStackParamList = {
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'Splash'>;
 
-// Figma screen image - complete screen design (same for light/dark - olive green)
-const splashScreen = require('../../figma-extracted/assets/screens/light-theme/1-light-splash-screen.png');
+// RediscoverTalk splash - blue gradient with face profiles logo
+const splashScreen = require('../../../assets/splash-icon.png');
 
 export const SplashScreen: React.FC = () => {
   const navigation = useNavigation<NavigationProp>();
@@ -77,7 +76,7 @@ export const SplashScreen: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#9EB567', // Olive green fallback
+    backgroundColor: '#0066CC', // Blue fallback matching splash gradient
   },
   imageContainer: {
     flex: 1,
